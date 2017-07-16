@@ -3,14 +3,19 @@
 //  GameProject
 //
 //  Created by Aatina Punjabi on 16/07/2017.
-//  Copyright © 2017 Aatina Punjabi. All rights reserved.
+//  Copyright ï¿½ 2017 Aatina Punjabi. All rights reserved.
 //
 
 #include <iostream>
 #include "SDL.h"
 
-//Screen Dimensions
+//Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
+
+
+/*
+ Functions
+ */
 
 int main(int argc, char * argv[]) {
 
@@ -19,9 +24,10 @@ int main(int argc, char * argv[]) {
 		std::cout << "SDL could not initialise! SDL Error: " << SDL_GetError() << std::endl;
 	}
 
-	//The window to be rendered into
-	SDL_Window *window = SDL_CreateWindow("Hello World!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+    //The window to be rendered into
+    SDL_Window *window = SDL_CreateWindow("Hello World!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 
+    
 	//Return error if window can't be created
 	if (NULL == window) {
 		std::cout << "Could not create window: " << SDL_GetError() << std::endl;
