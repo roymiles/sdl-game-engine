@@ -8,13 +8,7 @@
 
 #include <iostream>
 
-#ifdef _WIN32
-	// Windows 32-bit and 64-bit
-	#include "SDL.h"
-#elif __APPLE__
-	// Mac only
-	#include <SDL2/SDL.h>
-#endif
+#include "SDL.h"
 
 //Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
