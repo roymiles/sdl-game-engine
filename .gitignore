@@ -13,3 +13,7 @@ Game-project/Debug/vc140.pdb
 Game-project/Game-project.vcxproj
 Game-project/Game-project.vcxproj.filters
 Game-project/Game-project.vcxproj.user
+x64/Debug/
+Game-project/x64/
+Debug/Game-project.pdb
+Game-project/Debug/

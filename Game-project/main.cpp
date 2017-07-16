@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 //Screen Dimensions
 const int WIDTH = 800, HEIGHT = 600;
