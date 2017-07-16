@@ -1,1 +1,15 @@
-*.xcodeproj
+.vs/
+Game-project.VC.VC.opendb
+Game-project.VC.db
+Game-project.sln
+Game-project/Debug/Game-project.log
+Game-project/Debug/Game-project.tlog/CL.command.1.tlog
+Game-project/Debug/Game-project.tlog/CL.read.1.tlog
+Game-project/Debug/Game-project.tlog/CL.write.1.tlog
+Game-project/Debug/Game-project.tlog/Game-project.lastbuildstate
+Game-project/Debug/Game-project.tlog/unsuccessfulbuild
+Game-project/Debug/vc140.idb
+Game-project/Debug/vc140.pdb
+Game-project/Game-project.vcxproj
+Game-project/Game-project.vcxproj.filters
+Game-project/Game-project.vcxproj.user
