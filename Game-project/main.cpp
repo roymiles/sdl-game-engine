@@ -9,9 +9,12 @@
 #include <iostream>
 
 #include "SDL.h"
+// The following is needed because SDL_main redefines the main function
+#undef main
+
 #include "Events/EventManager.h"
 
-namespace game {
+using namespace game;
 
 // Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
@@ -51,6 +54,9 @@ int main(int argc, char * argv[]) {
 		// Handle inputs
 		event_manager->handle_inputs(&window_event);
 
+		// logic
+		// update screen
+
 		// Wait until the next frame
 		// This ensures the game runs at the same
 		// speed on all computers
@@ -64,6 +70,4 @@ int main(int argc, char * argv[]) {
 	SDL_Quit();
 
 	return EXIT_SUCCESS;
-}
-
 }

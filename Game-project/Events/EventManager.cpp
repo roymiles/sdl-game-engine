@@ -14,7 +14,7 @@ EventManager::~EventManager()
 void EventManager::handle_inputs(SDL_Event* window_event)
 {
 	if (SDL_PollEvent(window_event)) {
-#warning "Not quite sure why i need this intermediate variable"
+//#pragma message("Not quite sure why i need this intermediate variable")
 		SDL_Event e = *window_event;
 		switch (e.type) {
 			/* Keyboard event */
