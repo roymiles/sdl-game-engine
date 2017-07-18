@@ -9,7 +9,8 @@
 #include <iostream>
 
 #include "SDL.h"
-
+#include "Events/EventManager.h"
+using namespace game;
 
 // Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
@@ -82,6 +83,9 @@ int main(int argc, char * argv[]) {
     
     //Handles any event that occurs in app
     SDL_Event windowEvent;
+    
+    events::EventManager* event_manager = new events::EventManager();
+
     
     if(!init()){
         printf( "Failed to initialize!\n" );
