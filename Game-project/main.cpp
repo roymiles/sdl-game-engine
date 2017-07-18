@@ -6,11 +6,14 @@
 //
 
 #include <iostream>
+#include <vector>
 
 #include "SDL.h"
 // The following is needed because SDL_main redefines the main function
 // #undef main
 
+#include "GameObject.h"
+#include "EntityManager.h"
 #include "Events/EventManager.h"
 
 using namespace game;
@@ -36,19 +39,19 @@ void close();
 bool init(){
     bool success = true;
     
-    //Initialises SDL
+    // Initialises SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         std::cout << "SDL could not initialise! SDL Error: " << SDL_GetError() << std::endl;
     }
     else{
-        //The window to be rendered into
+        // The window to be rendered into
         window = SDL_CreateWindow("Hello World!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
         if ( window == NULL ){
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
             success = false;
         }
         else{
-            //Get window surface
+            // Get window surface
             screenSurface = SDL_GetWindowSurface( window );
         }
     }
@@ -57,10 +60,10 @@ bool init(){
 
 bool loadMedia()
 {
-    //Loading success flag
+    // Loading success flag
     bool success = true;
     
-    //Load splash image
+    // Load splash image
     imageSurface = SDL_LoadBMP( "hi.bmp" );
     if( imageSurface == NULL )
     {
@@ -91,13 +94,18 @@ int main(int argc, char * argv[]) {
 		return EXIT_FAILURE;
     }
 
-    //Constantly running window
+    // Constantly running window
     SDL_BlitSurface( imageSurface, NULL, screenSurface, NULL );
     SDL_UpdateWindowSurface( window );
         
 	// Handles any event that occurs in app
 	SDL_Event window_event;
 	events::EventManager* event_manager = new events::EventManager();
+
+	// Call setup on all entities
+	//for (auto &entity : EntityManager::entityContainer) {
+	//	entity.setup();
+	//}
 
 	int frametime;
 
@@ -106,6 +114,12 @@ int main(int argc, char * argv[]) {
 
 		// Handle inputs
 		event_manager->handle_inputs(&window_event);
+
+
+		// Call update on all entities
+		//for (auto &entity : EntityManager::entityContainer) {
+		//	entity.update();
+		//}
 
 		// logic
 		// update screen
