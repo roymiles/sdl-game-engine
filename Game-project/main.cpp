@@ -3,16 +3,16 @@
 //  GameProject
 //
 //  Created by Aatina Punjabi on 16/07/2017.
-//  Copyright � 2017 Aatina Punjabi. All rights reserved.
+//  Copyright 2017 Aatina Punjabi. All rights reserved.
 //
 
 #include <iostream>
 
 #include "SDL.h"
 
-//Screen Dimensions constants
-const int WIDTH = 800, HEIGHT = 600;
 
+// Screen Dimensions constants
+const int WIDTH = 800, HEIGHT = 600;
 
 SDL_Window *window = NULL;
 SDL_Surface *screenSurface = NULL;
