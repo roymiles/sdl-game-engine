@@ -86,12 +86,6 @@ void close(){
 
 int main(int argc, char * argv[]) {
     
-    //Handles any event that occurs in app
-    SDL_Event windowEvent;
-    
-    events::EventManager* event_manager = new events::EventManager();
-
-    
     if(!init()){
         printf( "Failed to initialize!\n" );
 		return EXIT_FAILURE;
