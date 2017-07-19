@@ -1,10 +1,35 @@
 # Game-project
 
-[Game programming pattern](http://gameprogrammingpatterns.com/component.html)
+[Game programming pattern](http://gameprogrammingpatterns.com/contents.html)
 
-All game objects (entities) should inherit from GameObject. This is a class that outlines 2 functions that must be overridden.
-Namely, the setup() and update() methods.
+### The World
+This is the instance of the entire game and acts as a container for all the entities.
+```c++
+World world;
+```
 
-The main function will call setup() on all entities before the main loop and then proceed to call update() on every entity for every frame.
+### Entities
 
-Each entity can have instances of components, these are useful classes that decouple logic in the program. For example, the player class can have a PhysicsComponent which states that it can interact with other physical objects.
+An entity is a game object (e.g. Player, Light source) and can be added to the world using ```createEntity```. 
+
+```c++
+World world;
+// ... 
+Entity entity = world.createEntity();
+```
+To remove an entity from the world use ```removeEntity```
+
+```c++
+world.removeEntity(entity);
+```
+
+### Components
+
+A Component adds functionality to an Entity. For example, you can make add a RigidBody Component to make the object interact with the environment using the physics engine.
+
+You may add/remove/get components to entities through the public methods defined in the entity class.
+
+- `addComponent`
+- `removeComponent`
+- `getComponent`
+
