@@ -1,18 +1,14 @@
 #pragma once
 
-#include "../GameObject.h"
+#include "../Entity.h"
 
-namespace game { namespace entities {
+namespace game { namespace entity {
 
-class Character : public GameObject
+class Character : public Entity
 {
 public:
 	Character();
 	~Character();
-
-	void setup() override;
-	void update() override;
 };
 
 } }
-

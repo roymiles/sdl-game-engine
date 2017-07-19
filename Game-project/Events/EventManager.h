@@ -4,8 +4,14 @@
 #include <string>
 
 #include "SDL.h"
+#include "../World.h"
 
 namespace game { namespace events {
+
+enum eventID {
+	KEY_DOWN = 0
+	//... add more
+};
 
 /*
  * This class is used to register and fire events using a container
@@ -14,12 +20,18 @@ namespace game { namespace events {
 class EventManager
 {
 public:
-	EventManager();
+	EventManager(World _world);
 	~EventManager();
 
-	void handle_inputs(SDL_Event* window_event);
+	/*
+	 * Poll SDL_Event to see if any inputs have been pressed
+	 * and make the appropriate callback
+	 */
+	void update(SDL_Event* window_event);
 
 private:
+	World world;
+
 	void _fire(std::string key); // Trigger an event
 	void _register(); // Register an event
 };

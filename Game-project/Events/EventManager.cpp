@@ -2,8 +2,9 @@
 
 namespace game { namespace events {
 
-EventManager::EventManager()
+EventManager::EventManager(World _world)
 {
+	this->world = _world;
 }
 
 
@@ -11,7 +12,7 @@ EventManager::~EventManager()
 {
 }
 
-void EventManager::handle_inputs(SDL_Event* window_event)
+void EventManager::update(SDL_Event* window_event)
 {
 	if (SDL_PollEvent(window_event)) {
 #pragma message("Not quite sure why i need this intermediate variable")
@@ -36,7 +37,10 @@ void EventManager::handle_inputs(SDL_Event* window_event)
 
 void EventManager::_fire(std::string key)
 {
-
+	for (auto &entity : world.entityContainer)
+	{
+		entity.onEvent(key);
+	}
 }
 
 void EventManager::_register()

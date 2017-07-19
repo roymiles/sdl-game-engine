@@ -12,11 +12,12 @@
 // The following is needed because SDL_main redefines the main function
 // #undef main
 
-#include "GameObject.h"
-#include "EntityManager.h"
+#include "World.h"
 #include "Events/EventManager.h"
 
 using namespace game;
+using namespace events;
+using namespace entity;
 
 // Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
@@ -98,31 +99,30 @@ int main(int argc, char * argv[]) {
     SDL_BlitSurface( imageSurface, NULL, screenSurface, NULL );
     SDL_UpdateWindowSurface( window );
         
+	// Manages all the entities
+	World* world = new World();
+
+	Character* character = new Character();
+	Entity* entity = world->createEntity(character);
+
+	entity->registerEvent('KEYUP');
+	entity->registerEvent('KEYDOWN');
+
 	// Handles any event that occurs in app
 	SDL_Event window_event;
-	events::EventManager* event_manager = new events::EventManager();
+	EventManager* eventManager = new EventManager(world);
 
 	// Call setup on all entities
-	//for (auto &entity : EntityManager::entityContainer) {
-	//	entity.setup();
-	//}
+	world->setup();
 
 	int frametime;
 
     while (true) {
 		frametime = SDL_GetTicks();
 
-		// Handle inputs
-		event_manager->handle_inputs(&window_event);
+		eventManager->update();
 
-
-		// Call update on all entities
-		//for (auto &entity : EntityManager::entityContainer) {
-		//	entity.update();
-		//}
-
-		// logic
-		// update screen
+		world->update();
 
 		// Wait until the next frame
 		// This ensures the game runs at the same
