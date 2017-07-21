@@ -8,6 +8,8 @@ This is the instance of the entire game and acts as a container for all the enti
 World world;
 ```
 
+This class
+
 ### Entities
 
 An entity is a game object (e.g. Player, Light source) and can be added to the world using ```createEntity```. 
@@ -25,7 +27,7 @@ world.removeEntity(entity);
 
 ### Components
 
-A Component adds functionality to an Entity. For example, you can make add a RigidBody Component to make the object interact with the environment using the physics engine.
+A Component adds functionality to an Entity. Any object that has a ```RigidBody``` Component, can interact with the environment within the physics engine.
 
 You may add/remove/get components to entities through the public methods defined in the entity class.
 
@@ -33,3 +35,14 @@ You may add/remove/get components to entities through the public methods defined
 - `removeComponent`
 - `getComponent`
 
+More components such as ```Sprite``` and ```AudioSource``` can be added.
+
+The physics engine can collect all entities that have RigidBody Components.
+```c++
+std::list<Entity> colliders = world.getEntitiesWithComponent<RigidBody>();
+```
+
+### Event Manager
+The event manager has an update function that is called once per frame. This is responsible for polling the SDL_Events and dispatching callbacks to registered entities.
+
+At the moment, when any event is triggered, the overriden ```eventTriggered(id)``` is called on each Entity (This is very heavy and so a solution where only registered entities have callbacks would be better)
