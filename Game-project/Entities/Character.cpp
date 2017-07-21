@@ -1,6 +1,6 @@
 #include "Character.h"
 
-namespace game { namespace entity {
+namespace game { namespace entities {
 
 Character::Character()
 {
@@ -13,7 +13,7 @@ Character::~Character()
 
 void Character::setup()
 {
-
+	//registerEvent("KEY_UP");
 }
 
 void Character::update()
@@ -21,13 +21,12 @@ void Character::update()
 
 }
 
-void Character::onEvent(std::string key)
+void Character::onEvent(Event e)
 {
-	switch (key) {
+	/*switch (key) {
 		case "KEY_UP":
-			std::cout << "Move up" << std::endl;
 			break;
-	}
+	}*/
 }
 
 } }

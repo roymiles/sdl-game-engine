@@ -7,17 +7,18 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "SDL.h"
 // The following is needed because SDL_main redefines the main function
 // #undef main
 
 #include "World.h"
-#include "Events/EventManager.h"
+#include "EventManager.h"
+#include "PhysicsEngine.h"
 
 using namespace game;
-using namespace events;
-using namespace entity;
+using namespace entities;
 
 // Screen Dimensions constants
 const int WIDTH = 800, HEIGHT = 600;
@@ -25,6 +26,7 @@ const int WIDTH = 800, HEIGHT = 600;
 const int fps = 40;
 const int minframetime = 1000 / fps;
 
+#pragma message("Use smart pointers, especially when they are declared in global scope. Smart pointers offer easy garbage collection")
 SDL_Window *window = NULL;
 SDL_Surface *screenSurface = NULL;
 SDL_Surface *imageSurface = NULL;
@@ -100,17 +102,14 @@ int main(int argc, char * argv[]) {
     SDL_UpdateWindowSurface( window );
         
 	// Manages all the entities
-	World* world = new World();
+	std::shared_ptr<World> world(new World());
 
-	Character* character = new Character();
-	Entity* entity = world->createEntity(character);
-
-	entity->registerEvent('KEYUP');
-	entity->registerEvent('KEYDOWN');
+	// Physics engine is responsible for detecting and reacting to collisions
+	std::unique_ptr<PhysicsEngine> physicsEngine(new PhysicsEngine(world));
 
 	// Handles any event that occurs in app
 	SDL_Event window_event;
-	EventManager* eventManager = new EventManager(world);
+	std::unique_ptr<EventManager> eventManager(new EventManager(world));
 
 	// Call setup on all entities
 	world->setup();
@@ -120,9 +119,18 @@ int main(int argc, char * argv[]) {
     while (true) {
 		frametime = SDL_GetTicks();
 
-		eventManager->update();
+#pragma message("Maybe pass in some delta time into these update functions? like how unity does it")
+		// Handle inputs
+		eventManager->update(&window_event);
 
+		// Physics Engine
+		physicsEngine->update();
+
+		// Logic
 		world->update();
+
+		// Render
+		// render(?)->update();
 
 		// Wait until the next frame
 		// This ensures the game runs at the same

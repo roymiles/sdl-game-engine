@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include <list>
+
+#include "Component.h"
+#include "Event.h"
 
 namespace game {
 
@@ -12,14 +14,31 @@ public:
 	~Entity();
 
 #pragma message("Do these need to be pure virtual?")
-	virtual void setup() = 0;
-	virtual void update();
-	virtual void onEvent(std::string key);
+	virtual void setup() {}
+	virtual void update() {}
+	virtual void onEvent(Event e) {}
 
-	virtual Component getComponent();
+#pragma message("Implement")
+	Component getComponent() {}
 	Component setComponent() {}
 
-	std::vector<Component> components;
+#pragma message("Look up way of exporting templated function body into cpp file")
+	template<typename T>
+	bool hasComponent() {
+		return true;
+	}
+
+	void registerEvent(Event e);
+#pragma message("De-register event")
+	std::list<Event> getRegisteredEvents();
+
+	bool hasRegisteredEvent(Event e) {
+		return true;
+	}
+
+private:
+	std::list<Event> registeredEvents;
+	std::list<Component> components;
 };
 
 }

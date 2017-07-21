@@ -2,16 +2,13 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "SDL.h"
-#include "../World.h"
+#include "World.h"
+#include "Event.h"
 
-namespace game { namespace events {
-
-enum eventID {
-	KEY_DOWN = 0
-	//... add more
-};
+namespace game {
 
 /*
  * This class is used to register and fire events using a container
@@ -20,7 +17,7 @@ enum eventID {
 class EventManager
 {
 public:
-	EventManager(World _world);
+	EventManager(std::shared_ptr<World> _world);
 	~EventManager();
 
 	/*
@@ -30,10 +27,10 @@ public:
 	void update(SDL_Event* window_event);
 
 private:
-	World world;
+	std::shared_ptr<World> world;
 
-	void _fire(std::string key); // Trigger an event
-	void _register(); // Register an event
+	void triggerEvent(Event e); // Trigger an event
+	void registerEvent(); // Register an event
 };
 
-} }
+}
