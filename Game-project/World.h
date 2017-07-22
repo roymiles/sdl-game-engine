@@ -31,6 +31,22 @@ public:
 
 	void setup();
 	void update();
+
+	// Return a list of all entities with a given component T
+	template<typename T>
+	std::list<Entity> getEntitiesWithComponent()
+	{
+		std::list<Entity> entitiesWithComponent;
+		for (auto &entity : entityContainer)
+		{
+			if (entity.second.hasComponent<T>())
+			{
+				entitiesWithComponent.push_back(entity.second);
+			}
+		}
+
+		return entitiesWithComponent;
+	}
 };
 
 }

@@ -2,8 +2,9 @@
 
 namespace game { namespace components {
 
-RigidBody::RigidBody()
+RigidBody::RigidBody(SDL_Rect _collisionMesh)
 {
+	collisionMesh = _collisionMesh;
 }
 
 

@@ -18,3 +18,4 @@ Game-project/x64/
 Debug/Game-project.pdb
 Game-project/Debug/
 *.xcodeproj
+Game-project/Dependancies/Boost/boost/

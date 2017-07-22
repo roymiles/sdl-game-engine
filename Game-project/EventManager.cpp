@@ -39,14 +39,9 @@ void EventManager::triggerEvent(Event e)
 	{
 		// Check if this entity has registered for this event
 		if (entity.second.hasRegisteredEvent(e)) {
-
+			entity.second.onEvent(e);
 		}
 	}
-}
-
-void EventManager::registerEvent()
-{
-
 }
 
 }

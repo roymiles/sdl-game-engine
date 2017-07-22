@@ -1,8 +1,7 @@
 //  main.cpp
 //  GameProject
 //
-//  Created by Aatina Punjabi on 16/07/2017.
-//  Copyright 2017 Aatina Punjabi. All rights reserved.
+//  Aatina and Roys project :D
 //
 
 #include <iostream>
@@ -10,8 +9,6 @@
 #include <memory>
 
 #include "SDL.h"
-// The following is needed because SDL_main redefines the main function
-// #undef main
 
 #include "World.h"
 #include "EventManager.h"

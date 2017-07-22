@@ -30,7 +30,6 @@ private:
 	std::shared_ptr<World> world;
 
 	void triggerEvent(Event e); // Trigger an event
-	void registerEvent(); // Register an event
 };
 
 }
