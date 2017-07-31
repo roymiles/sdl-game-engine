@@ -2,7 +2,7 @@
 
 #include "../Maths/Vec2.h"
 
-namespace game {
+namespace game { namespace components {
 
 using namespace maths;
 
@@ -20,4 +20,4 @@ public:
 	Vec2d orientation;
 };
 
-}
+} }

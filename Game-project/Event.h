@@ -2,6 +2,8 @@
 
 namespace game {
 
+typedef std::shared_ptr<Event> eventPointer;
+
 class Event
 {
 public:

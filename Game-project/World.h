@@ -6,12 +6,14 @@
 #include <map>
 
 #include "Entity.h"
+#include "Utility\Random.h"
 #pragma message("Maybe the map creation could be exported into another class?")
 #include "Entities/Character.h" 
 
 namespace game {
 
 using namespace entities;
+using namespace utilities;
 
 class World
 {
@@ -20,13 +22,13 @@ public:
 	~World();
 
 	// Each entity is  identified by a unique string
-	std::map<std::string, Entity> entityContainer;
+	std::map<std::string, entityPointer> entityContainer;
 	
 	// For a given identifier, return the entity within the container
-	Entity World::getEntity(std::string id);
+	entityPointer World::getEntity(std::string id);
 
 	// Add an entity to the container and return the identifier
-	std::string createEntity(std::shared_ptr<Entity> entity);
+	std::string createEntity(entityPointer entity);
 	void removeEntity(int id);
 
 	void setup();
@@ -34,12 +36,12 @@ public:
 
 	// Return a list of all entities with a given component T
 	template<typename T>
-	std::list<Entity> getEntitiesWithComponent()
+	std::list<entityPointer> getEntitiesWithComponent()
 	{
-		std::list<Entity> entitiesWithComponent;
+		std::list<entityPointer> entitiesWithComponent;
 		for (auto &entity : entityContainer)
 		{
-			if (entity.second.hasComponent<T>())
+			if (entity.second->hasComponent<T>())
 			{
 				entitiesWithComponent.push_back(entity.second);
 			}

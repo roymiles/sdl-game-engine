@@ -33,13 +33,13 @@ void EventManager::update(SDL_Event* window_event)
 	}
 }
 
-void EventManager::triggerEvent(Event e)
+void EventManager::triggerEvent(eventPointer e)
 {
 	for (auto &entity : world->entityContainer)
 	{
 		// Check if this entity has registered for this event
-		if (entity.second.hasRegisteredEvent(e)) {
-			entity.second.onEvent(e);
+		if (entity.second->hasRegisteredEvent(e)) {
+			entity.second->onEvent(e);
 		}
 	}
 }

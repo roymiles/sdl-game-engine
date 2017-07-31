@@ -11,12 +11,12 @@ Entity::~Entity()
 {
 }
 
-void Entity::registerEvent(Event e)
+void Entity::registerEvent(std::shared_ptr<Event> e)
 {
 	registeredEvents.push_back(e);
 }
 
-void Entity::deregisterEvent(Event e)
+void Entity::deregisterEvent(std::shared_ptr<Event> e)
 {
 	for (auto &e2 : registeredEvents)
 	{
@@ -30,12 +30,12 @@ void Entity::deregisterEvent(Event e)
 #pragma message("Event didn't exist, return false?")
 }
 
-std::list<Event> Entity::getRegisteredEvents()
+std::list<std::shared_ptr<Event>> Entity::getRegisteredEvents()
 {
 	return registeredEvents;
 }
 
-bool Entity::hasRegisteredEvent(Event e)
+bool Entity::hasRegisteredEvent(std::shared_ptr<Event> e)
 {
 	for (auto &e2 : registeredEvents)
 	{
@@ -48,7 +48,7 @@ bool Entity::hasRegisteredEvent(Event e)
 	return false;
 }
 
-void Entity::setComponent(Component c)
+void Entity::setComponent(std::shared_ptr<Component> c)
 {
 	components.push_back(c);
 }

@@ -15,13 +15,13 @@ PhysicsEngine::~PhysicsEngine()
 void PhysicsEngine::update()
 {
 	// Get all entities with RigidBody components
-	std::list<Entity> colliders;
+	std::list<entityPointer> colliders;
 	colliders = world->getEntitiesWithComponent<RigidBody>();
 
 	checkCollisions(colliders);
 }
 
-std::list<std::pair<Entity, Entity>> PhysicsEngine::checkCollisions(std::list<Entity>& colliders)
+std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollisions(std::list<entityPointer>& colliders)
 {
 	// The sides of the rectangles
 	int leftA, leftB;
@@ -44,13 +44,14 @@ std::list<std::pair<Entity, Entity>> PhysicsEngine::checkCollisions(std::list<En
 		After every loop, you only need to loop n-1 elements
 	*/
 
-	std::list<std::pair<Entity, Entity>> collisionPairs;
+	// This is an enumeration of all the possible pair combinations of rigid body entities
+	std::list<std::pair<entityPointer, entityPointer>> collisionPairs;
 
 	// Loop through all colliders and check there isnt a collision with any other
 	int n = 0;
 	for (auto &A : colliders)
 	{
-		meshA = A.getComponent<RigidBody>()->collisionMesh;
+		meshA = A->getComponent<RigidBody>()->collisionMesh;
 
 		// Calculate the sides of rect A
 		leftA = meshA.x;
@@ -65,7 +66,7 @@ std::list<std::pair<Entity, Entity>> PhysicsEngine::checkCollisions(std::list<En
 		 */
 		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B) {
 		{
-			meshB = (*B).getComponent<RigidBody>()->collisionMesh;
+			meshB = (*B)->getComponent<RigidBody>()->collisionMesh;
 
 			// Object can't collide with itself
 			if (A != (*B))
@@ -92,12 +93,12 @@ std::list<std::pair<Entity, Entity>> PhysicsEngine::checkCollisions(std::list<En
 }
 
 
-void PhysicsEngine::respondToCollisions(std::list<std::pair<Entity, Entity>>& collidingPairs)
+void PhysicsEngine::respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs)
 {
 	for (auto &entities : collidingPairs)
 	{
-		std::shared_ptr<RigidBody> A(entities.first.getComponent<RigidBody>());
-		std::shared_ptr<RigidBody> B(entities.second.getComponent<RigidBody>());
+		std::shared_ptr<RigidBody> A(entities.first->getComponent<RigidBody>());
+		std::shared_ptr<RigidBody> B(entities.second->getComponent<RigidBody>());
 
 #pragma message("Need to double check the entities are referencing same component (no copying)")
 		// For now just multiply each rigid bodies velocity by -1 * elasticity

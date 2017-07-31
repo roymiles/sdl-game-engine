@@ -29,7 +29,7 @@ public:
 private:
 	std::shared_ptr<World> world;
 
-	void triggerEvent(Event e); // Trigger an event
+	void triggerEvent(eventPointer e); // Trigger an event
 };
 
 }

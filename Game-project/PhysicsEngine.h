@@ -1,6 +1,7 @@
 #pragma once
 
 #include "World.h"
+#include "Entity.h"
 #include "Components/RigidBody.h"
 
 namespace game {
@@ -27,13 +28,13 @@ private:
 	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding
 	 */
-	std::list<std::pair<Entity, Entity>> checkCollisions(std::list<Entity>& colliders);
+	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(std::list<entityPointer>& colliders);
 
 	/*
 	 * From a pair of colliding meshes, add an impulse to each rigidbody
 	 */
 #pragma message("Not a fan of this function name, ideas?")
-	void respondToCollisions(std::list<std::pair<Entity, Entity>>& collidingPairs);
+	void respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs);
 };
 
 }
