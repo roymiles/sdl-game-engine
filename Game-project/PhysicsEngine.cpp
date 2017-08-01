@@ -18,9 +18,17 @@ void PhysicsEngine::update()
 	std::list<entityPointer> colliders;
 	colliders = world->getEntitiesWithComponent<RigidBody>();
 
-	checkCollisions(colliders);
+	// Get the entities that are going t
+	std::list<std::pair<entityPointer, entityPointer>> collisionPairs;
+	collisionPairs = checkCollisions(colliders);
+	
+	respondToCollisions(collisionPairs);
 }
 
+/*
+ * Takes a list of RigidBody Entities and returns an enumeration of all
+ * all the entities that are going to collide (in the form of pairs)
+ */
 std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollisions(std::list<entityPointer>& colliders)
 {
 	// The sides of the rectangles
@@ -92,7 +100,9 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 	return collisionPairs;
 }
 
-
+/*
+ * Applies the appropriate reactive force on the colliding entities
+ */
 void PhysicsEngine::respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs)
 {
 	for (auto &entities : collidingPairs)
