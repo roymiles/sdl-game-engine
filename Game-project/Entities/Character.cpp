@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "../Utility/FileHelpers.h"
 #include "../Events/KeyUp.h"
+#include "../Maths/Vec2.h"
 
 namespace game { namespace entities {
 
@@ -53,6 +54,10 @@ void Character::update()
 void Character::onEvent(std::string key)
 {
 	std::cout << "Event triggered: " << key << std::endl;
+
+	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
+	Vec2d position = transformComponent->getPosition();
+	transformComponent->setPosition(position.x + 1, position.y + 1);
 	/*switch (key) {
 		case "KEY_UP":
 			break;
