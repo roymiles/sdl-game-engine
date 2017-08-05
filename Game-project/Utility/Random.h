@@ -6,7 +6,7 @@
 namespace game { namespace utilities {
 
 // See: https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
-std::string randomString(size_t length)
+inline std::string randomString(size_t length)
 {
 	auto randChar = []() -> char
 	{

@@ -28,9 +28,11 @@ void RenderingEngine::update()
 
 		// Apply the image
 		SDL_BlitSurface(sprite->image, NULL, screenSurface, NULL);
-		// Update the surface
-		SDL_UpdateWindowSurface(window);
 	}
+
+	// Update the surface
+	// This is only done after all the images are blitsed
+	SDL_UpdateWindowSurface(window);
 }
 
 }

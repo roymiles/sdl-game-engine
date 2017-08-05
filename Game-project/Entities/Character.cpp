@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "../Utility/FileHelpers.h"
 
 namespace game { namespace entities {
 
@@ -17,8 +18,7 @@ void Character::setup()
 
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-#pragma message("This should be done through a setter function")
-	spriteComponent->imagePath = "C:\\Users\\Roy\\Documents\\Game-project\\Game-project\\Resources\\character.png";
+	spriteComponent->setImagePath(utilities::resourceFolder + "hi.bmp");
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);

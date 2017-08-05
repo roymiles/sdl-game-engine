@@ -11,8 +11,8 @@
 #include "SDL.h"
 
 #include "World.h"
-#include "EventManager.h"
-#include "PhysicsEngine.h"
+//#include "EventManager.h"
+//#include "PhysicsEngine.h"
 #include "RenderingEngine.h"
 
 #include "Entities\Character.h"
@@ -35,24 +35,21 @@ SDL_Surface *imageSurface	= NULL;
  */
 
 bool init();
-bool loadMedia();
 void close();
 
 bool init(){
     bool success = true;
     
     // Initialises SDL
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0){
         std::cout << "SDL could not initialise! SDL Error: " << SDL_GetError() << std::endl;
-    }
-    else{
+    }else{
         // The window to be rendered into
-        window = SDL_CreateWindow("Hello World!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-        if ( window == NULL ){
+        window = SDL_CreateWindow("Game Title", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+        if (window == NULL){
 			std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
             success = false;
-        }
-        else{
+        }else{
             // Get window surface
             screenSurface = SDL_GetWindowSurface(window);
         }
@@ -60,33 +57,14 @@ bool init(){
     return success;
 }
 
-bool loadMedia()
+void close()
 {
-    // Loading success flag
-    bool success = true;
-    
-    // Load splash image
-    imageSurface = SDL_LoadBMP( "hi.bmp" );
-    if( imageSurface == NULL )
-    {
-        printf( "Unable to load image %s! SDL Error: %s\n", "hi.bmp", SDL_GetError() );
-        success = false;
-    }
-    
-    return success;
-}
-
-void close(){
-    SDL_FreeSurface(imageSurface);
-    imageSurface = NULL;
-    
     SDL_FreeSurface(screenSurface);
     screenSurface = NULL;
     
     // Close the window
     SDL_DestroyWindow(window);
     SDL_Quit();
-    
 }
 
 int main(int argc, char * argv[]) {
@@ -110,19 +88,19 @@ int main(int argc, char * argv[]) {
 	// ----------------------------------------
 
 	// Handles any event that occurs in app
-	SDL_Event window_event;
-	std::unique_ptr<EventManager> eventManager(new EventManager(world));
+	//SDL_Event window_event;
+	//std::unique_ptr<EventManager> eventManager(new EventManager(world));
 
 	// Physics engine is responsible for detecting and reacting to collisions
-	std::unique_ptr<PhysicsEngine> physicsEngine(new PhysicsEngine(world));
+	//std::unique_ptr<PhysicsEngine> physicsEngine(new PhysicsEngine(world));
 
 	// Rendering engine is responsible for drawing appropriate entities to screen
 	std::unique_ptr<RenderingEngine> renderingEngine(new RenderingEngine(world, window, screenSurface));
 
 	// Call setup on all entities
 	world->setup();
-
-	int frametime;
+	
+	unsigned int frametime;
 
     while (true) {
 		frametime = SDL_GetTicks();
@@ -130,13 +108,13 @@ int main(int argc, char * argv[]) {
 #pragma message("Maybe pass in some delta time into these update functions? like how unity does it")
 #pragma message("Double check update() order")
 		// Handle inputs
-		eventManager->update(&window_event);
+		//eventManager->update(&window_event);
 
 		// Physics Engine
-		physicsEngine->update();
+		// physicsEngine->update();
 
 		// Logic
-		world->update();
+		// world->update();
 
 		// Render
 		renderingEngine->update();

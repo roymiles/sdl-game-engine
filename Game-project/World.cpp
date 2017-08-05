@@ -1,6 +1,11 @@
 #include "World.h"
 
+// To generate the unique entity keys
+#include "Utility/Random.h"
+
 namespace game {
+
+using namespace utilities;
 
 World::World()
 {
@@ -45,6 +50,8 @@ void World::setup()
 	// Loop through all the created entities and call setup
 	for (auto &entity : entityContainer)
 	{
+		// Calling setup on each entity will also internally call
+		// setup on each of their components
 		entity.second->setup();
 	}
 }
@@ -54,7 +61,7 @@ void World::update()
 	// Loop through all entities and call update
 	for (auto &entity : entityContainer)
 	{
-		entity.second->setup();
+		entity.second->update();
 	}
 }
 

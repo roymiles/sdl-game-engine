@@ -1,8 +1,8 @@
 #pragma once
 
-namespace game {
+#include <memory>
 
-typedef std::shared_ptr<Event> eventPointer;
+namespace game {
 
 class Event
 {
@@ -12,5 +12,7 @@ public:
 
 	bool operator==(const Event &other) const;
 };
+
+typedef std::shared_ptr<Event> eventPointer;
 
 }

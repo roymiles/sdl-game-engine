@@ -9,13 +9,11 @@
 
 namespace game {
 
-typedef std::shared_ptr<Entity> entityPointer;
-
 class Entity
 {
 public:
 	Entity();
-	~Entity();
+	virtual ~Entity() = 0;
 
 	virtual void setup() {}
 	virtual void update() {}
@@ -65,5 +63,7 @@ protected:
 	std::list<std::shared_ptr<Event>> registeredEvents;
 	std::list<std::shared_ptr<Component>> components;
 };
+
+typedef std::shared_ptr<Entity> entityPointer;
 
 }
