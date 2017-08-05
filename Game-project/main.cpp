@@ -35,7 +35,6 @@ int main(int argc, char * argv[]) {
 	// Manages all the entities
 	std::shared_ptr<World> world(new World());
 
-
 	// Handles any event that occurs in app
 	SDL_Event window_event;
 	std::unique_ptr<EventManager> eventManager(new EventManager(world));

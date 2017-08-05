@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <memory>
 
@@ -11,6 +12,10 @@
 // All the event types
 #include "Events/KeyUp.h"
 #include "Events/KeyDown.h"
+#include "Events/UpKey.h"
+#include "Events/RightKey.h"
+#include "Events/DownKey.h"
+#include "Events/LeftKey.h"
 
 namespace game {
 

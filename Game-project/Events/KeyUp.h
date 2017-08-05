@@ -11,8 +11,6 @@ public:
 	~KeyUp();
 
 	const std::string getName() const override;
-
-private:
 	static const std::string name;
 };
 

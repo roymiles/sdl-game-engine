@@ -2,13 +2,14 @@
 
 #include "../Event.h"
 
-namespace game { namespace events {
+namespace game {
+namespace events {
 
-class KeyDown : public Event
+class UpKey : public Event
 {
 public:
-	KeyDown();
-	~KeyDown();
+	UpKey();
+	~UpKey();
 
 	const std::string getName() const override;
 	// This needs to be public so that it can easily be read without
@@ -16,5 +17,6 @@ public:
 	static const std::string name;
 };
 
-} }
+}
+}
 

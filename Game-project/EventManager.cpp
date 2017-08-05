@@ -6,6 +6,10 @@ namespace game {
 EventManager::EventManager(std::shared_ptr<World> _world)
 {
 	world = _world;
+
+	// Populate the event list
+	std::shared_ptr<KeyDown> keyDown(new KeyDown());
+	std::shared_ptr<KeyUp> keyUp(new KeyUp());
 }
 
 
@@ -21,19 +25,29 @@ void EventManager::update(SDL_Event* window_event)
         std::cout << window_event->type << std::endl;
         switch (window_event->type) {
 			/* Keyboard event */
-            case SDL_KEYDOWN: {
-                KeyDown k;
-                triggerEvent(k.getName());
+            case SDL_KEYDOWN:
+                triggerEvent(KeyDown::name);
+
+				/* Check the SDLKey values to see what key is pressed */
+				switch (window_event->key.keysym.sym) {
+					case SDLK_LEFT:
+						triggerEvent(LeftKey::name);
+						break;
+					case SDLK_RIGHT:
+						triggerEvent(RightKey::name);
+						break;
+					case SDLK_UP:
+						triggerEvent(UpKey::name);
+						break;
+					case SDLK_DOWN:
+						triggerEvent(DownKey::name);
+						break;
+					default:
+						break;
+				}
                 break;
-            }
-			case SDL_KEYUP: {
-				KeyUp k;
-				triggerEvent(k.getName());
-				break;
-			}
-				/* SDL_QUIT event (window close) */
-			case SDL_QUIT:
-				//triggerEvent(KEY_DOWN);
+			case SDL_KEYUP:
+				triggerEvent(KeyUp::name);
 				break;
 
 			default:

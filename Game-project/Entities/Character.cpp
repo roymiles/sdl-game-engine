@@ -5,6 +5,7 @@
 #include "../Events/KeyUp.h"
 #include "../Events/KeyDown.h"
 #include "../Maths/Vec2.h"
+#include "../EventManager.h"
 
 namespace game { namespace entities {
 
@@ -30,17 +31,21 @@ void Character::setup()
 	spriteComponent->setImagePath(utilities::resourceFolder + "hi.bmp");
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(10, 10, 5, 5);
+	transformComponent->setDimensions(10, 10, 20, 20);
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);
 	setComponent(transformComponent);
 
 	// Register for any events
-	std::shared_ptr<KeyDown> keyDownEvent(new KeyDown());
-    std::shared_ptr<KeyUp> keyUpEvent(new KeyUp());
-	registerEvent(keyUpEvent);
-    registerEvent(keyDownEvent);
+	std::shared_ptr<UpKey> upKeyEvent(new UpKey());
+    std::shared_ptr<RightKey> rightKeyEvent(new RightKey());
+	std::shared_ptr<DownKey> downKeyEvent(new DownKey());
+	std::shared_ptr<LeftKey> leftKeyEvent(new LeftKey());
+	registerEvent(upKeyEvent);
+    registerEvent(rightKeyEvent);
+	registerEvent(downKeyEvent);
+	registerEvent(leftKeyEvent);
 
 	// Call the setup function for all the components
 	for (auto &component : components)
@@ -62,13 +67,21 @@ void Character::onEvent(std::string key)
 	Vec2d position = transformComponent->getPosition();
     int width = transformComponent->getWidth();
     int height = transformComponent->getHeight();
-    
-    transformComponent->setDimensions(position.x, position.y, width+100, height+200);
-    
-	/*switch (key) {
-		case "KEY_UP":
-			break;
-	}*/
+
+	// Remember the coordinate (0,0) starts at the top left. This means that the +ve
+	// y axis will be downwards, not upwards
+	if (UpKey::name == key) {
+		transformComponent->setDimensions(position.x, position.y-5, height, width);
+	}
+	else if (RightKey::name == key) {
+		transformComponent->setDimensions(position.x+5, position.y, height, width);
+	}
+	else if (LeftKey::name == key) {
+		transformComponent->setDimensions(position.x-5, position.y, height, width);
+	}
+	else if (DownKey::name == key) {
+		transformComponent->setDimensions(position.x, position.y+5, height, width);
+	}
 }
 
 const std::string Character::getName() const
