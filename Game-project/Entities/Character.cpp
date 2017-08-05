@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "../Utility/FileHelpers.h"
 #include "../Events/KeyUp.h"
+#include "../Events/KeyDown.h"
 #include "../Maths/Vec2.h"
 
 namespace game { namespace entities {
@@ -36,8 +37,10 @@ void Character::setup()
 	setComponent(transformComponent);
 
 	// Register for any events
-	std::shared_ptr<KeyUp> keyUpEvent(new KeyUp());
+	std::shared_ptr<KeyDown> keyDownEvent(new KeyDown());
+    std::shared_ptr<KeyUp> keyUpEvent(new KeyUp());
 	registerEvent(keyUpEvent);
+    registerEvent(keyDownEvent);
 
 	// Call the setup function for all the components
 	for (auto &component : components)
@@ -57,7 +60,11 @@ void Character::onEvent(std::string key)
 
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
 	Vec2d position = transformComponent->getPosition();
-	transformComponent->setPosition(position.x + 1, position.y + 1);
+    int width = transformComponent->getWidth();
+    int height = transformComponent->getHeight();
+    
+    transformComponent->setDimensions(position.x, position.y, width+100, height+200);
+    
 	/*switch (key) {
 		case "KEY_UP":
 			break;

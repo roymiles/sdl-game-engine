@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include <iostream>
 
 namespace game {
 
@@ -17,9 +18,14 @@ void EventManager::update(SDL_Event* window_event)
 	// Note: the scope within the case statements is because there are variable intialisations
 	// this also ensures the variables are destroyed upon going out of the case statement (scope)
 	if (SDL_PollEvent(window_event)) {
-		switch (window_event->type) {
+        std::cout << window_event->type << std::endl;
+        switch (window_event->type) {
 			/* Keyboard event */
-			case SDL_KEYDOWN:
+            case SDL_KEYDOWN: {
+                KeyDown k;
+                triggerEvent(k.getName());
+                break;
+            }
 			case SDL_KEYUP: {
 				KeyUp k;
 				triggerEvent(k.getName());
@@ -34,6 +40,8 @@ void EventManager::update(SDL_Event* window_event)
 				break;
 		}
 	}
+    
+    
 }
 
 // Trigger an event
@@ -47,5 +55,5 @@ void EventManager::triggerEvent(std::string name)
 		}
 	}
 }
-
+    
 }

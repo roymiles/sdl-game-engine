@@ -10,6 +10,7 @@
 
 // All the event types
 #include "Events/KeyUp.h"
+#include "Events/KeyDown.h"
 
 namespace game {
 

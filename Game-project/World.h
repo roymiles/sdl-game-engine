@@ -24,7 +24,7 @@ public:
 	std::map<std::string, entityPointer> entityContainer;
 	
 	// For a given identifier, return the entity within the container
-	entityPointer World::getEntity(std::string id);
+	entityPointer getEntity(std::string id);
 
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);

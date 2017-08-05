@@ -41,8 +41,8 @@ public:
 	std::map<std::string, std::shared_ptr<Event>> getRegisteredEvents();
 	bool hasRegisteredEvent(std::string key);
 
-	bool Entity::operator==(const Entity &other) const;
-	bool Entity::operator!=(const Entity &other) const;
+	bool operator==(const Entity &other) const;
+	bool operator!=(const Entity &other) const;
 
 protected:
 	std::map<std::string, std::shared_ptr<Event>> registeredEvents;

@@ -4,6 +4,6 @@ namespace game { namespace utilities {
 
 #include <string>
 
-const std::string resourceFolder = "C:\\Users\\Roy\\Documents\\Game-project\\Game-project\\Resources\\";
+const std::string resourceFolder = "/Users/aatina/workspace/Game-project/Game-project/Resources/";
 
 } }

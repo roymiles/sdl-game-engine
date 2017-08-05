@@ -15,7 +15,7 @@ inline std::string randomString(size_t length)
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			"abcdefghijklmnopqrstuvwxyz";
 		const size_t maxIndex = (sizeof(charset) - 1);
-		return charset[rand() % maxIndex];
+		return charset[2 % maxIndex];
 	};
 	std::string str(length, 0);
 	std::generate_n(str.begin(), length, randChar);

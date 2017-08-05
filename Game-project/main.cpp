@@ -15,7 +15,7 @@
 #include "PhysicsEngine.h"
 #include "RenderingEngine.h"
 
-#include "Entities\Character.h"
+#include "Entities/Character.h"
 
 using namespace game;
 using namespace entities;
