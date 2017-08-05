@@ -33,9 +33,13 @@ void Character::setup()
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(10, 10, 20, 20);
 
+	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
+	rigidBodyComponent->setCollisionMesh(transformComponent->getRect());
+
 	// ... and then add these components to the container
 	setComponent(spriteComponent);
 	setComponent(transformComponent);
+	setComponent(rigidBodyComponent);
 
 	// Register for any events
 	std::shared_ptr<UpKey> upKeyEvent(new UpKey());
@@ -61,7 +65,7 @@ void Character::update()
 
 void Character::onEvent(std::string key)
 {
-	std::cout << "Event triggered: " << key << std::endl;
+	std::cout << key << " event triggered for " << getName() << std::endl;
 
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
 	Vec2d position = transformComponent->getPosition();

@@ -5,23 +5,24 @@
 #include "../Components/Transform.h"
 #include "../Components/RigidBody.h"
 
-namespace game { namespace entities {
+namespace game {
+namespace entities {
 
 using namespace components;
 
-class Character : public Entity
+class Box : public Entity
 {
 public:
-	Character();
-	~Character();
+	Box();
+	~Box();
 
 	void setup() override;
 	void update() override;
-	void onEvent(std::string key) override;
 	const std::string getName() const override;
 
 private:
 	static const std::string name;
 };
 
-} }
+}
+}

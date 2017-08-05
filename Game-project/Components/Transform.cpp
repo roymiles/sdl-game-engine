@@ -57,4 +57,15 @@ void Transform::setWidth(int _width)
 	width = _width;
 }
 
+SDL_Rect Transform::getRect()
+{
+	SDL_Rect r;
+	r.x = position.x;
+	r.y = position.y;
+	r.w = width;
+	r.h = height;
+
+	return r;
+}
+
 } }

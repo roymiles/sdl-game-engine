@@ -59,7 +59,7 @@ int main(int argc, char * argv[]) {
 		eventManager->update(&window_event);
 
 		// Physics Engine
-		// physicsEngine->update();
+		physicsEngine->update();
 
 		// Logic
 		world->update();

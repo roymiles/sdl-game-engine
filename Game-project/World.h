@@ -9,6 +9,7 @@
 #include "Entity.h"
 #pragma message("Maybe the map creation could be exported into another class?")
 #include "Entities/Character.h" 
+#include "Entities/Box.h"
 
 namespace game {
 

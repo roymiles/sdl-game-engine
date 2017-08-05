@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Component.h"
-
+#include "SDL.h"
 #include "../Maths/Vec2.h"
 
 namespace game { namespace components {
@@ -29,6 +29,8 @@ public:
 	int getWidth() const;
 	void setHeight(int _height);
 	void setWidth(int _width);
+
+	SDL_Rect getRect();
 
 private:
 	// The unique name of the component

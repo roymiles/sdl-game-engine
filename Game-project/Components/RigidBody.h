@@ -15,9 +15,10 @@ using namespace maths;
 class RigidBody : public Component
 {
 public:
-	RigidBody() {}
-	RigidBody(SDL_Rect _collisionMesh);
+	RigidBody();
 	~RigidBody();
+
+	void setCollisionMesh(SDL_Rect _collisionMesh);
 
 	const std::string getName() const override;
 
@@ -30,10 +31,12 @@ public:
 	// to its velocity before. The constant of proportionality is its elasticity
 	double elasticity;
 
-	SDL_Rect collisionMesh;
-private:
 	// The unique name of the component
+	// This needs to be public so that it can be accessed without making
+	// an unnecessary instance
 	static const std::string name;
+
+	SDL_Rect collisionMesh;
 };
 
 } }

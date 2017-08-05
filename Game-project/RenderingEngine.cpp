@@ -26,15 +26,8 @@ void RenderingEngine::update()
 	for (auto &entity : drawableEntities)
 	{
 		// Every entity is drawn inside a box (rectangle)
-		SDL_Rect box;
-
 		std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
-
-		Vec2d position = transform->getPosition();
-		box.x = position.x;
-		box.y = position.y;
-		box.w = transform->getWidth();
-		box.h = transform->getHeight();
+		SDL_Rect box = transform->getRect();
 
 		std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 

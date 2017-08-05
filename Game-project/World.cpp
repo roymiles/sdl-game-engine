@@ -45,6 +45,9 @@ void World::setup()
 	// Create entities for level
 	std::shared_ptr<Character> character(new Character());
 	createEntity(character);
+
+	std::shared_ptr<Box> box(new Box());
+	createEntity(box);
 	// ----------------------------------------
 
 	// Loop through all the created entities and call setup

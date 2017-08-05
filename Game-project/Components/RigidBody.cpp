@@ -6,14 +6,20 @@ namespace game { namespace components {
 
 const std::string RigidBody::name = "RigidBody";
 
-RigidBody::RigidBody(SDL_Rect _collisionMesh)
+RigidBody::RigidBody()
 {
-	collisionMesh = _collisionMesh;
+	mass	   = 1;
+	elasticity = 1;
 }
 
 
 RigidBody::~RigidBody()
 {
+}
+
+void RigidBody::setCollisionMesh(SDL_Rect _collisionMesh)
+{
+	collisionMesh = _collisionMesh;
 }
 
 const std::string RigidBody::getName() const

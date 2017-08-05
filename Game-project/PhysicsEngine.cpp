@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "PhysicsEngine.h"
 
 namespace game {
@@ -16,8 +18,7 @@ void PhysicsEngine::update()
 {
 	// Get all entities with RigidBody components
 	std::map<std::string, entityPointer> colliders;
-	RigidBody rigidBody;
-	colliders = world->getEntitiesWithComponent(rigidBody.getName());
+	colliders = world->getEntitiesWithComponent(RigidBody::name);
 
 	checkCollisions(colliders);
 }
@@ -63,7 +64,7 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 		/*
 		 * Loop through all the other entities that can collide with A
 		 * Though start from the nth element to avoid checking a different permutation of the same pair
-		 * - Iterator values are accessed with *it
+		 * Note: Iterator values are accessed with *it
 		 */
 		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B) {
 		{
@@ -81,6 +82,7 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 				// If any of the sides from A are outside of B
 				if (!(bottomA <= topB || topA >= bottomB || rightA <= leftB || leftA >= rightB))
 					// The two objects are intersecting, collision.
+					std::cout << A.second->getName() << " is colliding with " << (*B).second->getName() << std::endl;
 					collisionPairs.push_back(std::make_pair(A.second, (*B).second));
 				}
 				
