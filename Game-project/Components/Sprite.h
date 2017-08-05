@@ -4,7 +4,7 @@
 
 #include "../Component.h"
 #include "../Utility/FileHelpers.h" // Access to image file paths
-#include "SDL.h"
+#include "SDL.h" 
 
 namespace game { namespace components {
 
@@ -14,7 +14,8 @@ public:
 	// Should include all data required for entity to be drawn
 
 	// The image we will load and show on the screen
-	SDL_Surface* image = NULL;
+	SDL_Surface* imageSurface = NULL;
+	SDL_Texture* imageTexture = NULL;
 
 	Sprite();
 	~Sprite();

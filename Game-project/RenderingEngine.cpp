@@ -1,12 +1,11 @@
 #include "RenderingEngine.h"
+#include "Window.h"
 
 namespace game {
 
-RenderingEngine::RenderingEngine(std::shared_ptr<World> _world, SDL_Window  *_window, SDL_Surface *_screenSurface)
+RenderingEngine::RenderingEngine(std::shared_ptr<World> _world)
 {
-	world		  = _world;
-	window		  = _window;
-	screenSurface = _screenSurface;
+	world = _world;
 }
 
 
@@ -19,6 +18,9 @@ void RenderingEngine::update()
 	std::map<std::string, entityPointer> drawableEntities;
 	Sprite sprite;
 	drawableEntities = world->getEntitiesWithComponent(sprite.getName());
+
+	// Clear the screen
+	SDL_RenderClear(Window::renderer);
 
 	// Draw all the sprites to the screen
 	for (auto &entity : drawableEntities)
@@ -36,13 +38,13 @@ void RenderingEngine::update()
 
 		std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 
-		// Apply the image
-		SDL_BlitSurface(sprite->image, NULL, screenSurface, &box);
+		// copy the texture to the rendering context
+		SDL_RenderCopy(Window::renderer, sprite->imageTexture, NULL, &box);
 	}
 
-	// Update the surface
-	// This is only done after all the images are blitsed
-	SDL_UpdateWindowSurface(window);
+	// Flip the backbuffer
+	// This means that everything that we prepared behind the screens is actually shown
+	SDL_RenderPresent(Window::renderer);
 }
 
 }

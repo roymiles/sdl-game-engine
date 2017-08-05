@@ -17,17 +17,13 @@ using namespace components;
 class RenderingEngine
 {
 public:
-	RenderingEngine(std::shared_ptr<World> _world, SDL_Window  *_window, SDL_Surface *_screenSurface);
+	RenderingEngine(std::shared_ptr<World> _world);
 	~RenderingEngine();
 
 	void update();
 
 private:
 	std::shared_ptr<World> world;
-	// The following pointers cant be unique_ptr or shared_ptr because they are passed
-	// into SDL_ functions which only accept raw pointers.
-	SDL_Window	*window;
-	SDL_Surface *screenSurface;
 };
 
 }
