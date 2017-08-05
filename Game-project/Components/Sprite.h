@@ -19,8 +19,7 @@ public:
 	Sprite();
 	~Sprite();
 
-	std::string getName() const override;
-	unsigned int getID() const override;
+	const std::string getName() const override;
 
 	void setup();
 
@@ -30,9 +29,8 @@ private:
 	// The path to the image
 	std::string imagePath;
 
-	// The unique name/ID of the component
+	// The unique name of the component
 	static const std::string name;
-	static const unsigned int ID;
 };
 
 } }

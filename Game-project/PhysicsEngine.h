@@ -28,7 +28,7 @@ private:
 	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding
 	 */
-	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(std::list<entityPointer>& colliders);
+	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(std::map<std::string, entityPointer>& colliders);
 
 	/*
 	 * From a pair of colliding meshes, add an impulse to each rigidbody

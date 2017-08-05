@@ -18,8 +18,7 @@ public:
 	Transform();
 	~Transform();
 
-	std::string getName() const override;
-	unsigned int getID() const override;
+	const std::string getName() const override;
 
 	void setPosition(double _x, double _y);
 	Vec2d getPosition();
@@ -32,9 +31,8 @@ public:
 	void setWidth(int _width);
 
 private:
-	// The unique name/ID of the component
+	// The unique name of the component
 	static const std::string name;
-	static const unsigned int ID;
 
 	Vec2d position;
 	Vec2d orientation;

@@ -16,8 +16,8 @@ public:
 
 	void setup() override;
 	void update() override;
-	void onEvent(int eventID) override;
-	std::string getName() override;
+	void onEvent(std::string key) override;
+	const std::string getName() const override;
 
 private:
 	static const std::string name;

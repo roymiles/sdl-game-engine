@@ -15,13 +15,14 @@ PhysicsEngine::~PhysicsEngine()
 void PhysicsEngine::update()
 {
 	// Get all entities with RigidBody components
-	std::list<entityPointer> colliders;
-	colliders = world->getEntitiesWithComponent<RigidBody>();
+	std::map<std::string, entityPointer> colliders;
+	RigidBody rigidBody;
+	colliders = world->getEntitiesWithComponent(rigidBody.getName());
 
 	checkCollisions(colliders);
 }
 
-std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollisions(std::list<entityPointer>& colliders)
+std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollisions(std::map<std::string, entityPointer>& colliders)
 {
 	// The sides of the rectangles
 	int leftA, leftB;
@@ -51,7 +52,7 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 	int n = 0;
 	for (auto &A : colliders)
 	{
-		meshA = A->getComponent<RigidBody>()->collisionMesh;
+		meshA = A.second->getComponent<RigidBody>()->collisionMesh;
 
 		// Calculate the sides of rect A
 		leftA = meshA.x;
@@ -66,7 +67,7 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 		 */
 		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B) {
 		{
-			meshB = (*B)->getComponent<RigidBody>()->collisionMesh;
+			meshB = (*B).second->getComponent<RigidBody>()->collisionMesh;
 
 			// Object can't collide with itself
 			if (A != (*B))
@@ -80,7 +81,7 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 				// If any of the sides from A are outside of B
 				if (!(bottomA <= topB || topA >= bottomB || rightA <= leftB || leftA >= rightB))
 					// The two objects are intersecting, collision.
-					collisionPairs.push_back(std::make_pair(A, *B));
+					collisionPairs.push_back(std::make_pair(A.second, (*B).second));
 				}
 				
 			}

@@ -2,8 +2,11 @@
 
 #include "Character.h"
 #include "../Utility/FileHelpers.h"
+#include "../Events/KeyUp.h"
 
 namespace game { namespace entities {
+
+using namespace events;
 
 const std::string Character::name = "Character"; 
 
@@ -31,10 +34,14 @@ void Character::setup()
 	setComponent(spriteComponent);
 	setComponent(transformComponent);
 
+	// Register for any events
+	std::shared_ptr<KeyUp> keyUpEvent(new KeyUp());
+	registerEvent(keyUpEvent);
+
 	// Call the setup function for all the components
 	for (auto &component : components)
 	{
-		component->setup();
+		component.second->setup();
 	}
 }
 
@@ -43,16 +50,16 @@ void Character::update()
 
 }
 
-void Character::onEvent(int eventID)
+void Character::onEvent(std::string key)
 {
-	std::cout << "Event triggered" << std::endl;
+	std::cout << "Event triggered: " << key << std::endl;
 	/*switch (key) {
 		case "KEY_UP":
 			break;
 	}*/
 }
 
-std::string Character::getName()
+const std::string Character::getName() const
 {
 	return name;
 }

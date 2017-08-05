@@ -7,10 +7,13 @@ namespace game { namespace events {
 class KeyUp : public Event
 {
 public:
-	static const int ID;
-
 	KeyUp();
 	~KeyUp();
+
+	const std::string getName() const override;
+
+private:
+	static const std::string name;
 };
 
 } }

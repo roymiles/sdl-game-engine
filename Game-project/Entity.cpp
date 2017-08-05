@@ -11,46 +11,75 @@ Entity::~Entity()
 {
 }
 
-void Entity::registerEvent(std::shared_ptr<Event> e)
+std::string Entity::registerEvent(std::shared_ptr<Event> e)
 {
-	registeredEvents.push_back(e);
+	// Add to container and then return the key
+	std::string key = e->getName();
+	registeredEvents[key] = e;
+
+	return key;
 }
 
-void Entity::deregisterEvent(std::shared_ptr<Event> e)
+void Entity::deregisterEvent(std::string key)
 {
-	for (auto &e2 : registeredEvents)
-	{
-		if (e == e2)
-		{
-			registeredEvents.remove(e2);
-			return;
-		}
-	}
-
-#pragma message("Event didn't exist, return false?")
+	registeredEvents.erase(key);
 }
 
-std::list<std::shared_ptr<Event>> Entity::getRegisteredEvents()
+std::map<std::string, std::shared_ptr<Event>> Entity::getRegisteredEvents()
 {
 	return registeredEvents;
 }
 
-void Entity::setComponent(std::shared_ptr<Component> c)
+bool Entity::hasRegisteredEvent(std::string key)
 {
-	components.push_back(c);
+	if (registeredEvents.find(key) == registeredEvents.end()) {
+		// not found
+		return false;
+	}
+	else {
+		// found
+		return true;
+	}
+}
+
+std::string Entity::setComponent(std::shared_ptr<Component> c)
+{
+	// Add to container and then return the key
+	std::string key = c->getName();
+	components[key] = c;
+
+	return key;
+}
+
+bool Entity::hasComponent(std::string key) {
+	if (components.find(key) == components.end()) {
+		// not found
+		return false;
+	}
+	else {
+		// found
+		return true;
+	}
 }
 
 bool Entity::operator==(const Entity &other) const
 {
-	// How to do comparison?
-#pragma message("How to perform object equality test?")
-	return false;
+	if (getName() == other.getName()) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool Entity::operator!=(const Entity &other) const
 {
-	// How to do comparison?
-	return false;
+	if (getName() != other.getName()) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 }

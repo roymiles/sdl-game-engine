@@ -34,18 +34,7 @@ public:
 private:
 	std::shared_ptr<World> world;
 
-	// Trigger an event
-	template<typename T>
-	void triggerEvent()
-	{
-		for (auto &entity : world->entityContainer)
-		{
-			// Check if this entity has registered for this event
-			if (entity.second->hasRegisteredEvent<T>()) {
-				entity.second->onEvent(T::ID);
-			}
-		}
-	}
+	void triggerEvent(std::string name);
 };
 
 }

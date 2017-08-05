@@ -26,7 +26,7 @@ std::string World::createEntity(entityPointer entity)
 	// Add to container and then return entity
 	
 	// Create a random key, this will be the unique key for this entitity
-	// - May need to check this key does not already exist first!
+	// May need to check this key does not already exist first!
 	std::string randomKey = randomString(5);
 
 	entityContainer[entity->getName() + "_" + randomKey] = entity;
@@ -34,9 +34,9 @@ std::string World::createEntity(entityPointer entity)
 	return randomKey;
 }
 
-void World::removeEntity(int id)
+void World::removeEntity(std::string key)
 {
-
+	entityContainer.erase(key);
 }
 
 void World::setup()
@@ -63,6 +63,20 @@ void World::update()
 	{
 		entity.second->update();
 	}
+}
+
+std::map<std::string, entityPointer> World::getEntitiesWithComponent(std::string key)
+{
+	std::map<std::string, entityPointer> entitiesWithComponent;
+	for (auto &entity : entityContainer)
+	{
+		if (entity.second->hasComponent(key))
+		{
+			entitiesWithComponent[entity.second->getName()] = entity.second;
+		}
+	}
+
+	return entitiesWithComponent;
 }
 
 }

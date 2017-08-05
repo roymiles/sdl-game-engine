@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <list>
 
 #include "Entity.h"
 #pragma message("Maybe the map creation could be exported into another class?")
@@ -27,26 +28,13 @@ public:
 
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);
-	void removeEntity(int id);
+	void removeEntity(std::string key);
 
 	void setup();
 	void update();
 
-	// Return a list of all entities with a given component T
-	template<typename T>
-	std::list<entityPointer> getEntitiesWithComponent()
-	{
-		std::list<entityPointer> entitiesWithComponent;
-		for (auto &entity : entityContainer)
-		{
-			if (entity.second->hasComponent<T>())
-			{
-				entitiesWithComponent.push_back(entity.second);
-			}
-		}
-
-		return entitiesWithComponent;
-	}
+	// Return a list of all entities with a given component
+	std::map<std::string, entityPointer> getEntitiesWithComponent(std::string key);
 };
 
 }

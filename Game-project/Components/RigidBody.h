@@ -15,12 +15,11 @@ using namespace maths;
 class RigidBody : public Component
 {
 public:
-#pragma message("This needs to be changed to an arbitrary mesh")
+	RigidBody() {}
 	RigidBody(SDL_Rect _collisionMesh);
 	~RigidBody();
 
-	std::string getName() const override;
-	unsigned int getID() const override;
+	const std::string getName() const override;
 
 	// Apply an impulse force in a given direction
 	// void impulse(Vec2d direction);
@@ -33,9 +32,8 @@ public:
 
 	SDL_Rect collisionMesh;
 private:
-	// The unique name/ID of the component
+	// The unique name of the component
 	static const std::string name;
-	static const unsigned int ID;
 };
 
 } }

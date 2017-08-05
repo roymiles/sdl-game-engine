@@ -16,8 +16,9 @@ RenderingEngine::~RenderingEngine()
 
 void RenderingEngine::update()
 {
-	std::list<entityPointer> drawableEntities;
-	drawableEntities = world->getEntitiesWithComponent<Sprite>();
+	std::map<std::string, entityPointer> drawableEntities;
+	Sprite sprite;
+	drawableEntities = world->getEntitiesWithComponent(sprite.getName());
 
 	// Draw all the sprites to the screen
 	for (auto &entity : drawableEntities)
@@ -25,7 +26,7 @@ void RenderingEngine::update()
 		// Every entity is drawn inside a box (rectangle)
 		SDL_Rect box;
 
-		std::shared_ptr<Transform> transform = entity->getComponent<Transform>();
+		std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
 
 		Vec2d position = transform->getPosition();
 		box.x = position.x;
@@ -33,7 +34,7 @@ void RenderingEngine::update()
 		box.w = transform->getWidth();
 		box.h = transform->getHeight();
 
-		std::shared_ptr<Sprite> sprite = entity->getComponent<Sprite>();
+		std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 
 		// Apply the image
 		SDL_BlitSurface(sprite->image, NULL, screenSurface, &box);

@@ -4,7 +4,6 @@
 namespace game { namespace components {
 
 const std::string Sprite::name = "Sprite";
-const unsigned int Sprite::ID  = utilities::hashCode(name);
 
 Sprite::Sprite()
 {
@@ -15,14 +14,9 @@ Sprite::~Sprite()
 {
 }
 
-std::string Sprite::getName() const
+const std::string Sprite::getName() const
 {
 	return name;
-}
-
-unsigned int Sprite::getID() const
-{
-	return ID;
 }
 
 void Sprite::setup()

@@ -2,7 +2,7 @@
 
 namespace game { namespace events {
 
-const int KeyUp::ID = 53;
+const std::string KeyUp::name = "KeyUp";
 
 KeyUp::KeyUp()
 {
@@ -10,6 +10,11 @@ KeyUp::KeyUp()
 
 KeyUp::~KeyUp()
 {
+}
+
+const std::string KeyUp::getName() const
+{
+	return name;
 }
 
 } }
