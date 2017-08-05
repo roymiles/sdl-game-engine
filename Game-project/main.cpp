@@ -40,6 +40,7 @@ void close();
 bool init(){
     bool success = true;
     
+#pragma message("Somehow port all this code into window class")
     // Initialises SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0){
         std::cout << "SDL could not initialise! SDL Error: " << SDL_GetError() << std::endl;
@@ -81,14 +82,8 @@ int main(int argc, char * argv[]) {
 	// Manages all the entities
 	std::shared_ptr<World> world(new World());
 
-	// -------------- Temporary ---------------
-	// Create entities for level
-	std::shared_ptr<Character> character(new Character());
-	world->createEntity(character);
-	// ----------------------------------------
-
 	// Handles any event that occurs in app
-	//SDL_Event window_event;
+	SDL_Event window_event;
 	std::unique_ptr<EventManager> eventManager(new EventManager(world));
 
 	// Physics engine is responsible for detecting and reacting to collisions
@@ -108,7 +103,7 @@ int main(int argc, char * argv[]) {
 #pragma message("Maybe pass in some delta time into these update functions? like how unity does it")
 #pragma message("Double check update() order")
 		// Handle inputs
-		//eventManager->update(&window_event);
+		eventManager->update(&window_event);
 
 		// Physics Engine
 		// physicsEngine->update();

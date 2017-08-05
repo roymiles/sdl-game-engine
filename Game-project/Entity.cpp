@@ -35,19 +35,6 @@ std::list<std::shared_ptr<Event>> Entity::getRegisteredEvents()
 	return registeredEvents;
 }
 
-bool Entity::hasRegisteredEvent(std::shared_ptr<Event> e)
-{
-	for (auto &e2 : registeredEvents)
-	{
-		if (e == e2)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void Entity::setComponent(std::shared_ptr<Component> c)
 {
 	components.push_back(c);

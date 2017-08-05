@@ -29,7 +29,7 @@ std::string World::createEntity(entityPointer entity)
 	// - May need to check this key does not already exist first!
 	std::string randomKey = randomString(5);
 
-	entityContainer[randomKey] = entity;
+	entityContainer[entity->getName() + "_" + randomKey] = entity;
 
 	return randomKey;
 }
@@ -41,11 +41,11 @@ void World::removeEntity(int id)
 
 void World::setup()
 {
-	// Create all the objects in the world and add them to the container
-#pragma message("Maybe the map creation could be exported into another class?")
-	// These should be shared pointers because they are passed into functions
-	entityPointer character(new Character());
-	std::string characterId = createEntity(character);
+	// -------------- Temporary ---------------
+	// Create entities for level
+	std::shared_ptr<Character> character(new Character());
+	createEntity(character);
+	// ----------------------------------------
 
 	// Loop through all the created entities and call setup
 	for (auto &entity : entityContainer)

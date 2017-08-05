@@ -19,7 +19,7 @@ void EventManager::update(SDL_Event* window_event)
 			/* Keyboard event */
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				//triggerEvent(KEY_DOWN);
+				triggerEvent<KeyUp>();
 				break;
 
 				/* SDL_QUIT event (window close) */
@@ -29,17 +29,6 @@ void EventManager::update(SDL_Event* window_event)
 
 			default:
 				break;
-		}
-	}
-}
-
-void EventManager::triggerEvent(eventPointer e)
-{
-	for (auto &entity : world->entityContainer)
-	{
-		// Check if this entity has registered for this event
-		if (entity.second->hasRegisteredEvent(e)) {
-			entity.second->onEvent(e);
 		}
 	}
 }

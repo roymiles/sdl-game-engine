@@ -8,7 +8,7 @@ class Event
 {
 public:
 	Event();
-	~Event();
+	virtual ~Event() = 0;
 
 	bool operator==(const Event &other) const;
 };

@@ -17,7 +17,8 @@ public:
 
 	virtual void setup() {}
 	virtual void update() {}
-	virtual void onEvent(std::shared_ptr<Event> e) {}
+	virtual void onEvent(int eventID) {}
+	virtual std::string getName() = 0;
 
 #pragma message("Look up way of exporting templated function body into cpp file")
 	template<typename T>
@@ -35,17 +36,14 @@ public:
 	}
 	void setComponent(std::shared_ptr<Component> c);
 
-#pragma message("Is this redundant since you can just use getComponent<T>() != nullptr")
 	template<typename T>
 	bool hasComponent() {
 		for (auto &component : components)
 		{
-			// Find a better way!
-			return true;
-			//if (std::type_info(T) == std::type_info(component))
-			//{
-			//	return true;
-			//}
+			if (std::dynamic_pointer_cast<T>(component))
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -54,7 +52,21 @@ public:
 	void registerEvent(std::shared_ptr<Event> e);
 	void deregisterEvent(std::shared_ptr<Event> e);
 	std::list<std::shared_ptr<Event>> getRegisteredEvents();
-	bool hasRegisteredEvent(std::shared_ptr<Event> e);
+
+	template<typename T>
+	bool hasRegisteredEvent()
+	{
+		for (auto &e : registeredEvents)
+		{
+			// If event can be cast to type T, then it is of type T
+			if (std::dynamic_pointer_cast<T>(e))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	bool Entity::operator==(const Entity &other) const;
 	bool Entity::operator!=(const Entity &other) const;
