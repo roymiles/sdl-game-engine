@@ -3,8 +3,8 @@
 
 namespace game { namespace components {
 
-const std::string name = "Sprite";
-const unsigned int ID  = utilities::hashCode(name.c_str());
+const std::string Sprite::name = "Sprite";
+const unsigned int Sprite::ID  = utilities::hashCode(name);
 
 Sprite::Sprite()
 {

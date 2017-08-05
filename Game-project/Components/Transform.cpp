@@ -4,8 +4,8 @@
 
 namespace game { namespace components {
 
-const std::string name = "Transform";
-const unsigned int ID = utilities::hashCode(name.c_str());
+const std::string Transform::name = "Transform";
+const unsigned int Transform::ID = utilities::hashCode(name);
 
 Transform::Transform()
 {

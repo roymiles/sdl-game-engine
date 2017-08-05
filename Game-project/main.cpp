@@ -11,8 +11,8 @@
 #include "SDL.h"
 
 #include "World.h"
-//#include "EventManager.h"
-//#include "PhysicsEngine.h"
+#include "EventManager.h"
+#include "PhysicsEngine.h"
 #include "RenderingEngine.h"
 
 #include "Entities\Character.h"
@@ -89,10 +89,10 @@ int main(int argc, char * argv[]) {
 
 	// Handles any event that occurs in app
 	//SDL_Event window_event;
-	//std::unique_ptr<EventManager> eventManager(new EventManager(world));
+	std::unique_ptr<EventManager> eventManager(new EventManager(world));
 
 	// Physics engine is responsible for detecting and reacting to collisions
-	//std::unique_ptr<PhysicsEngine> physicsEngine(new PhysicsEngine(world));
+	std::unique_ptr<PhysicsEngine> physicsEngine(new PhysicsEngine(world));
 
 	// Rendering engine is responsible for drawing appropriate entities to screen
 	std::unique_ptr<RenderingEngine> renderingEngine(new RenderingEngine(world, window, screenSurface));
@@ -114,7 +114,7 @@ int main(int argc, char * argv[]) {
 		// physicsEngine->update();
 
 		// Logic
-		// world->update();
+		world->update();
 
 		// Render
 		renderingEngine->update();

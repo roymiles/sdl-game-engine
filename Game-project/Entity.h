@@ -24,9 +24,9 @@ public:
 	std::shared_ptr<T> getComponent() {
 		for (auto &component : components)
 		{
-			if (typeid(component) == typeid(T))
+			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(component))
 			{
-				return std::dynamic_pointer_cast<T>(component);
+				return ptr;
 			}
 		}
 
