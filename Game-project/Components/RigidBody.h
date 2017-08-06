@@ -18,8 +18,6 @@ public:
 	RigidBody();
 	~RigidBody();
 
-	void setCollisionMesh(SDL_Rect _collisionMesh);
-
 	const std::string getName() const override;
 
 	// Apply an impulse force in a given direction
@@ -35,8 +33,6 @@ public:
 	// This needs to be public so that it can be accessed without making
 	// an unnecessary instance
 	static const std::string name;
-
-	SDL_Rect collisionMesh;
 };
 
 } }

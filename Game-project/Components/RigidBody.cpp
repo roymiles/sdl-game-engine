@@ -17,11 +17,6 @@ RigidBody::~RigidBody()
 {
 }
 
-void RigidBody::setCollisionMesh(SDL_Rect _collisionMesh)
-{
-	collisionMesh = _collisionMesh;
-}
-
 const std::string RigidBody::getName() const
 {
 	return name;

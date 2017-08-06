@@ -32,7 +32,6 @@ void Box::setup()
 	transformComponent->setDimensions(50, 50, 200, 200);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
-	rigidBodyComponent->setCollisionMesh(transformComponent->getRect());
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);

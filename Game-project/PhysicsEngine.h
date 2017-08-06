@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Components/RigidBody.h"
 
+
 namespace game {
 
 /*
@@ -26,6 +27,12 @@ private:
 	std::shared_ptr<World> world;
 
 	/*
+	 * This function is responsible for updating the position of every rigidbody
+	 * based on their velocities.
+	 */
+	void updatePositions(std::map<std::string, entityPointer>& rigidBodies);
+
+	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding
 	 */
 	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(std::map<std::string, entityPointer>& colliders);
@@ -36,6 +43,8 @@ private:
 #pragma message("Not a fan of this function name, ideas?")
 	void respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs);
 };
+
+typedef std::pair<entityPointer, entityPointer> collisionPair;
 
 }
 

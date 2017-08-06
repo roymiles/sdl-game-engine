@@ -34,7 +34,7 @@ void Character::setup()
 	transformComponent->setDimensions(10, 10, 20, 20);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
-	rigidBodyComponent->setCollisionMesh(transformComponent->getRect());
+	rigidBodyComponent->mass = -1; // Infinite mass
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);

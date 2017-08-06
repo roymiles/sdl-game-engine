@@ -17,20 +17,36 @@ PhysicsEngine::~PhysicsEngine()
 void PhysicsEngine::update()
 {
 	// Get all entities with RigidBody components
-	std::map<std::string, entityPointer> colliders;
-	colliders = world->getEntitiesWithComponent(RigidBody::name);
+	std::map<std::string, entityPointer> rigidBodies;
+	rigidBodies = world->getEntitiesWithComponent(RigidBody::name);
 
-	checkCollisions(colliders);
+	updatePositions(rigidBodies);
+	std::list<collisionPair> collisionPairs = checkCollisions(rigidBodies);
+	if (!collisionPairs.empty()) {
+		respondToCollisions(collisionPairs);
+	}
 }
 
-std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollisions(std::map<std::string, entityPointer>& colliders)
+void PhysicsEngine::updatePositions(std::map<std::string, entityPointer>& rigidBodies)
 {
-	// The sides of the rectangles
-	int leftA, leftB;
-	int rightA, rightB;
-	int topA, topB;
-	int bottomA, bottomB;
+	for (auto &A : rigidBodies)
+	{
+		std::shared_ptr<RigidBody> rigidBodyComponent = A.second->getComponent<RigidBody>();
+		if (rigidBodyComponent->mass != -1) { // If mass is not infinite
+			std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
+			Vec2d currentPosition = transformComponent->getPosition();
+			
+			// Add the velocity components to their position
+			transformComponent->setPosition(
+				currentPosition.x + rigidBodyComponent->velocity.x,
+				currentPosition.y + rigidBodyComponent->velocity.y
+			);
+		}
+	}
+}
 
+std::list<collisionPair> PhysicsEngine::checkCollisions(std::map<std::string, entityPointer>& colliders)
+{
 	// The collision meshes
 	SDL_Rect meshA;
 	SDL_Rect meshB;
@@ -47,40 +63,28 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 	*/
 
 	// This is an enumeration of all the possible pair combinations of rigid body entities
-	std::list<std::pair<entityPointer, entityPointer>> collisionPairs;
+	std::list<collisionPair> collisionPairs;
 
 	// Loop through all colliders and check there isnt a collision with any other
 	int n = 0;
 	for (auto &A : colliders)
 	{
-		meshA = A.second->getComponent<RigidBody>()->collisionMesh;
-
-		// Calculate the sides of rect A
-		leftA = meshA.x;
-		rightA = meshA.x + meshA.w;
-		topA = meshA.y;
-		bottomA = meshA.y + meshA.h;
-
+		meshA = A.second->getComponent<Transform>()->getRect();
 		/*
 		 * Loop through all the other entities that can collide with A
 		 * Though start from the nth element to avoid checking a different permutation of the same pair
 		 * Note: Iterator values are accessed with *it
 		 */
-		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B) {
+		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B)
 		{
-			meshB = (*B).second->getComponent<RigidBody>()->collisionMesh;
+			meshB = (*B).second->getComponent<Transform>()->getRect();
 
 			// Object can't collide with itself
 			if (A != (*B))
 			{
-				// Calculate the sides of rect B
-				leftB = meshB.x;
-				rightB = meshB.x + meshB.w;
-				topB = meshB.y;
-				bottomB = meshB.y + meshB.h;
-
 				// If any of the sides from A are outside of B
-				if (!(bottomA <= topB || topA >= bottomB || rightA <= leftB || leftA >= rightB))
+				if (SDL_HasIntersection(&meshA, &meshB))
+				{
 					// The two objects are intersecting, collision.
 					std::cout << A.second->getName() << " is colliding with " << (*B).second->getName() << std::endl;
 					collisionPairs.push_back(std::make_pair(A.second, (*B).second));
@@ -96,18 +100,29 @@ std::list<std::pair<entityPointer, entityPointer>> PhysicsEngine::checkCollision
 }
 
 
-void PhysicsEngine::respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs)
+void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs)
 {
 	for (auto &entities : collidingPairs)
 	{
-		std::shared_ptr<RigidBody> A(entities.first->getComponent<RigidBody>());
-		std::shared_ptr<RigidBody> B(entities.second->getComponent<RigidBody>());
+		std::shared_ptr<Transform> transformComponentA = entities.first->getComponent<Transform>();
+		std::shared_ptr<Transform> transformComponentB = entities.second->getComponent<Transform>();
 
-#pragma message("Need to double check the entities are referencing same component (no copying)")
+		SDL_Rect intersectionResult; // A rect containing the amount of intersection
+		SDL_IntersectRect(&transformComponentA->getRect(), &transformComponentB->getRect(), &intersectionResult);
+
+		std::shared_ptr<RigidBody> rigidBodyComponentA = entities.first->getComponent<RigidBody>();
+		std::shared_ptr<RigidBody> rigidBodyComponentB = entities.second->getComponent<RigidBody>();
+
 		// For now just multiply each rigid bodies velocity by -1 * elasticity
 		// Note: Must multiple Vec2 * double (not other way round as not specified in Vec2.h, need to implement)
-		A->velocity = A->velocity * A->elasticity * -1.0;
-		B->velocity = A->velocity * A->elasticity * -1.0;
+		rigidBodyComponentA->velocity = rigidBodyComponentA->velocity * rigidBodyComponentA->elasticity * -1.0;
+		rigidBodyComponentB->velocity = rigidBodyComponentB->velocity * rigidBodyComponentB->elasticity * -1.0;
+
+		// Add a slight impulse proportional to the area of the intersection
+		rigidBodyComponentA->velocity += (transformComponentA->getPosition().x - intersectionResult.x);
+		rigidBodyComponentA->velocity += (transformComponentA->getPosition().y - intersectionResult.y);
+		rigidBodyComponentB->velocity += (transformComponentB->getPosition().x - intersectionResult.x);
+		rigidBodyComponentB->velocity += (transformComponentB->getPosition().y - intersectionResult.y);
 	}
 }
 
