@@ -3,7 +3,7 @@
 #include "World.h"
 #include "Entity.h"
 #include "Components/RigidBody.h"
-
+#include "Window.h"
 
 namespace game {
 
@@ -31,6 +31,16 @@ private:
 	 * based on their velocities.
 	 */
 	void updatePositions(std::map<std::string, entityPointer>& rigidBodies);
+
+	/*
+	 * Every object that goes outside of the screen will wrap round to the other side
+	 */
+	void boundToWindow(std::map<std::string, entityPointer>& rigidBodies);
+
+	/*
+	 * Apply friction to the object, which slows it down
+	 */
+	void applyFriction(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding

@@ -21,6 +21,9 @@ void PhysicsEngine::update()
 	rigidBodies = world->getEntitiesWithComponent(RigidBody::name);
 
 	updatePositions(rigidBodies);
+	boundToWindow(rigidBodies);
+	applyFriction(rigidBodies);
+
 	std::list<collisionPair> collisionPairs = checkCollisions(rigidBodies);
 	if (!collisionPairs.empty()) {
 		respondToCollisions(collisionPairs);
@@ -41,6 +44,57 @@ void PhysicsEngine::updatePositions(std::map<std::string, entityPointer>& rigidB
 				currentPosition.x + rigidBodyComponent->velocity.x,
 				currentPosition.y + rigidBodyComponent->velocity.y
 			);
+		}
+	}
+}
+
+void PhysicsEngine::boundToWindow(std::map<std::string, entityPointer>& rigidBodies)
+{
+	for (auto &A : rigidBodies)
+	{
+		std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
+		Vec2d position = transformComponent->getPosition();
+		// x-axis
+		if (position.x > Window::WIDTH)
+		{
+			// Right hand side of the screen
+			position.x = 0;
+		}
+		else if (position.x + transformComponent->getWidth() < 0)
+		{
+			// Left hand side of the screen
+			position.x = Window::WIDTH;
+		}
+
+		// y-axis
+		if (position.y > Window::HEIGHT)
+		{
+			// Bottom of screen
+			position.y = 0;
+		}
+		else if (position.y + transformComponent->getHeight() < 0)
+		{
+			// Top of screen
+			position.y = Window::HEIGHT;
+		}
+
+		transformComponent->setPosition(position.x, position.y);
+	}
+}
+
+void PhysicsEngine::applyFriction(std::map<std::string, entityPointer>& rigidBodies)
+{
+	for (auto &A : rigidBodies)
+	{
+		std::shared_ptr<RigidBody> rigidBodyComponent = A.second->getComponent<RigidBody>();
+		Vec2d velocity = rigidBodyComponent->velocity;
+
+		if (velocity.length() < 0.5) {
+			rigidBodyComponent->velocity.x = 0;
+			rigidBodyComponent->velocity.y = 0;
+		}
+		else {
+			rigidBodyComponent->velocity = velocity * 0.9;
 		}
 	}
 }
@@ -115,14 +169,74 @@ void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs
 
 		// For now just multiply each rigid bodies velocity by -1 * elasticity
 		// Note: Must multiple Vec2 * double (not other way round as not specified in Vec2.h, need to implement)
-		rigidBodyComponentA->velocity = rigidBodyComponentA->velocity * rigidBodyComponentA->elasticity * -1.0;
-		rigidBodyComponentB->velocity = rigidBodyComponentB->velocity * rigidBodyComponentB->elasticity * -1.0;
+		//rigidBodyComponentA->velocity = rigidBodyComponentA->velocity * rigidBodyComponentA->elasticity * -1.0;
+		//rigidBodyComponentB->velocity = rigidBodyComponentB->velocity * rigidBodyComponentB->elasticity * -1.0;
 
 		// Add a slight impulse proportional to the area of the intersection
-		rigidBodyComponentA->velocity += (transformComponentA->getPosition().x - intersectionResult.x);
-		rigidBodyComponentA->velocity += (transformComponentA->getPosition().y - intersectionResult.y);
-		rigidBodyComponentB->velocity += (transformComponentB->getPosition().x - intersectionResult.x);
-		rigidBodyComponentB->velocity += (transformComponentB->getPosition().y - intersectionResult.y);
+		Vec2d positionA = transformComponentA->getPosition();
+		Vec2d positionB = transformComponentB->getPosition();
+		// x-axis
+		if (intersectionResult.x == positionA.x)
+		{
+			// A is on right side of B
+#pragma message("Character should not have infinite mass")
+			std::cout << "A is on right of B" << std::endl;
+
+			if (rigidBodyComponentA->mass == -1) {
+				transformComponentA->setPosition(positionA.x + intersectionResult.w, positionA.y);
+			}
+			else {
+				// Character is B
+				transformComponentB->setPosition(positionB.x + intersectionResult.w, positionB.y);
+			}
+			//rigidBodyComponentA->velocity.x += intersectionResult.w;
+			//rigidBodyComponentB->velocity.x -= intersectionResult.w;
+		}
+		else {
+			// A is on the left of B
+			//rigidBodyComponentA->velocity.x -= intersectionResult.w;
+			//rigidBodyComponentB->velocity.x += intersectionResult.w;
+			std::cout << "A is on left of B" << std::endl;
+
+			if (rigidBodyComponentA->mass == -1) {
+				transformComponentA->setPosition(positionA.x - intersectionResult.w, positionA.y);
+			}
+			else {
+				// Character is B
+				transformComponentB->setPosition(positionB.x - intersectionResult.w, positionB.y);
+			}
+		}
+
+		// y-axis
+		if (intersectionResult.y == positionA.y)
+		{
+			// A is above B
+			//rigidBodyComponentA->velocity.y += intersectionResult.h;
+			//rigidBodyComponentB->velocity.y -= intersectionResult.h;
+			std::cout << "A is above of B" << std::endl;
+
+			if (rigidBodyComponentA->mass == -1) {
+				transformComponentA->setPosition(positionA.x, positionA.y + intersectionResult.h);
+			}
+			else {
+				// Character is B
+				transformComponentB->setPosition(positionB.x, positionB.y + intersectionResult.h);
+			}
+		}
+		else {
+			// A is below B
+			//rigidBodyComponentA->velocity.y -= intersectionResult.h;
+			//rigidBodyComponentB->velocity.y += intersectionResult.h;
+			std::cout << "A is below B" << std::endl;
+
+			if (rigidBodyComponentA->mass == -1) {
+				transformComponentA->setPosition(positionA.x, positionA.y - intersectionResult.h);
+			}
+			else {
+				// Character is B
+				transformComponentB->setPosition(positionB.x, positionB.y - intersectionResult.h);
+			}
+		}
 	}
 }
 

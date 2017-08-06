@@ -14,7 +14,6 @@ public:
 	static SDL_Window* window;
 	static SDL_Renderer* renderer;
 
-private:
 	// Screen Dimensions constants
 	static const int WIDTH;
 	static const int HEIGHT;
