@@ -26,7 +26,8 @@ void Box::setup()
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-	spriteComponent->setImagePath(utilities::resourceFolder + "hi.bmp");
+	spriteComponent->setNumberOfImages(state::SIZE);
+	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "hi.bmp");
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(50, 50, 200, 200);
@@ -53,6 +54,11 @@ void Box::update()
 const std::string Box::getName() const
 {
 	return name;
+}
+
+int Box::getCurrentState() const
+{
+	return currentState;
 }
 
 }

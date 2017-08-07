@@ -42,6 +42,7 @@ void World::removeEntity(std::string key)
 void World::setup()
 {
 	// -------------- Temporary ---------------
+	// TODO: This needs to be ported over to a LevelManager class
 	// Create entities for level
 	std::shared_ptr<Character> character(new Character());
 	createEntity(character);

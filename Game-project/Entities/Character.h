@@ -19,9 +19,13 @@ public:
 	void update() override;
 	void onEvent(std::string key) override;
 	const std::string getName() const override;
+	int getCurrentState() const override;
 
 private:
 	static const std::string name;
+
+	static const enum state : int { IDLE, MOVING, SIZE=2 };
+	state currentState;
 };
 
 } }

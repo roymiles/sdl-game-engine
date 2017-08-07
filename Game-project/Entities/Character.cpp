@@ -15,6 +15,7 @@ const std::string Character::name = "Character";
 
 Character::Character()
 {
+	currentState = state::IDLE;
 }
 
 
@@ -27,13 +28,17 @@ void Character::setup()
 	// Register any events
 
 	// Create instances of all the components for this entity
+
 	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-	spriteComponent->setImagePath(utilities::resourceFolder + "hi.bmp");
+	spriteComponent->setNumberOfImages(state::SIZE);
+	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "hi.bmp");
+	spriteComponent->setImagePath(state::MOVING, utilities::resourceFolder + "hi.bmp");
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(10, 10, 20, 20);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
+	// HACK: Character should not have infinite mass, remember to change the physics engine accordingly
 	rigidBodyComponent->mass = -1; // Infinite mass
 
 	// ... and then add these components to the container
@@ -42,10 +47,10 @@ void Character::setup()
 	setComponent(rigidBodyComponent);
 
 	// Register for any events
-	std::shared_ptr<UpKey> upKeyEvent(new UpKey());
+	std::shared_ptr<UpKey>	  upKeyEvent(new UpKey());
     std::shared_ptr<RightKey> rightKeyEvent(new RightKey());
-	std::shared_ptr<DownKey> downKeyEvent(new DownKey());
-	std::shared_ptr<LeftKey> leftKeyEvent(new LeftKey());
+	std::shared_ptr<DownKey>  downKeyEvent(new DownKey());
+	std::shared_ptr<LeftKey>  leftKeyEvent(new LeftKey());
 	registerEvent(upKeyEvent);
     registerEvent(rightKeyEvent);
 	registerEvent(downKeyEvent);
@@ -91,6 +96,11 @@ void Character::onEvent(std::string key)
 const std::string Character::getName() const
 {
 	return name;
+}
+
+int Character::getCurrentState() const
+{
+	return currentState;
 }
 
 } }
