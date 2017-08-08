@@ -2,8 +2,6 @@
 
 #include "Character.h"
 #include "../Utility/FileHelpers.h"
-#include "../Events/KeyUp.h"
-#include "../Events/KeyDown.h"
 #include "../Maths/Vec2.h"
 #include "../EventManager.h"
 
@@ -30,9 +28,9 @@ void Character::setup()
 	// Create instances of all the components for this entity
 
 	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-	spriteComponent->setNumberOfImages(state::SIZE);
-	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "hi.bmp");
-	spriteComponent->setImagePath(state::MOVING, utilities::resourceFolder + "hi.bmp");
+	spriteComponent->resizeImageVectors(state::SIZE);
+	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "mega-man.bmp");
+	spriteComponent->setImagePath(state::MOVING, utilities::resourceFolder + "mega-man-moving.bmp");
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(10, 10, 20, 20);
@@ -47,6 +45,9 @@ void Character::setup()
 	setComponent(rigidBodyComponent);
 
 	// Register for any events
+	std::shared_ptr<KeyUp>	  keyUpEvent(new KeyUp());
+	registerEvent(keyUpEvent);
+
 	std::shared_ptr<UpKey>	  upKeyEvent(new UpKey());
     std::shared_ptr<RightKey> rightKeyEvent(new RightKey());
 	std::shared_ptr<DownKey>  downKeyEvent(new DownKey());
@@ -80,16 +81,23 @@ void Character::onEvent(std::string key)
 	// Remember the coordinate (0,0) starts at the top left. This means that the +ve
 	// y axis will be downwards, not upwards
 	if (UpKey::name == key) {
+		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x, position.y-5, height, width);
 	}
 	else if (RightKey::name == key) {
+		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x+5, position.y, height, width);
 	}
 	else if (LeftKey::name == key) {
+		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x-5, position.y, height, width);
 	}
 	else if (DownKey::name == key) {
+		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x, position.y+5, height, width);
+	}
+	else if (KeyUp::name == key) {
+		currentState = state::IDLE;
 	}
 }
 

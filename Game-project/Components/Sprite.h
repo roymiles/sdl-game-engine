@@ -47,8 +47,7 @@ public:
 		}
 	}
 
-	// TODO: I really don't like this function name
-	void setNumberOfImages(size_t size)
+	void resizeImageVectors(size_t size)
 	{
 		imagePaths.resize(size);
 		imageTextures.resize(size);
