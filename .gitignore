@@ -19,3 +19,8 @@ Debug/Game-project.pdb
 Game-project/Debug/
 *.xcodeproj
 Game-project/Dependancies/Boost/boost/
+/build/
+/dist/
+.dep.inc
+Makefile
+nbproject/
