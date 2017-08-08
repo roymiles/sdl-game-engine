@@ -20,6 +20,7 @@ public:
 	virtual void update() {}
 	virtual void onEvent(std::string name) {}
 	virtual const std::string getName() const = 0;
+	virtual int getCurrentState() const = 0;
 
 	template<typename T>
 	std::shared_ptr<T> getComponent() {

@@ -32,7 +32,7 @@ void RenderingEngine::update()
 		std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 
 		// copy the texture to the rendering context
-		SDL_RenderCopy(Window::renderer, sprite->imageTexture, NULL, &box);
+		SDL_RenderCopy(Window::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
 	}
 
 	// Flip the backbuffer

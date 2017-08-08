@@ -175,67 +175,36 @@ void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs
 		// Add a slight impulse proportional to the area of the intersection
 		Vec2d positionA = transformComponentA->getPosition();
 		Vec2d positionB = transformComponentB->getPosition();
+
+		// Get the entity with infinite mass (character)
+#pragma message("Character should not have infinite mass")
+		std::shared_ptr<Transform> characterTransform = (rigidBodyComponentA->mass == -1) ? transformComponentA : transformComponentB;
+		Vec2d characterPosition						  = (rigidBodyComponentA->mass == -1) ? positionA : positionB;
+
 		// x-axis
+		// Note: I'm not sure why it works this way round, but it does :s
 		if (intersectionResult.x == positionA.x)
 		{
-			// A is on right side of B
-#pragma message("Character should not have infinite mass")
-			std::cout << "A is on right of B" << std::endl;
-
-			if (rigidBodyComponentA->mass == -1) {
-				transformComponentA->setPosition(positionA.x + intersectionResult.w, positionA.y);
-			}
-			else {
-				// Character is B
-				transformComponentB->setPosition(positionB.x + intersectionResult.w, positionB.y);
-			}
-			//rigidBodyComponentA->velocity.x += intersectionResult.w;
-			//rigidBodyComponentB->velocity.x -= intersectionResult.w;
-		}
-		else {
 			// A is on the left of B
-			//rigidBodyComponentA->velocity.x -= intersectionResult.w;
-			//rigidBodyComponentB->velocity.x += intersectionResult.w;
-			std::cout << "A is on left of B" << std::endl;
-
-			if (rigidBodyComponentA->mass == -1) {
-				transformComponentA->setPosition(positionA.x - intersectionResult.w, positionA.y);
-			}
-			else {
-				// Character is B
-				transformComponentB->setPosition(positionB.x - intersectionResult.w, positionB.y);
-			}
+			characterTransform->setPosition(characterPosition.x - intersectionResult.w, characterPosition.y);
 		}
-
+		else if (intersectionResult.x + intersectionResult.w == positionA.x + transformComponentA->getWidth()) {
+			// A is on the right of B
+			characterTransform->setPosition(characterPosition.x + intersectionResult.w, characterPosition.y);
+		}
 		// y-axis
-		if (intersectionResult.y == positionA.y)
+		else if (intersectionResult.y == positionA.y)
 		{
 			// A is above B
-			//rigidBodyComponentA->velocity.y += intersectionResult.h;
-			//rigidBodyComponentB->velocity.y -= intersectionResult.h;
-			std::cout << "A is above of B" << std::endl;
-
-			if (rigidBodyComponentA->mass == -1) {
-				transformComponentA->setPosition(positionA.x, positionA.y + intersectionResult.h);
-			}
-			else {
-				// Character is B
-				transformComponentB->setPosition(positionB.x, positionB.y + intersectionResult.h);
-			}
+			characterTransform->setPosition(characterPosition.x, characterPosition.y - intersectionResult.h);
+		}
+		else if(intersectionResult.y + intersectionResult.h == positionA.y + transformComponentA->getHeight()){
+			// A is below B
+			characterTransform->setPosition(characterPosition.x, characterPosition.y + intersectionResult.h);
 		}
 		else {
-			// A is below B
-			//rigidBodyComponentA->velocity.y -= intersectionResult.h;
-			//rigidBodyComponentB->velocity.y += intersectionResult.h;
-			std::cout << "A is below B" << std::endl;
-
-			if (rigidBodyComponentA->mass == -1) {
-				transformComponentA->setPosition(positionA.x, positionA.y - intersectionResult.h);
-			}
-			else {
-				// Character is B
-				transformComponentB->setPosition(positionB.x, positionB.y - intersectionResult.h);
-			}
+			// This should never happen
+			std::cout << "WTF!!!" << std::endl;
 		}
 	}
 }
