@@ -1,9 +1,13 @@
 #pragma once
 
-namespace game { namespace utilities {
-
 #include <string>
 
-const std::string resourceFolder = "C:\\Users\\Roy\\Documents\\Game-project\\Game-project\\Resources\\";
+namespace game { namespace utilities {
+   
+
+const std::string resourceFolder = "Game-project/Resources/";
+    
+//const std::string resourceFolder = "C:\\Users\\Roy\\Documents\\Game-project\\Game-project\\Resources\\";
+
 
 } }
