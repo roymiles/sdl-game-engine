@@ -161,8 +161,11 @@ void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs
 		std::shared_ptr<Transform> transformComponentA = entities.first->getComponent<Transform>();
 		std::shared_ptr<Transform> transformComponentB = entities.second->getComponent<Transform>();
 
+                SDL_Rect rectA = transformComponentA->getRect();
+                SDL_Rect rectB = transformComponentB->getRect();
+                
 		SDL_Rect intersectionResult; // A rect containing the amount of intersection
-		SDL_IntersectRect(&transformComponentA->getRect(), &transformComponentB->getRect(), &intersectionResult);
+		SDL_IntersectRect(&rectA, &rectB, &intersectionResult);
 
 		std::shared_ptr<RigidBody> rigidBodyComponentA = entities.first->getComponent<RigidBody>();
 		std::shared_ptr<RigidBody> rigidBodyComponentB = entities.second->getComponent<RigidBody>();
