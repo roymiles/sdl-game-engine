@@ -50,7 +50,7 @@ void World::setup()
 	std::shared_ptr<Box> box(new Box());
 	createEntity(box);
         
-        std::shared_ptr<Floor> floor(new Floor());
+	std::shared_ptr<Floor> floor(new Floor());
 	createEntity(floor);
 	// ----------------------------------------
 

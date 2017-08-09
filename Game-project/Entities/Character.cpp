@@ -31,6 +31,7 @@ void Character::setup()
 	spriteComponent->resizeImageVectors(state::SIZE);
 	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "mega-man.bmp");
 	spriteComponent->setImagePath(state::MOVING, utilities::resourceFolder + "mega-man-moving.bmp");
+	spriteComponent->setZIndex(0);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(10, 10, 20, 20);

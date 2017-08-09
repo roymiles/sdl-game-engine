@@ -28,7 +28,7 @@ void Floor::setup()
 	std::shared_ptr<Sprite> spriteComponent(new Sprite());
 	spriteComponent->resizeImageVectors(state::SIZE);
 	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "hi.bmp");
-        spriteComponent->setZIndex(0);
+    spriteComponent->setZIndex(1);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(0, 0, 100, 100);

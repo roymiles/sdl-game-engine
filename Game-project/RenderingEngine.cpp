@@ -41,7 +41,8 @@ void RenderingEngine::update()
 	SDL_RenderPresent(Window::renderer);
 }
 
-void RenderingEngine::sort( std::map<std::string, entityPointer>& drawableEntities)
+// Ascending order
+void RenderingEngine::sort(std::map<std::string, entityPointer>& drawableEntities)
 {
     int i, j, n;
     entityPointer temp;
@@ -62,19 +63,14 @@ void RenderingEngine::sort( std::map<std::string, entityPointer>& drawableEntiti
             int elem1 = drawableEntities[entityKeys[i-1]]->getComponent<Sprite>()->getZIndex();
             int elem2 = drawableEntities[entityKeys[i]]->getComponent<Sprite>()->getZIndex();
        
-            if (elem1 > elem2) {
+            if (elem1 < elem2) {
                 temp=drawableEntities[entityKeys[j]];
                 drawableEntities[entityKeys[j]]=drawableEntities[entityKeys[j+1]];
                 drawableEntities[entityKeys[j+1]]=temp;
             }
         }
     }
-//    for (auto &entity : drawableEntities)
-//    {
-//        int zIndex = entity.second->getComponent<Sprite>()->getZIndex();
-//    }
-    
- 
+
 }
 
 }
