@@ -18,6 +18,7 @@ void RenderingEngine::update()
 	std::map<std::string, entityPointer> drawableEntities;
 	Sprite sprite;
 	drawableEntities = world->getEntitiesWithComponent(sprite.getName());
+        sort(drawableEntities);
 
 	// Clear the screen
 	SDL_RenderClear(Window::renderer);
@@ -38,6 +39,42 @@ void RenderingEngine::update()
 	// Flip the backbuffer
 	// This means that everything that we prepared behind the screens is actually shown
 	SDL_RenderPresent(Window::renderer);
+}
+
+void RenderingEngine::sort( std::map<std::string, entityPointer>& drawableEntities)
+{
+    int i, j, n;
+    entityPointer temp;
+    n = drawableEntities.size();
+    
+    std::vector<std::string> entityKeys;
+    entityKeys.reserve(n);
+    
+    for (auto &entity : drawableEntities)
+    {
+        entityKeys.push_back(entity.first);    
+    }
+    
+    for (i=1; i<n-1; i++)
+    {
+        for (j=1; i<n-1; i++)
+        {
+            int elem1 = drawableEntities[entityKeys[i-1]]->getComponent<Sprite>()->getZIndex();
+            int elem2 = drawableEntities[entityKeys[i]]->getComponent<Sprite>()->getZIndex();
+       
+            if (elem1 > elem2) {
+                temp=drawableEntities[entityKeys[j]];
+                drawableEntities[entityKeys[j]]=drawableEntities[entityKeys[j+1]];
+                drawableEntities[entityKeys[j+1]]=temp;
+            }
+        }
+    }
+//    for (auto &entity : drawableEntities)
+//    {
+//        int zIndex = entity.second->getComponent<Sprite>()->getZIndex();
+//    }
+    
+ 
 }
 
 }

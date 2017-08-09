@@ -22,8 +22,10 @@ public:
 
 	void update();
 
+
 private:
 	std::shared_ptr<World> world;
+        void sort(std::map<std::string, entityPointer>& drawableEntities);
 };
 
 }

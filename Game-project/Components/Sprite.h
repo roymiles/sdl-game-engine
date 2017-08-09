@@ -18,7 +18,7 @@ public:
 
 	Sprite()
 	{
-
+            zIndex = 1;
 	}
 
 	~Sprite()
@@ -30,6 +30,16 @@ public:
 	{
 		return name;
 	}
+        
+        int getZIndex() const
+        {
+            return zIndex;
+        }
+        
+        void setZIndex(int _zIndex)
+        {
+            zIndex = _zIndex;
+        }
 
 	void setup()
 	{
@@ -70,6 +80,8 @@ private:
 
 	// The unique name of the component
 	static const std::string name;
+        int zIndex;
+        
 };
 
 } }
