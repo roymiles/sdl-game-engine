@@ -54,6 +54,22 @@ public:
     {
         zIndex = _zIndex;
     }
+
+	SDL_Surface* loadImage(std::string filename) {
+		SDL_Surface *tmp;
+		tmp = SDL_LoadBMP(filename.c_str());
+
+		if (!tmp) {
+			fprintf(stderr, "Error: '%s' could not be opened: %s\n", filename, SDL_GetError());
+			return NULL;
+		}
+		else {
+			if (SDL_SetColorKey(tmp, SDL_RLEACCEL, SDL_MapRGB(tmp->format, 255, 255, 255)) == -1)
+				fprintf(stderr, "Warning: colorkey will not be used, reason: %s\n", SDL_GetError());
+		}
+
+		return tmp;
+	}
 	
 	void setup()
 	{
@@ -68,7 +84,7 @@ public:
 
 			for (int j = 0; j < imagePaths[i].size(); j++)
 			{
-				SDL_Surface* imageSurface = SDL_LoadBMP(imagePaths[i][j].c_str());
+				SDL_Surface* imageSurface = loadImage(imagePaths[i][j]); //SDL_LoadBMP(imagePaths[i][j].c_str());
 				textures[j] = SDL_CreateTextureFromSurface(Window::renderer, imageSurface);
 
 				if (textures[j] == NULL)

@@ -25,7 +25,7 @@ public:
 
 private:
 	std::shared_ptr<World> world;
-        void sort(std::map<std::string, entityPointer>& drawableEntities);
+	void sort(std::map<std::string, entityPointer>& drawableEntities);
 };
 
 }
