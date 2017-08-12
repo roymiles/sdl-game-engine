@@ -26,6 +26,10 @@ private:
 
 	static const enum state : int { IDLE, MOVING, SIZE=2 };
 	state currentState;
+
+	// Current position
+	int x;
+	int y;
 };
 
 } }

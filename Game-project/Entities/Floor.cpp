@@ -13,8 +13,10 @@ using namespace events;
 
 const std::string Floor::name = "Floor";
 
-Floor::Floor()
+Floor::Floor(int _x, int _y)
 {
+	x = _x;
+	y = _y;
 }
 
 
@@ -25,13 +27,12 @@ Floor::~Floor()
 void Floor::setup()
 {
 	// Create instances of all components for entity
-	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-	spriteComponent->resizeImageVectors(state::SIZE);
-	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "hi.bmp");
-    spriteComponent->setZIndex(1);
+	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
+	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "grass.bmp" });
+    spriteComponent->setZIndex(BACKGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(0, 0, 100, 100);
+	transformComponent->setDimensions(x, y, 100, 100);
 
 	// Add components to the container
 	setComponent(spriteComponent);

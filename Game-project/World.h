@@ -30,6 +30,8 @@ public:
 
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);
+	void createEntity(entityPointer entity, std::string key);
+
 	void removeEntity(std::string key);
 
 	void setup();

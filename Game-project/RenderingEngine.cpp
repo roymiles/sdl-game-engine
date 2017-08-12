@@ -16,24 +16,32 @@ RenderingEngine::~RenderingEngine()
 void RenderingEngine::update()
 {
 	std::map<std::string, entityPointer> drawableEntities;
-	Sprite sprite;
-	drawableEntities = world->getEntitiesWithComponent(sprite.getName());
-        sort(drawableEntities);
+	drawableEntities = world->getEntitiesWithComponent(Sprite::name);
+	//sort(drawableEntities);
 
 	// Clear the screen
 	SDL_RenderClear(Window::renderer);
 
-	// Draw all the sprites to the screen
-	for (auto &entity : drawableEntities)
+	// Draw all entities for each layer in order
+	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
 	{
-		// Every entity is drawn inside a box (rectangle)
-		std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
-		SDL_Rect box = transform->getRect();
+		// Draw all the sprites to the screen
+		for (auto &entity : drawableEntities)
+		{
+			// If this entity is for a different layer skip it
+			int a = entity.second->getComponent<Sprite>()->getZIndex();
+			if (entity.second->getComponent<Sprite>()->getZIndex() != currentLayer)
+				continue;
 
-		std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
+			// Every entity is drawn inside a box (rectangle)
+			std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
+			SDL_Rect box = transform->getRect();
 
-		// copy the texture to the rendering context
-		SDL_RenderCopy(Window::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
+			std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
+
+			// copy the texture to the rendering context
+			SDL_RenderCopy(Window::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
+		}
 	}
 
 	// Flip the backbuffer

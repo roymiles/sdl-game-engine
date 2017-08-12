@@ -12,7 +12,7 @@ using namespace components;
 class Floor : public Entity
 {
 public:
-	Floor();
+	Floor(int _x, int _y);
 	~Floor();
 
 	void setup() override;
@@ -25,6 +25,9 @@ private:
 
 	static const enum state : int { IDLE, SIZE=1 };
 	state currentState;
+
+	int x;
+	int y;
 };
 
 }

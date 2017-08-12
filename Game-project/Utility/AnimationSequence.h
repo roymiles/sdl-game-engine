@@ -7,7 +7,7 @@ class AnimationSequence
         AnimationSequence(std::vector<SDL_Texture*> _textures)
         {
             textures = _textures;
-            index = 0;   
+            index    = 0;   
         }
         
         void reset()
@@ -16,7 +16,7 @@ class AnimationSequence
             index = 0;
         }
         
-        int getTexture()
+		SDL_Texture* getTexture()
         {
             // Return the current texture and then increment the index
             // if index is already at the end of the loop, go back to 0
@@ -27,12 +27,14 @@ class AnimationSequence
                 // triggerEvent(...);
                 index = 0;
             }else{
+				// Move onto next image in the sequence
                 index++; 
             }
+
             return textures[tmp];
         }
     
     private:
-        int index;
+        int index; // The current index of the animation sequence
         std::vector<SDL_Texture*> textures; // All the textures in order for the animation sequence
 };

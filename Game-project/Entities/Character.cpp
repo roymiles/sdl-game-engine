@@ -16,7 +16,6 @@ Character::Character()
 	currentState = state::IDLE;
 }
 
-
 Character::~Character()
 {
 }
@@ -27,11 +26,10 @@ void Character::setup()
 
 	// Create instances of all the components for this entity
 
-	std::shared_ptr<Sprite> spriteComponent(new Sprite());
-	spriteComponent->resizeImageVectors(state::SIZE);
-	spriteComponent->setImagePath(state::IDLE, utilities::resourceFolder + "mega-man.bmp");
-	spriteComponent->setImagePath(state::MOVING, utilities::resourceFolder + "mega-man-moving.bmp");
-	spriteComponent->setZIndex(0);
+	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
+	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "mega-man.bmp" });
+	spriteComponent->setImagePaths(state::MOVING, { utilities::resourceFolder + "mega-man-moving.bmp", utilities::resourceFolder + "mega-man.bmp" });
+	spriteComponent->setZIndex(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(10, 10, 20, 20);
