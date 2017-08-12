@@ -184,30 +184,35 @@ void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs
 		std::shared_ptr<Transform> characterTransform = (rigidBodyComponentA->mass == -1) ? transformComponentA : transformComponentB;
 		Vec2d characterPosition						  = (rigidBodyComponentA->mass == -1) ? positionA : positionB;
 
+		bool left  = (intersectionResult.x == positionA.x);
+		bool right = (intersectionResult.x + intersectionResult.w == positionA.x + transformComponentA->getWidth());
+		bool above = (intersectionResult.y == positionA.y);
+		bool below = (intersectionResult.y + intersectionResult.h == positionA.y + transformComponentA->getHeight());
+
 		// x-axis
 		// Note: I'm not sure why it works this way round, but it does :s
-		if (intersectionResult.x == positionA.x)
+		if ( (left && !(above || below)) || (left && (above || below) && intersectionResult.h > intersectionResult.w) )
 		{
 			// A is on the left of B
 			characterTransform->setPosition(characterPosition.x - intersectionResult.w, characterPosition.y);
 		}
-		else if (intersectionResult.x + intersectionResult.w == positionA.x + transformComponentA->getWidth()) {
+		else if ((right && !(above || below)) || (right && (above || below) && intersectionResult.h > intersectionResult.w)) {
 			// A is on the right of B
 			characterTransform->setPosition(characterPosition.x + intersectionResult.w, characterPosition.y);
 		}
 		// y-axis
-		else if (intersectionResult.y == positionA.y)
+		else if ((above && !(left || right)) || (above && (left || right) && intersectionResult.h <= intersectionResult.w))
 		{
 			// A is above B
 			characterTransform->setPosition(characterPosition.x, characterPosition.y - intersectionResult.h);
 		}
-		else if(intersectionResult.y + intersectionResult.h == positionA.y + transformComponentA->getHeight()){
+		else if ((below && !(left || right)) || (below && (left || right) && intersectionResult.h <= intersectionResult.w)) {
 			// A is below B
 			characterTransform->setPosition(characterPosition.x, characterPosition.y + intersectionResult.h);
 		}
 		else {
-			// This should never happen
-			std::cout << "WTF!!!" << std::endl;
+			// Object is on a corner
+			std::cout << "Unknown collision" << std::endl;
 		}
 	}
 }

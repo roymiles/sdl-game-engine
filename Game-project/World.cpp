@@ -63,10 +63,11 @@ void World::setup()
 		for (int y = 0; y < Window::HEIGHT; y += 100)
 		{
 			std::shared_ptr<Floor> floor(new Floor(x, y));
-			//floor = std::make_shared<Floor>(new Floor(x, y));
-			std::stringstream ss;
 
+			// Use x_y key as opposed to a random string
+			std::stringstream ss;
 			ss << x << "_" << y;
+
 			createEntity(floor, ss.str());
 		}
 	}
@@ -97,6 +98,7 @@ std::map<std::string, entityPointer> World::getEntitiesWithComponent(std::string
 	{
 		if (entity.second->hasComponent(key))
 		{
+			// Add a random key at the end to avoid entities of the same type overwriting
 			entitiesWithComponent[entity.second->getName() + "_" + randomString(7)] = entity.second;
 		}
 	}
