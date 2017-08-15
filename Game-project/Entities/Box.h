@@ -5,8 +5,7 @@
 #include "../Components/Transform.h"
 #include "../Components/RigidBody.h"
 
-namespace game {
-namespace entities {
+namespace game { namespace entities {
 
 using namespace components;
 
@@ -28,5 +27,4 @@ private:
 	state currentState;
 };
 
-}
-}
+} }

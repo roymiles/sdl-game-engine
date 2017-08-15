@@ -41,10 +41,6 @@ void RenderingEngine::update()
 			// Every entity is drawn inside a box (rectangle)
 			std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
 			SDL_Rect box = transform->getRect();
-			
-			// All the entity positions are offset by the cameras position
-			int x = box.x; // Temp variables
-			int y = box.y;
 
 			std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
 			std::shared_ptr<Transform> cameraTarget = camera->getTarget()->getComponent<Transform>();

@@ -51,6 +51,9 @@ public:
 		return nullptr;
 	}
 
+	// Get the highest layer entity at a given point x, y
+	//std::shared_ptr<Entity> getEntityAtPoint(SDL_Point point);
+
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);
 	void createEntity(entityPointer entity, std::string key);

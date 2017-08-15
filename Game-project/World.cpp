@@ -23,6 +23,32 @@ entityPointer World::getEntity(std::string key)
 	return entityContainer[key];
 }
 
+//std::vector<std::shared_ptr<Entity>> World::getEntityAtPoint(SDL_Point point)
+//{
+//	std::shared_ptr<Transform> transformComponent;
+//	std::vector<std::shared_ptr<Entity>> entitiesAtPoints;
+//	for (auto &entity : entityContainer)
+//	{
+//		if (entity.second->hasComponent("Transform"))
+//		{
+//			transformComponent = entity.second->getComponent<Transform>();
+//
+//			// Check if the entity covers the point
+//			if (SDL_PointInRect(&point, &transformComponent->getRect()))
+//			{
+//				entitiesAtPoints.push_back(entity);
+//			}
+//		}
+//	}
+//
+//	if (entitiesAtPoints.size == 0) {
+//		return {}; // No entities at this point
+//	}
+//	else {
+//		return entitiesAtPoints;
+//	}
+//}
+
 std::string World::createEntity(entityPointer entity)
 {
 	// Add to container and then return entity
