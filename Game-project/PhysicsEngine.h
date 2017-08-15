@@ -30,17 +30,18 @@ private:
 	 * This function is responsible for updating the position of every rigidbody
 	 * based on their velocities.
 	 */
-	void updatePositions(std::map<std::string, entityPointer>& rigidBodies);
+	//void updatePositions(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
 	 * Every object that goes outside of the screen will wrap round to the other side
+	 * This will need to be called inside the update() method
 	 */
-	void boundToWindow(std::map<std::string, entityPointer>& rigidBodies);
+	//void boundToWindow(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
 	 * Apply friction to the object, which slows it down
 	 */
-	void applyFriction(std::map<std::string, entityPointer>& rigidBodies);
+	//void applyFriction(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding

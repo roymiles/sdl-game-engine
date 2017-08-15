@@ -21,6 +21,7 @@ public:
 	const std::string getName() const override;
 
 	void setPosition(double _x, double _y);
+	void setPosition(Vec2d _position);
 	Vec2d getPosition();
 
 	void setDimensions(double _x, double _y, int _height, int _width);

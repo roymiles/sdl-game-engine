@@ -7,6 +7,7 @@
 #include "Component.h"
 #include "Event.h"
 #include "Utility/Random.h"
+#include "Maths/Vec2.h"
 
 namespace game {
 
@@ -20,7 +21,7 @@ public:
 	virtual void update() {}
 	virtual void onEvent(std::string name) {}
 	virtual const std::string getName() const = 0;
-	virtual int getCurrentState() const = 0;
+	virtual int getCurrentState() const { return -1; };
 
 	template<typename T>
 	std::shared_ptr<T> getComponent() {
@@ -32,7 +33,7 @@ public:
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 	std::string setComponent(std::shared_ptr<Component> c);
 	bool hasComponent(std::string key);
@@ -44,6 +45,8 @@ public:
 
 	bool operator==(const Entity &other) const;
 	bool operator!=(const Entity &other) const;
+
+	virtual void onCollision(maths::Vec2d &collisionVector) {}
 
 protected:
 	std::map<std::string, std::shared_ptr<Event>> registeredEvents;

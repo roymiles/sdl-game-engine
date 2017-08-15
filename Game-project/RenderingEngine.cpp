@@ -6,6 +6,8 @@ namespace game {
 RenderingEngine::RenderingEngine(std::shared_ptr<World> _world)
 {
 	world = _world;
+
+	camera = world->getEntity<Camera>();
 }
 
 
@@ -19,6 +21,9 @@ void RenderingEngine::update()
 	drawableEntities = world->getEntitiesWithComponent(Sprite::name);
 	//sort(drawableEntities);
 
+	// Get the camera
+	std::shared_ptr<Camera> sprite = world->getEntity<Camera>();
+
 	// Clear the screen
 	SDL_RenderClear(Window::renderer);
 
@@ -29,13 +34,33 @@ void RenderingEngine::update()
 		for (auto &entity : drawableEntities)
 		{
 			// If this entity is for a different layer skip it
-			int a = entity.second->getComponent<Sprite>()->getZIndex();
-			if (entity.second->getComponent<Sprite>()->getZIndex() != currentLayer)
+			int a = entity.second->getComponent<Sprite>()->getLayer();
+			if (entity.second->getComponent<Sprite>()->getLayer() != currentLayer)
 				continue;
 
 			// Every entity is drawn inside a box (rectangle)
 			std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
 			SDL_Rect box = transform->getRect();
+			
+			// All the entity positions are offset by the cameras position
+			int x = box.x; // Temp variables
+			int y = box.y;
+
+			std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
+			std::shared_ptr<Transform> cameraTarget = camera->getTarget()->getComponent<Transform>();
+			// The sprites are offset by half the screen width and height, so that the character
+			// is in the centre of the screen
+
+			// All screen position are relative to the camera
+			box.x -= cameraTransform->getPosition().x;
+			box.y -= cameraTransform->getPosition().y;
+			// Make the target of the camera at the centre of the screen
+			box.x += Window::WIDTH / 2;
+			box.y += Window::HEIGHT / 2;
+			// Offset the camera by the width and height of the target
+			// This is because rectangle coordinates are specified by the top left corner rather than the centre
+			box.x -= cameraTarget->getWidth() / 2;
+			box.y -= cameraTarget->getHeight() / 2;
 
 			std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 
@@ -68,8 +93,8 @@ void RenderingEngine::sort(std::map<std::string, entityPointer>& drawableEntitie
     {
         for (j=1; i<n-1; i++)
         {
-            int elem1 = drawableEntities[entityKeys[i-1]]->getComponent<Sprite>()->getZIndex();
-            int elem2 = drawableEntities[entityKeys[i]]->getComponent<Sprite>()->getZIndex();
+            int elem1 = drawableEntities[entityKeys[i-1]]->getComponent<Sprite>()->getLayer();
+            int elem2 = drawableEntities[entityKeys[i]]->getComponent<Sprite>()->getLayer();
        
             if (elem1 < elem2) {
                 temp=drawableEntities[entityKeys[j]];

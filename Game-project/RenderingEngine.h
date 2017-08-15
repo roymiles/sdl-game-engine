@@ -20,11 +20,15 @@ public:
 	RenderingEngine(std::shared_ptr<World> _world);
 	~RenderingEngine();
 
+	/* 
+	 * Called on every frame and draws every entity with a sprite component
+	 */
 	void update();
-
 
 private:
 	std::shared_ptr<World> world;
+	std::shared_ptr<Camera> camera;
+
 	void sort(std::map<std::string, entityPointer>& drawableEntities);
 };
 

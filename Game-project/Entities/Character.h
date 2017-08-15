@@ -21,10 +21,12 @@ public:
 	const std::string getName() const override;
 	int getCurrentState() const override;
 
+	void onCollision(maths::Vec2d &collisionVector) override;
+
 private:
 	static const std::string name;
 
-	static const enum state : int { IDLE, MOVING, SIZE=2 };
+	const enum state : int { IDLE, MOVING, SIZE=2 };
 	state currentState;
 
 	// Current position

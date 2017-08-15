@@ -40,7 +40,8 @@ public:
 private:
 	std::shared_ptr<World> world;
 
-	void triggerEvent(std::string name);
+	// Calls onEvent for every entity registering to the triggered event
+	void triggerEvent(std::string eventName);
 };
 
 }

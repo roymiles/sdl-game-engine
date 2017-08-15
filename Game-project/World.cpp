@@ -52,8 +52,20 @@ void World::setup()
 	// -------------- Temporary ---------------
 	// TODO: This needs to be ported over to a LevelManager class
 	// Create entities for level
+
+
+	// Load the first level
+	//std::shared_ptr<LevelManager> levelManager(new LevelManager());
+	//levelManager->loadLevel()
+
+	currentGameState = gameState::Level1;
+	// importEntities(state);
+
 	std::shared_ptr<Character> character(new Character());
 	createEntity(character);
+
+	std::shared_ptr<Camera> camera(new Camera(character));
+	createEntity(camera);
 
 	std::shared_ptr<Box> box(new Box());
 	createEntity(box);

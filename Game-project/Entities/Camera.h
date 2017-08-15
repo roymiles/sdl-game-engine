@@ -10,22 +10,21 @@ namespace entities {
 
 using namespace components;
 
-class Box : public Entity
+class Camera : public Entity
 {
 public:
-	Box();
-	~Box();
+	Camera(std::shared_ptr<Entity> _target);
+	~Camera();
 
 	void setup() override;
 	void update() override;
 	const std::string getName() const override;
-	int getCurrentState() const override;
+	std::shared_ptr<Entity> getTarget();
 
 private:
 	static const std::string name;
 
-	const enum state : int { IDLE, SIZE=1 };
-	state currentState;
+	std::shared_ptr<Entity> target; // The entity the camera will follow
 };
 
 }

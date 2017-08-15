@@ -23,7 +23,7 @@ public:
 private:
 	static const std::string name;
 
-	static const enum state : int { IDLE, SIZE=1 };
+	const enum state : int { IDLE, SIZE=1 };
 	state currentState;
 
 	int x;

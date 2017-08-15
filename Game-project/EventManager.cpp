@@ -54,13 +54,15 @@ void EventManager::update(SDL_Event* window_event)
 }
 
 // Trigger an event
-void EventManager::triggerEvent(std::string name)
+// Loops through all the entities and checks if the entity has registered
+// for the event, if so it will call onEvent for the entity to handle accordingly
+void EventManager::triggerEvent(std::string eventName)
 {
 	for (auto &entity : world->entityContainer)
 	{
 		// Check if this entity has registered for this event
-		if (entity.second->hasRegisteredEvent(name)) {
-			entity.second->onEvent(name);
+		if (entity.second->hasRegisteredEvent(eventName)) {
+			entity.second->onEvent(eventName);
 		}
 	}
 }

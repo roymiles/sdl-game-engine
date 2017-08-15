@@ -3,7 +3,6 @@
 #include "Floor.h"
 #include "SDL.h"
 #include "../Utility/FileHelpers.h"
-#include "../Maths/Vec2.h"
 #include "../EventManager.h"
 
 namespace game {
@@ -29,7 +28,7 @@ void Floor::setup()
 	// Create instances of all components for entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
 	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "grass.bmp" });
-    spriteComponent->setZIndex(BACKGROUND);
+    spriteComponent->setLayer(BACKGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(x, y, 100, 100);

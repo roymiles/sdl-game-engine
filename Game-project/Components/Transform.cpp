@@ -25,6 +25,11 @@ void Transform::setPosition(double _x, double _y)
 	position = Vec2d(_x, _y);
 }
 
+void Transform::setPosition(Vec2d _position)
+{
+	position = _position;
+}
+
 Vec2d Transform::getPosition()
 {
 	return position;

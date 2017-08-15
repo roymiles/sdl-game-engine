@@ -35,6 +35,9 @@ int main(int argc, char * argv[]) {
 	// Manages all the entities
 	std::shared_ptr<World> world(new World());
 
+	// Call setup on all entities
+	world->setup();
+
 	// Handles any event that occurs in app
 	SDL_Event window_event;
 	std::unique_ptr<EventManager> eventManager(new EventManager(world));
@@ -44,9 +47,6 @@ int main(int argc, char * argv[]) {
 
 	// Rendering engine is responsible for drawing appropriate entities to screen
 	std::unique_ptr<RenderingEngine> renderingEngine(new RenderingEngine(world));
-
-	// Call setup on all entities
-	world->setup();
 	
 	unsigned int frametime;
 

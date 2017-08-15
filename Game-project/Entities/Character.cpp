@@ -2,7 +2,6 @@
 
 #include "Character.h"
 #include "../Utility/FileHelpers.h"
-#include "../Maths/Vec2.h"
 #include "../EventManager.h"
 
 namespace game { namespace entities {
@@ -28,11 +27,15 @@ void Character::setup()
 
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
 	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "mega-man.bmp" });
-	spriteComponent->setImagePaths(state::MOVING, { utilities::resourceFolder + "mega-man-moving.bmp", utilities::resourceFolder + "mega-man.bmp" });
-	spriteComponent->setZIndex(FOREGROUND);
+	//spriteComponent->setImagePaths(state::MOVING, { utilities::resourceFolder + "mega-man-moving.bmp", utilities::resourceFolder + "mega-man.bmp" });
+	spriteComponent->setImagePaths(state::MOVING, { utilities::resourceFolder + "mega-man-moving.bmp" });
+	spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(10, 10, 20, 20);
+	// Drawn in the centre of the screen
+	// The rectangles are drawn on screen from the top left of the image
+	// To ensure the character is exactly in the middle, the character needs to be offset by its height and width
+	transformComponent->setDimensions(Window::WIDTH/2, Window::HEIGHT/2, 100, 100);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
 	// HACK: Character should not have infinite mass, remember to change the physics engine accordingly
@@ -108,6 +111,14 @@ const std::string Character::getName() const
 int Character::getCurrentState() const
 {
 	return currentState;
+}
+
+
+void Character::onCollision(maths::Vec2d &collisionVector)
+{
+	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
+	Vec2d position = transformComponent->getPosition();
+	transformComponent->setPosition(position.x - collisionVector.x, position.y - collisionVector.y);
 }
 
 } }

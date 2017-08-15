@@ -3,7 +3,6 @@
 #include "Box.h"
 #include "SDL.h"
 #include "../Utility/FileHelpers.h"
-#include "../Maths/Vec2.h"
 #include "../EventManager.h"
 
 namespace game {
@@ -27,7 +26,7 @@ void Box::setup()
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
 	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "hi.bmp" });
-    spriteComponent->setZIndex(FOREGROUND);
+    spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	transformComponent->setDimensions(50, 50, 200, 200);
