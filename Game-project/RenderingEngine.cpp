@@ -21,9 +21,6 @@ void RenderingEngine::update()
 	drawableEntities = world->getEntitiesWithComponent(Sprite::name);
 	//sort(drawableEntities);
 
-	// Get the camera
-	std::shared_ptr<Camera> sprite = world->getEntity<Camera>();
-
 	// Clear the screen
 	SDL_RenderClear(Window::renderer);
 
@@ -69,7 +66,7 @@ void RenderingEngine::update()
 	SDL_RenderPresent(Window::renderer);
 }
 
-// Ascending order
+// Sort the container of entities according to their layer in ascending order
 void RenderingEngine::sort(std::map<std::string, entityPointer>& drawableEntities)
 {
     int i, j, n;
