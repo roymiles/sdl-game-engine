@@ -51,8 +51,14 @@ public:
 		return nullptr;
 	}
 
-	// Get the highest layer entity at a given point x, y
-	//std::shared_ptr<Entity> getEntityAtPoint(SDL_Point point);
+	// Get a list of all the entities that are within a given point x, y
+	// @param point - an SDL struct that simply contains the x, y data
+	std::vector<std::shared_ptr<Entity>> getEntitiesAtPoint(SDL_Point &point);
+
+	// Get the entity with the highest layer from a list of entities
+	// @param maxLayer - Cap the search to find only entities below a given layer
+	//					 For example, you may not care about anything higher than the FOREGROUND
+	std::shared_ptr<Entity> getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer);
 
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);

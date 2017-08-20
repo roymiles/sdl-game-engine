@@ -34,7 +34,6 @@ void RenderingEngine::update()
 		for (auto &entity : drawableEntities)
 		{
 			// If this entity is for a different layer skip it
-			int a = entity.second->getComponent<Sprite>()->getLayer();
 			if (entity.second->getComponent<Sprite>()->getLayer() != currentLayer)
 				continue;
 

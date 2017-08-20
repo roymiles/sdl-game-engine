@@ -3,6 +3,7 @@
 // To generate the unique entity keys
 #include "Utility/Random.h"
 
+#include <iostream>
 #include <sstream>
 
 namespace game {
@@ -23,31 +24,48 @@ entityPointer World::getEntity(std::string key)
 	return entityContainer[key];
 }
 
-//std::vector<std::shared_ptr<Entity>> World::getEntityAtPoint(SDL_Point point)
-//{
-//	std::shared_ptr<Transform> transformComponent;
-//	std::vector<std::shared_ptr<Entity>> entitiesAtPoints;
-//	for (auto &entity : entityContainer)
-//	{
-//		if (entity.second->hasComponent("Transform"))
-//		{
-//			transformComponent = entity.second->getComponent<Transform>();
-//
-//			// Check if the entity covers the point
-//			if (SDL_PointInRect(&point, &transformComponent->getRect()))
-//			{
-//				entitiesAtPoints.push_back(entity);
-//			}
-//		}
-//	}
-//
-//	if (entitiesAtPoints.size == 0) {
-//		return {}; // No entities at this point
-//	}
-//	else {
-//		return entitiesAtPoints;
-//	}
-//}
+std::vector<std::shared_ptr<Entity>> World::getEntitiesAtPoint(SDL_Point &point)
+{
+	std::shared_ptr<Transform> transformComponent;
+	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
+	for (auto &entity : entityContainer)
+	{
+		if (entity.second->hasComponent("Transform"))
+		{
+			transformComponent = entity.second->getComponent<Transform>();
+
+			// Check if the entity covers the point
+			if (SDL_PointInRect(&point, &transformComponent->getRect()))
+			{
+				entitiesAtPoint.push_back(entity.second);
+			}
+		}
+	}
+
+	return entitiesAtPoint;
+}
+
+std::shared_ptr<Entity> World::getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer)
+{
+	// Go down the layers to find the entity that is visable on the walking layers
+	// Anything higher than FOREGROUND is on a menu, affect etc and so they don't affect
+	// the navigation mesh
+	bool tmp = false;
+	for (int currentLayer = layers::FOREGROUND; currentLayer >= layers::BACKGROUND; currentLayer--)
+	{
+		// Check if there is an entity at this point and on this layer
+		for (auto const &entity : entities)
+		{
+			if (entity->getComponent<Sprite>()->getLayer() == currentLayer)
+			{
+				return entity;
+			}
+		}
+	}
+
+	std::cout << "No entities found on layers below or equal to maxLayer" << std::endl;
+	return nullptr;
+}
 
 std::string World::createEntity(entityPointer entity)
 {

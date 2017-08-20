@@ -2,13 +2,13 @@
 
 #include "Box.h"
 #include "SDL.h"
-#include "../Utility/FileHelpers.h"
+#include "../Utility/FileHelper.h"
 #include "../EventManager.h"
 
-namespace game {
-namespace entities {
+namespace game { namespace entities {
 
 using namespace events;
+using namespace utilities;
 
 const std::string Box::name = "Box";
 
@@ -25,7 +25,7 @@ void Box::setup()
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
-	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "hi.bmp" });
+	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "hi.bmp" });
     spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
@@ -60,5 +60,4 @@ int Box::getCurrentState() const
 	return currentState;
 }
 
-}
-}
+} }

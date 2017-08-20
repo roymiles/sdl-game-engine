@@ -15,11 +15,15 @@
 #include "EventManager.h"
 #include "PhysicsEngine.h"
 #include "RenderingEngine.h"
+#include "Algorithms/PathFinding.h" // TEMPORARY
+#include "Utility/FileHelper.h" // TEMPORARY
 
 #include "Entities/Character.h"
 
 using namespace game;
 using namespace entities;
+using namespace algorithms; // TEMPORARY
+using namespace utilities; // TEMPORARY
 
 const int fps = 40;
 const int minframetime = 1000 / fps;
@@ -37,6 +41,12 @@ int main(int argc, char * argv[]) {
 
 	// Call setup on all entities
 	world->setup();
+
+	// TEMPORARY
+	std::shared_ptr<PathFinding> p(new PathFinding(world));
+	std::vector<std::vector<char>> navMesh = p->createNavMesh(10);
+	FileHelper::writeMatrixToFile<char>(navMesh);
+	std::vector<moves> moveList = p->astar(navMesh);
 
 	// Handles any event that occurs in app
 	SDL_Event window_event;

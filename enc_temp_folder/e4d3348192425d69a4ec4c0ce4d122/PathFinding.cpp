@@ -75,6 +75,17 @@ std::vector<std::vector<char>> PathFinding::createNavMesh(int resolution)
 std::vector<moves> PathFinding::astar(std::vector<std::vector<char>> grid)
 {
 	// A*
+	//Map map(grid);
+
+	//MicroPather* pather = new MicroPather(&map); // Although you really should set the default params for your game.
+
+	//micropather::MPVector<void*> path; // A vector of all the states
+	//float totalCost = 0;
+	//void* startState = (void*)(0 * grid.size() + 0); // 0,0
+	//void* endState = (void*)(200 * grid.size() + 0); // 0,200
+	//int result = pather->Solve(startState, endState, &path, &totalCost);
+
+
 	AStar *a = new AStar(grid);
 
 	std::vector<std::shared_ptr<Node>> path;

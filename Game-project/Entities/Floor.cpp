@@ -2,13 +2,13 @@
 
 #include "Floor.h"
 #include "SDL.h"
-#include "../Utility/FileHelpers.h"
+#include "../Utility/FileHelper.h"
 #include "../EventManager.h"
 
-namespace game {
-namespace entities {
+namespace game { namespace entities {
 
 using namespace events;
+using namespace utilities;
 
 const std::string Floor::name = "Floor";
 
@@ -27,7 +27,7 @@ void Floor::setup()
 {
 	// Create instances of all components for entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
-	spriteComponent->setImagePaths(state::IDLE, { utilities::resourceFolder + "grass.bmp" });
+	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "grass.bmp" });
     spriteComponent->setLayer(BACKGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
@@ -59,5 +59,4 @@ int Floor::getCurrentState() const
 	return currentState;
 }
 
-}
-}
+} }

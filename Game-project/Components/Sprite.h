@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "../Component.h"
-#include "../Utility/FileHelpers.h" // Access to image file paths
+#include "../Utility/FileHelper.h" // Access to image file paths
 #include "../Utility/AnimationSequence.h" // Every sprite has an AnimationSequence object to iterate through
 #include "../Window.h"
 #include "SDL.h" 
