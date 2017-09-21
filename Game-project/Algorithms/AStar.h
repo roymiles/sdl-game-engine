@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+namespace game { namespace algorithms {
+
 struct Node
 {
 	Node(int _x, int _y)
@@ -30,7 +32,7 @@ struct Node
 class AStar
 {
 public:
-	AStar(std::vector<std::vector<char>> _grid);
+	AStar(std::vector<std::vector<char>> _grid, int _resolution = 10);
 	~AStar();
 
 	bool calculate(int startX, int startY, int endX, int endY, std::vector<std::shared_ptr<Node>> &path);
@@ -53,6 +55,8 @@ public:
 private:
 	size_t MAX_X, MAX_Y;
 
+	int resolution;
+
 	std::shared_ptr<Node> startNode;
 	std::shared_ptr<Node> endNode;
 
@@ -64,4 +68,6 @@ private:
 
 	std::vector<std::vector<char>> grid;
 };
+
+} }
 

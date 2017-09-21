@@ -16,6 +16,7 @@
 #include "Events/RightKey.h"
 #include "Events/DownKey.h"
 #include "Events/LeftKey.h"
+#include "Events/MouseButtonUp.h"
 
 namespace game {
 
@@ -41,7 +42,7 @@ private:
 	std::shared_ptr<World> world;
 
 	// Calls onEvent for every entity registering to the triggered event
-	void triggerEvent(std::string eventName);
+	void triggerEvent(std::shared_ptr<Event> event_ptr);
 };
 
 }

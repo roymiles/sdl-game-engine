@@ -3,7 +3,7 @@
 #include "World.h"
 #include "Entity.h"
 #include "Components/RigidBody.h"
-#include "Window.h"
+#include "WindowManager.h"
 
 namespace game {
 
@@ -33,10 +33,16 @@ private:
 	//void updatePositions(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
+	 * Restrict entities to inside the level
+	 * Any temporary entities that exit the level, will need to be removed
+	 */
+	void boundToMap(std::map<std::string, entityPointer>& rigidBodies);
+
+	/*
 	 * Every object that goes outside of the screen will wrap round to the other side
 	 * This will need to be called inside the update() method
 	 */
-	//void boundToWindow(std::map<std::string, entityPointer>& rigidBodies);
+	void boundToWindow(std::map<std::string, entityPointer>& rigidBodies);
 
 	/*
 	 * Apply friction to the object, which slows it down

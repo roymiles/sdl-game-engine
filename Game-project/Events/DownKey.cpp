@@ -1,7 +1,6 @@
 #include "DownKey.h"
 
-namespace game {
-namespace events {
+namespace game { namespace events {
 
 const std::string DownKey::name = "DownKey";
 
@@ -18,5 +17,4 @@ const std::string DownKey::getName() const
 	return name;
 }
 
-}
-}
+} }

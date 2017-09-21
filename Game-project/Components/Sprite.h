@@ -6,7 +6,7 @@
 #include "../Component.h"
 #include "../Utility/FileHelper.h" // Access to image file paths
 #include "../Utility/AnimationSequence.h" // Every sprite has an AnimationSequence object to iterate through
-#include "../Window.h"
+#include "../WindowManager.h"
 #include "SDL.h" 
 
 namespace game { namespace components {
@@ -14,8 +14,20 @@ namespace game { namespace components {
 enum layers : int {
 	BACKGROUND = 0,
 	FOREGROUND = 1,
+	GUI		   = 2,
 
-	SIZE = 2 // Number of layers, used for looping
+	SIZE = 3 // Number of layers, used for looping
+};
+
+struct rgb {
+	rgb(int _red, int _green, int _blue)
+	{
+		red   = _red;
+		green = _green;
+		blue  = _blue;
+	}
+
+	int red, green, blue;
 };
 
 class Sprite : public Component
@@ -28,6 +40,9 @@ public:
 
 	// The unique name of the component
 	static const std::string name;
+
+	// rgb colour that is used to represent transparency
+	static const rgb* transparentColour;
 
 	const std::string getName() const override;
         

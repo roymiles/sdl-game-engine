@@ -10,6 +10,8 @@ namespace game {
 
 using namespace utilities;
 
+std::map<std::string, entityPointer> World::entityContainer = {};
+
 World::World()
 {
 }
@@ -30,7 +32,7 @@ std::vector<std::shared_ptr<Entity>> World::getEntitiesAtPoint(SDL_Point &point)
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	for (auto &entity : entityContainer)
 	{
-		if (entity.second->hasComponent("Transform"))
+		if (entity.second->hasComponent(Transform::name))
 		{
 			transformComponent = entity.second->getComponent<Transform>();
 
@@ -114,9 +116,12 @@ void World::setup()
 	std::shared_ptr<Box> box(new Box());
 	createEntity(box);
         
-	for (int x = 0; x < Window::WIDTH; x += 100)
+	std::shared_ptr<Button> button(new Button());
+	createEntity(button);
+
+	for (int x = 0; x < WindowManager::WIDTH; x += 100)
 	{
-		for (int y = 0; y < Window::HEIGHT; y += 100)
+		for (int y = 0; y < WindowManager::HEIGHT; y += 100)
 		{
 			std::shared_ptr<Floor> floor(new Floor(x, y));
 

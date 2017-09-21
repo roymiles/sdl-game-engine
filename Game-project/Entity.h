@@ -19,7 +19,7 @@ public:
 
 	virtual void setup() {}
 	virtual void update() {}
-	virtual void onEvent(std::string name) {}
+	virtual void onEvent(std::shared_ptr<Event> event_ptr) {}
 	virtual const std::string getName() const = 0;
 	virtual int getCurrentState() const { return -1; };
 

@@ -11,6 +11,8 @@
 #include "Entities/Character.h" 
 #include "Entities/Box.h"
 #include "Entities/Floor.h"
+#include "Entities/UI/Button.h"
+#include "Entities/UI/Block.h"
 
 namespace game {
 
@@ -28,7 +30,7 @@ public:
 	~World();
 
 	// Each entity is  identified by a unique string
-	std::map<std::string, entityPointer> entityContainer;
+	static std::map<std::string, entityPointer> entityContainer;
 
 	// Current game state
 	gameState currentGameState;
@@ -53,12 +55,12 @@ public:
 
 	// Get a list of all the entities that are within a given point x, y
 	// @param point - an SDL struct that simply contains the x, y data
-	std::vector<std::shared_ptr<Entity>> getEntitiesAtPoint(SDL_Point &point);
+	static std::vector<std::shared_ptr<Entity>> getEntitiesAtPoint(SDL_Point &point);
 
 	// Get the entity with the highest layer from a list of entities
 	// @param maxLayer - Cap the search to find only entities below a given layer
 	//					 For example, you may not care about anything higher than the FOREGROUND
-	std::shared_ptr<Entity> getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer);
+	static std::shared_ptr<Entity> getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer);
 
 	// Add an entity to the container and return the identifier
 	std::string createEntity(entityPointer entity);

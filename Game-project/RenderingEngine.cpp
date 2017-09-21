@@ -1,5 +1,5 @@
 #include "RenderingEngine.h"
-#include "Window.h"
+#include "WindowManager.h"
 
 namespace game {
 
@@ -22,7 +22,10 @@ void RenderingEngine::update()
 	//sort(drawableEntities);
 
 	// Clear the screen
-	SDL_RenderClear(Window::renderer);
+	SDL_RenderClear(WindowManager::renderer);
+
+	std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
+	std::shared_ptr<Transform> cameraTarget    = camera->getTarget()->getComponent<Transform>();
 
 	// Draw all entities for each layer in order
 	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
@@ -38,32 +41,39 @@ void RenderingEngine::update()
 			std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
 			SDL_Rect box = transform->getRect();
 
-			std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
-			std::shared_ptr<Transform> cameraTarget = camera->getTarget()->getComponent<Transform>();
 			// The sprites are offset by half the screen width and height, so that the character
 			// is in the centre of the screen
 
-			// All screen position are relative to the camera
-			box.x -= cameraTransform->getPosition().x;
-			box.y -= cameraTransform->getPosition().y;
-			// Make the target of the camera at the centre of the screen
-			box.x += Window::WIDTH / 2;
-			box.y += Window::HEIGHT / 2;
-			// Offset the camera by the width and height of the target
-			// This is because rectangle coordinates are specified by the top left corner rather than the centre
-			box.x -= cameraTarget->getWidth() / 2;
-			box.y -= cameraTarget->getHeight() / 2;
+			if (transform->getDisplayType() == _ABSOLUTE)
+			{
+				// ---- DRAW RELATIVE TO CAMERA ----
+				// All screen position are relative to the camera
+				box.x -= cameraTransform->getPosition().x;
+				box.y -= cameraTransform->getPosition().y;
+				// Make the target of the camera at the centre of the screen
+				box.x += WindowManager::WIDTH / 2;
+				box.y += WindowManager::HEIGHT / 2;
+				// Offset the camera by the width and height of the target
+				// This is because rectangle coordinates are specified by the top left corner rather than the centre
+				box.x -= cameraTarget->getWidth() / 2;
+				box.y -= cameraTarget->getHeight() / 2;
+			}
+			//else {
+				// ---- DRAW RELATIVE TO SCREEN ----
+				// Just keep x, y position of entity
+				// ... 
+			//}
 
 			std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
 
 			// copy the texture to the rendering context
-			SDL_RenderCopy(Window::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
+			SDL_RenderCopy(WindowManager::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
 		}
 	}
 
 	// Flip the backbuffer
 	// This means that everything that we prepared behind the screens is actually shown
-	SDL_RenderPresent(Window::renderer);
+	SDL_RenderPresent(WindowManager::renderer);
 }
 
 // Sort the container of entities according to their layer in ascending order

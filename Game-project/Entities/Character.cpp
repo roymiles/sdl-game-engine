@@ -8,6 +8,7 @@ namespace game { namespace entities {
 
 using namespace events;
 using namespace utilities;
+using namespace algorithms;
 
 const std::string Character::name = "Character"; 
 
@@ -22,25 +23,25 @@ Character::~Character()
 
 void Character::setup()
 {
+	//isFollowingPath = false;
 	// Register any events
 
 	// Create instances of all the components for this entity
 
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
-	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "mega-man.bmp" });
+	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "character.bmp" });
 	//spriteComponent->setImagePaths(state::MOVING, { utilities::resourceFolder + "mega-man-moving.bmp", utilities::resourceFolder + "mega-man.bmp" });
-	spriteComponent->setImagePaths(state::MOVING, { FileHelper::resourceFolder + "mega-man-moving.bmp" });
+	spriteComponent->setImagePaths(state::MOVING, { FileHelper::resourceFolder + "character.bmp" });
 	spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	// Drawn in the centre of the screen
 	// The rectangles are drawn on screen from the top left of the image
 	// To ensure the character is exactly in the middle, the character needs to be offset by its height and width
-	transformComponent->setDimensions(Window::WIDTH/2, Window::HEIGHT/2, 100, 100);
+	transformComponent->setDimensions(WindowManager::WIDTH/2, WindowManager::HEIGHT/2, 100, 100);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
-	// HACK: Character should not have infinite mass, remember to change the physics engine accordingly
-	rigidBodyComponent->mass = -1; // Infinite mass
+	rigidBodyComponent->mass = 0;
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);
@@ -60,6 +61,9 @@ void Character::setup()
 	registerEvent(downKeyEvent);
 	registerEvent(leftKeyEvent);
 
+	std::shared_ptr<MouseButtonUp>  mouseButtonUpEvent(new MouseButtonUp());
+	registerEvent(mouseButtonUpEvent);
+
 	// Call the setup function for all the components
 	for (auto &component : components)
 	{
@@ -69,17 +73,50 @@ void Character::setup()
 
 void Character::update()
 {
+	if (isFollowingPath)
+	{
+		if (pathIndex == path.size())
+		{
+			isFollowingPath = false;
+			return;
+		}
 
+		std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
+		Vec2d position = transformComponent->getPosition();
+		int width = transformComponent->getWidth();
+		int height = transformComponent->getHeight();
+
+		int curMove = path[pathIndex];
+		switch (curMove) {
+			case UP:
+				transformComponent->setDimensions(position.x, position.y - PathFinding::resolution, height, width);
+				break;
+			case RIGHT:
+				transformComponent->setDimensions(position.x + PathFinding::resolution, position.y, height, width);
+				break;
+			case DOWN:
+				transformComponent->setDimensions(position.x, position.y + PathFinding::resolution, height, width);
+				break;
+			case LEFT:
+				transformComponent->setDimensions(position.x - PathFinding::resolution, position.y, height, width);
+				break;
+		}
+
+		pathIndex++; // Move onto next movement
+	}
 }
 
-void Character::onEvent(std::string key)
+void Character::onEvent(std::shared_ptr<Event> event_ptr)
 {
-	std::cout << key << " event triggered for " << getName() << std::endl;
+	//std::cout << event_ptr->getName() << " event triggered for " << getName() << std::endl;
 
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
 	Vec2d position = transformComponent->getPosition();
     int width = transformComponent->getWidth();
     int height = transformComponent->getHeight();
+
+	// key is the name of the current event that has been triggered
+	std::string key = event_ptr->getName();
 
 	// Remember the coordinate (0,0) starts at the top left. This means that the +ve
 	// y axis will be downwards, not upwards
@@ -101,6 +138,16 @@ void Character::onEvent(std::string key)
 	}
 	else if (KeyUp::name == key) {
 		currentState = state::IDLE;
+	}
+	else if (MouseButtonUp::name == key) {
+		std::shared_ptr<MouseButtonUp> mouseButtonUp = std::static_pointer_cast<MouseButtonUp>(event_ptr);
+		std::cout << "Released mouse at " << mouseButtonUp->getX() << ", " << mouseButtonUp->getY() << std::endl;
+		std::cout << "Currently at " << transformComponent->getX() << ", " << transformComponent->getY() << std::endl;
+		std::vector<moves> moveList = PathFinding::astar(transformComponent->getX(), transformComponent->getY(), mouseButtonUp->getX(), mouseButtonUp->getY());
+
+		isFollowingPath = true;
+		pathIndex		= 0;
+		path			= moveList;
 	}
 }
 

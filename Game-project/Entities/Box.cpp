@@ -25,7 +25,7 @@ void Box::setup()
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
-	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "hi.bmp" });
+	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "empty.bmp" });
     spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());

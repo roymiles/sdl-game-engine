@@ -25,3 +25,5 @@ Game-project/Dependancies/Boost/boost/
 .dep.inc
 Makefile
 nbproject/
+Game-project/Dependancies/nanogui/
+Game-project/Dependancies/imgui/

@@ -1,15 +1,19 @@
 #include "PathFinding.h"
 #include "../World.h"
 #include "../Entity.h"
-#include "../Window.h"
+#include "../WindowManager.h"
+#include "../LevelManager.h"
 #include "../Maths/Vec2.h"
 #include "AStar.h"
 
 namespace game { namespace algorithms {
 
-PathFinding::PathFinding(std::shared_ptr<World> _world)
+// Initialise navMesh and resolution
+grid2D_t PathFinding::navMesh = {};
+int PathFinding::resolution   = 1;
+
+PathFinding::PathFinding()
 {
-	world = _world;
 }
 
 
@@ -23,62 +27,84 @@ PathFinding::~PathFinding()
  * This function is very slow and computes the navigation mesh for the current level
  * This will need to be pre-computed for every level to reduce runtime computation
  */
-std::vector<std::vector<char>> PathFinding::createNavMesh(int resolution)
-{
+grid2D_t PathFinding::createNavMesh(int _resolution)
+{	 
 	// Currently only generate a screen sized nav mesh
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	SDL_Point point;
 
-	int width = Window::WIDTH / resolution;
-	int height = Window::HEIGHT / resolution;
+	int width  = LevelManager::WIDTH;
+	int height = LevelManager::HEIGHT;
 
 	// Resize the matrix to the width and height of the map
 	// It is good practice to resize a vector before rather than using push_back
-	std::vector<std::vector<char>> navMesh;
-	navMesh.resize(width);
+	grid2D_t navMesh;
+	navMesh.resize(width / _resolution);
 	for (auto &y : navMesh)
 	{
-		y.resize(height);
+		y.resize(height / _resolution);
 	}
 
 	std::shared_ptr<Entity> entity;
-	for (int x = 0; x < width; x++)
+	// Incrementers for the array indices
+	int x, x_i, y, y_i;
+	for (x = 0, x_i = 0; x < width; x += _resolution)
 	{
-		for (int y = 0; y < height; y++)
+		for (y = 0, y_i = 0; y < height; y += _resolution)
 		{
-			point.x = x * resolution;
-			point.y = y * resolution;
-			entitiesAtPoint = world->getEntitiesAtPoint(point);
+			point.x = x;
+			point.y = y;
+			entitiesAtPoint = World::getEntitiesAtPoint(point);
+
+			// If there is no entity at this point, then assume its walkable
+			if (entitiesAtPoint.empty()) {
+				navMesh[x_i][y_i] = '0';
+				continue; // Move onto next x, y coordinate
+			}
 
 			// Of these entities at point x,y get the one on the highest layer
 			// Need to do this because obstacles are on a layer above the background
-			entity = world->getHighestLayerEntity(entitiesAtPoint, layers::FOREGROUND);
+			entity = World::getHighestLayerEntity(entitiesAtPoint, layers::FOREGROUND);
 
 			// If the top layer entity has a rigid body component, then it is unwalkable
-			if (entity->hasComponent("RigidBody"))
+			if (entity->hasComponent(RigidBody::name))
 			{
-				navMesh[x][y] = 'X';
+				navMesh[x_i][y_i] = 'X';
 			}
 			else {
-				navMesh[x][y] = '0';
+				navMesh[x_i][y_i] = '0';
 			}
 
+			y_i++;
 		}
+
+		x_i++;
 	}
 
+
 	return navMesh;
+}
+
+void PathFinding::setCurrentNavMesh(grid2D_t _navMesh)
+{
+	PathFinding::navMesh = _navMesh;
+}
+
+void PathFinding::setResolution(int _resolution)
+{
+	PathFinding::resolution = _resolution;
 }
 
 /*
  * Calculate the path from A to B avoiding obstacles U
  */
-std::vector<moves> PathFinding::astar(std::vector<std::vector<char>> grid)
+std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY)
 {
 	// A*
-	AStar *a = new AStar(grid);
+	AStar *aStar = new AStar(PathFinding::navMesh, PathFinding::resolution);
 
 	std::vector<std::shared_ptr<Node>> path;
-	a->calculate(0, 0, 10, 10, path);
+	aStar->calculate(startX, startY, endX, endY, path);
 
 	std::vector<moves> moveList;
 	moveList.resize(path.size());
@@ -89,23 +115,23 @@ std::vector<moves> PathFinding::astar(std::vector<std::vector<char>> grid)
 			prevState = path[i];
 		}
 		else {
-			if (path[i]->x == prevState->x + 1)
+			if (path[i]->x == prevState->x + PathFinding::resolution)
 			{
 				// Moved right
 				moveList[i] = moves::RIGHT;
 			}
-			else if (path[i]->x == prevState->x - 1) 
+			else if (path[i]->x == prevState->x - PathFinding::resolution)
 			{
 				// Moved left
 				moveList[i] = moves::LEFT;
 			}
 			// Increasing y-axis is downward, this is because (0,0) is the top left of the screen
-			else if (path[i]->y == prevState->y + 1)
+			else if (path[i]->y == prevState->y + PathFinding::resolution)
 			{
 				// Moved down
 				moveList[i] = moves::DOWN;
 			}
-			else if (path[i]->y == prevState->y - 1)
+			else if (path[i]->y == prevState->y - PathFinding::resolution)
 			{
 				// Moved up
 				moveList[i] = moves::UP;

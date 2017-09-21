@@ -73,4 +73,24 @@ SDL_Rect Transform::getRect()
 	return r;
 }
 
+int Transform::getX() const
+{
+	return position.x;
+}
+
+int Transform::getY() const
+{
+	return position.y;
+}
+
+display Transform::getDisplayType() const
+{
+	return displayType;
+}
+
+void Transform::setDisplayType(const display _displayType)
+{
+	displayType = _displayType;
+}
+
 } }

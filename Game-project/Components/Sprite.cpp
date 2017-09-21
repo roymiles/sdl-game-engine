@@ -1,11 +1,13 @@
 #include "Sprite.h"
-#include "../Window.h"
+#include "../WindowManager.h"
 
 #include <string>
 
 namespace game { namespace components {
 
 const std::string Sprite::name = "Sprite";
+
+const rgb* Sprite::transparentColour = new rgb(108, 61, 182);
 
 Sprite::Sprite(int num_states)
 {
@@ -44,7 +46,7 @@ SDL_Surface* Sprite::loadImage(std::string filename) {
 		return NULL;
 	}
 	else {
-		if (SDL_SetColorKey(tmp, SDL_RLEACCEL, SDL_MapRGB(tmp->format, 255, 255, 255)) == -1)
+		if (SDL_SetColorKey(tmp, SDL_RLEACCEL, SDL_MapRGB(tmp->format, transparentColour->red, transparentColour->green, transparentColour->blue)) == -1)
 			fprintf(stderr, "Warning: colorkey will not be used, reason: %s\n", SDL_GetError());
 	}
 
@@ -65,7 +67,7 @@ void Sprite::setup()
 		for (int j = 0; j < imagePaths[i].size(); j++)
 		{
 			SDL_Surface* imageSurface = loadImage(imagePaths[i][j]);
-			textures[j] = SDL_CreateTextureFromSurface(Window::renderer, imageSurface);
+			textures[j] = SDL_CreateTextureFromSurface(WindowManager::renderer, imageSurface);
 
 			if (textures[j] == NULL)
 			{

@@ -1,33 +1,40 @@
 #pragma once
 
-#include "../World.h"
-
 #include <vector>
 #include <memory>
 
 namespace game { namespace algorithms {
 
-enum moves {
+enum moves : int {
 	UP,
 	DOWN,
 	LEFT,
 	RIGHT
 };
 
+typedef std::vector<std::vector<char>> grid2D_t;
+
 class PathFinding
 {
 public:
-	PathFinding(std::shared_ptr<World> _world);
+	PathFinding();
 	~PathFinding();
 
-	std::vector<std::vector<char>> createNavMesh(int resolution = 5);
+	/* 
+	 * Create navigation mesh for the entire level
+	 */
+	grid2D_t createNavMesh(int _resolution = 5);
 
-	std::vector<std::vector<int>> navMesh;
+	static void setCurrentNavMesh(grid2D_t _navMesh);
+	static void setResolution(int _resolution);
 
-	std::vector<moves> astar(std::vector<std::vector<char>> map);
+	static int resolution;
+	static grid2D_t navMesh;
+
+	// Uses current navMesh
+	static std::vector<moves> astar(int startX, int startY, int endX, int endY);
 
 private:
-	std::shared_ptr<World> world;
 };
 
 } }

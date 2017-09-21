@@ -3,17 +3,24 @@
 #include <algorithm>
 #include <iostream>
 
-#define DEBUG_ASTAR
+#include "../Utility/Common.h"
 
-AStar::AStar(std::vector<std::vector<char>> _grid)
+namespace game { namespace algorithms {
+
+using namespace utilities;
+
+//#define DEBUG_ASTAR
+
+AStar::AStar(std::vector<std::vector<char>> _grid, int _resolution)
 {
-	grid = _grid;
+	grid		= _grid;
+	resolution	= _resolution;
 
-	MAX_X = _grid.size();
-	MAX_Y = _grid[0].size();
+	MAX_X = _grid.size() * _resolution;
+	MAX_Y = _grid[0].size() * _resolution;
 
-	closedSet.reserve(MAX_X * MAX_Y);
-	openSet.reserve(MAX_X * MAX_Y);
+	closedSet.reserve(_grid.size() * _grid[0].size());
+	openSet.reserve(_grid.size() * _grid[0].size());
 }
 
 AStar::~AStar()
@@ -22,8 +29,21 @@ AStar::~AStar()
 
 bool AStar::calculate(int startX, int startY, int endX, int endY, std::vector<std::shared_ptr<Node>> &path)
 {
+	// Perhaps these should round down?
+	startX = roundUp(startX, resolution);
+	startY = roundUp(startY, resolution);
+	endX   = roundUp(endX, resolution);
+	endY   = roundUp(endY, resolution);
+
+	// Check if start and end coordinates are inside the grid
+	// Double check conditions
+	//if (!(startX > 0 && startX < MAX_X && startY > 0 && startY < MAX_Y &&
+	//	endX > 0 && endX < MAX_X && endY > 0 && endY < MAX_Y)) {
+	//	return false;
+	//}
+
 	startNode = std::shared_ptr<Node>(new Node(startX, startY));
-	endNode = std::shared_ptr<Node>(new Node(endX, endY));
+	endNode   = std::shared_ptr<Node>(new Node(endX, endY));
 
 	openSet.push_back(startNode);
 	// Closed set is empty
@@ -101,7 +121,7 @@ int AStar::heuristic(std::shared_ptr<Node> &start, std::shared_ptr<Node> &end)
 
 void AStar::removeNode(std::shared_ptr<Node> &_node)
 {
-	for (auto node = openSet.begin(); node != openSet.end(); ++node) 
+	for (auto node = openSet.begin(); node != openSet.end(); ++node)
 	{
 		if (_node->x == (*node)->x && _node->y == (*node)->y)
 		{
@@ -120,27 +140,32 @@ std::vector<std::shared_ptr<Node>> AStar::getNeighbours(std::shared_ptr<Node> &_
 	x = _node->x;
 	y = _node->y;
 
+	// indices are the x, y coordinates divided by the resolution
+	int x_i, y_i;
+	x_i = x / resolution;
+	y_i = y / resolution;
+
 	if (x < MAX_X) {
-		if (grid[x + 1][y] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x + 1, y)));
+		if (grid[x_i + 1][y_i] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x + resolution, y)));
 		}
 	}
 
 	if (x > 0) {
-		if (grid[x - 1][y] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x - 1, y)));
+		if (grid[x_i - 1][y_i] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x - resolution, y)));
 		}
 	}
 
 	if (y < MAX_Y) {
-		if (grid[x][y + 1] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x, y + 1)));
+		if (grid[x_i][y_i + 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x, y + resolution)));
 		}
 	}
 
 	if (y > 0) {
-		if (grid[x][y - 1] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x, y - 1)));
+		if (grid[x_i][y_i - 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x, y - resolution)));
 		}
 	}
 
@@ -192,7 +217,7 @@ bool AStar::inOpenList(int x, int y)
 
 std::shared_ptr<Node> AStar::getNodeInOpenList(int x, int y)
 {
-	for(int i = 0; i < openSet.size(); i++)
+	for (int i = 0; i < openSet.size(); i++)
 	{
 		if (x == openSet[i]->x && y == openSet[i]->y)
 		{
@@ -228,3 +253,5 @@ std::vector<std::shared_ptr<Node>> AStar::constructPath(std::shared_ptr<Node> &_
 	std::reverse(path.begin(), path.end());
 	return path;
 }
+
+} }

@@ -9,14 +9,18 @@
 #include <memory>
 
 #include "SDL.h"
+#include "SDL_opengl.h"
+#include "Dependancies/imgui/imgui.h"
+#include "Dependancies/imgui/imgui_impl_sdl.h"
 
-#include "Window.h"
+#include "WindowManager.h"
 #include "World.h"
 #include "EventManager.h"
 #include "PhysicsEngine.h"
 #include "RenderingEngine.h"
 #include "Algorithms/PathFinding.h" // TEMPORARY
 #include "Utility/FileHelper.h" // TEMPORARY
+#include "LevelManager.h" // TEMPORARY
 
 #include "Entities/Character.h"
 
@@ -29,24 +33,56 @@ const int fps = 40;
 const int minframetime = 1000 / fps;
 
 int main(int argc, char * argv[]) {
-    
-	std::shared_ptr<Window> window(new Window());
-    if(!window->init()){
+
+	// Setup window
+	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	//SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	//SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	//SDL_DisplayMode current;
+	//SDL_GetCurrentDisplayMode(0, &current);
+
+	std::shared_ptr<WindowManager> windowManager(new WindowManager());
+	if (!windowManager->init()) {
 		std::cout << "Failed to initialize!" << std::endl;
 		return EXIT_FAILURE;
-    }
-        
+	}
+
+	// Setup ImGui binding
+	ImGui_ImplSdlGL2_Init(windowManager->window);
+
 	// Manages all the entities
-	std::shared_ptr<World> world(new World());
+	std::shared_ptr<game::World> world(new World());
 
 	// Call setup on all entities
 	world->setup();
 
 	// TEMPORARY
-	std::shared_ptr<PathFinding> p(new PathFinding(world));
-	std::vector<std::vector<char>> navMesh = p->createNavMesh(10);
-	FileHelper::writeMatrixToFile<char>(navMesh);
-	std::vector<moves> moveList = p->astar(navMesh);
+	std::shared_ptr<PathFinding> pathFinding(new PathFinding());
+
+	if (FileHelper::fileExists("navMesh.txt")) {
+		// Use the previously made nav mesh
+		std::vector<std::vector<char>> navMesh;
+		FileHelper::readMatrixFromFile<char>(navMesh, "navMesh.txt");
+
+		pathFinding->setCurrentNavMesh(navMesh);
+
+		// Calculate the resolution by comparing the level dimensions with the matrix
+		// Mat.size = Level::width / resolution.x -> resolution.x = Level::width / Mat.size 
+		int resolution = LevelManager::WIDTH / (int)navMesh.size();
+		pathFinding->setResolution(resolution);
+	}
+	else {
+		// Create the nav mesh
+		int resolution = 10;
+		std::vector<std::vector<char>> navMesh = pathFinding->createNavMesh(resolution);
+		pathFinding->setCurrentNavMesh(navMesh);
+		pathFinding->setResolution(resolution);
+
+		// Save nav mesh to file
+		FileHelper::writeMatrixToFile<char>(navMesh, "navMesh.txt");
+	}
 
 	// Handles any event that occurs in app
 	SDL_Event window_event;
@@ -60,6 +96,10 @@ int main(int argc, char * argv[]) {
 	
 	unsigned int frametime;
 
+	bool show_test_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImColor(114, 144, 154);
+
     while (true) {
 		frametime = SDL_GetTicks();
 
@@ -67,6 +107,27 @@ int main(int argc, char * argv[]) {
 #pragma message("Double check update() order")
 		// Handle inputs
 		eventManager->update(&window_event);
+
+		//ImGui_ImplSdlGL2_NewFrame(windowManager->window);
+		//// 1. Show a simple window
+		//// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+		//{
+		//	static float f = 0.0f;
+		//	ImGui::Text("Hello, world!");
+		//	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		//	ImGui::ColorEdit3("clear color", (float*)&clear_color);
+		//	if (ImGui::Button("Test Window")) show_test_window ^= 1;
+		//	if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		//}
+
+		// 2. Show another simple window, this time using an explicit Begin/End pair
+		if (show_another_window)
+		{
+			ImGui::Begin("Another Window", &show_another_window);
+			ImGui::Text("Hello from another window!");
+			ImGui::End();
+		}
 
 		// Physics Engine
 		physicsEngine->update();
@@ -77,6 +138,14 @@ int main(int argc, char * argv[]) {
 		// Render
 		renderingEngine->update();
 
+		// Rendering
+		//glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
+		//glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		////glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
+		//ImGui::Render();
+		//SDL_GL_SwapWindow(windowManager->window);
+
 		// Wait until the next frame
 		// This ensures the game runs at the same
 		// speed on all computers
@@ -86,7 +155,7 @@ int main(int argc, char * argv[]) {
     }
     
 	// Delete renderer, window
-    window->close();
+	windowManager->close();
     
     return EXIT_SUCCESS;
 }

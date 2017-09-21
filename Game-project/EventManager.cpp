@@ -20,31 +20,59 @@ void EventManager::update(SDL_Event* window_event)
 	if (SDL_PollEvent(window_event)) {
         switch (window_event->type) {
 			/* Keyboard event */
-            case SDL_KEYDOWN:
-                triggerEvent(KeyDown::name);
+			case SDL_KEYDOWN :
+			{
+				std::shared_ptr<KeyDown> keyDown(new KeyDown());
+				triggerEvent(keyDown);
 
 				/* Check the SDLKey values to see what key is pressed */
 				switch (window_event->key.keysym.sym) {
 					case SDLK_LEFT:
-						triggerEvent(LeftKey::name);
+					{
+						std::shared_ptr<LeftKey> leftKey(new LeftKey());
+						triggerEvent(leftKey);
 						break;
+					}
 					case SDLK_RIGHT:
-						triggerEvent(RightKey::name);
+					{
+						std::shared_ptr<RightKey> rightKey(new RightKey());
+						triggerEvent(rightKey);
 						break;
+					}
 					case SDLK_UP:
-						triggerEvent(UpKey::name);
+					{
+						std::shared_ptr<UpKey> upKey(new UpKey());
+						triggerEvent(upKey);
 						break;
+					}
 					case SDLK_DOWN:
-						triggerEvent(DownKey::name);
+					{
+						std::shared_ptr<DownKey> downKey(new DownKey());
+						triggerEvent(downKey);
 						break;
+					}
 					default:
 						break;
 				}
-                break;
-			case SDL_KEYUP:
-				triggerEvent(KeyUp::name);
 				break;
+			}
+			case SDL_KEYUP:
+			{
+				std::shared_ptr<KeyUp> keyUp(new KeyUp());
+				triggerEvent(keyUp);
+				break;
+			}
 
+			case SDL_MOUSEBUTTONUP:
+			{
+				//Get mouse position
+				std::cout << "mouse up" << std::endl;
+				int x, y;
+				SDL_GetMouseState(&x, &y);
+				std::shared_ptr<MouseButtonUp> mouseButtonUp(new MouseButtonUp(x, y));
+				triggerEvent(mouseButtonUp);
+				break;
+			}
 			default:
 				break;
 		}
@@ -56,13 +84,14 @@ void EventManager::update(SDL_Event* window_event)
 // Trigger an event
 // Loops through all the entities and checks if the entity has registered
 // for the event, if so it will call onEvent for the entity to handle accordingly
-void EventManager::triggerEvent(std::string eventName)
+//void EventManager::triggerEvent(std::string eventName)
+void EventManager::triggerEvent(std::shared_ptr<Event> event_ptr)
 {
 	for (auto &entity : world->entityContainer)
 	{
 		// Check if this entity has registered for this event
-		if (entity.second->hasRegisteredEvent(eventName)) {
-			entity.second->onEvent(eventName);
+		if (entity.second->hasRegisteredEvent(event_ptr->getName())) {
+			entity.second->onEvent(event_ptr);
 		}
 	}
 }

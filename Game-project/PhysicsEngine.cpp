@@ -2,6 +2,7 @@
 
 #include "PhysicsEngine.h"
 #include "EventManager.h" // For triggerEvent
+#include "LevelManager.h" // boundToMap
 
 namespace game {
 
@@ -21,6 +22,7 @@ void PhysicsEngine::update()
 	std::map<std::string, entityPointer> rigidBodies;
 	rigidBodies = world->getEntitiesWithComponent(RigidBody::name);
 
+	boundToMap(rigidBodies);
 	//updatePositions(rigidBodies);
 	//boundToWindow(rigidBodies);
 	//applyFriction(rigidBodies);
@@ -49,39 +51,75 @@ void PhysicsEngine::update()
 //	}
 //}
 //
-//void PhysicsEngine::boundToWindow(std::map<std::string, entityPointer>& rigidBodies)
-//{
-//	for (auto &A : rigidBodies)
-//	{
-//		std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
-//		Vec2d position = transformComponent->getPosition();
-//		// x-axis
-//		if (position.x > Window::WIDTH)
-//		{
-//			// Right hand side of the screen
-//			position.x = 0;
-//		}
-//		else if (position.x + transformComponent->getWidth() < 0)
-//		{
-//			// Left hand side of the screen
-//			position.x = Window::WIDTH;
-//		}
-//
-//		// y-axis
-//		if (position.y > Window::HEIGHT)
-//		{
-//			// Bottom of screen
-//			position.y = 0;
-//		}
-//		else if (position.y + transformComponent->getHeight() < 0)
-//		{
-//			// Top of screen
-//			position.y = Window::HEIGHT;
-//		}
-//
-//		transformComponent->setPosition(position.x, position.y);
-//	}
-//}
+
+void PhysicsEngine::boundToMap(std::map<std::string, entityPointer>& rigidBodies)
+{
+	for (auto &A : rigidBodies)
+	{
+		std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
+		Vec2d position = transformComponent->getPosition();
+		// x-axis
+		if (position.x > LevelManager::WIDTH)
+		{
+			// Right hand side of the map
+			position.x = LevelManager::WIDTH;
+		}
+		else if (position.x + transformComponent->getWidth() < 0)
+		{
+			// Left hand side of the map
+			position.x = 0;
+		}
+
+		// y-axis
+		if (position.y > LevelManager::HEIGHT)
+		{
+			// Bottom of screen
+			position.y = LevelManager::HEIGHT;
+		}
+		else if (position.y + transformComponent->getHeight() < 0)
+		{
+			// Top of screen
+			position.y = 0;
+		}
+
+		transformComponent->setPosition(position.x, position.y);
+	}
+}
+
+void PhysicsEngine::boundToWindow(std::map<std::string, entityPointer>& rigidBodies)
+{
+	for (auto &A : rigidBodies)
+	{
+		std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
+		Vec2d position = transformComponent->getPosition();
+		// x-axis
+		if (position.x > WindowManager::WIDTH)
+		{
+			// Right hand side of the screen
+			position.x = 0;
+		}
+		else if (position.x + transformComponent->getWidth() < 0)
+		{
+			// Left hand side of the screen
+			position.x = WindowManager::WIDTH;
+		}
+
+		// y-axis
+		if (position.y > WindowManager::HEIGHT)
+		{
+			// Bottom of screen
+			position.y = 0;
+		}
+		else if (position.y + transformComponent->getHeight() < 0)
+		{
+			// Top of screen
+			position.y = WindowManager::HEIGHT;
+		}
+
+		transformComponent->setPosition(position.x, position.y);
+	}
+}
+
 //
 //void PhysicsEngine::applyFriction(std::map<std::string, entityPointer>& rigidBodies)
 //{
