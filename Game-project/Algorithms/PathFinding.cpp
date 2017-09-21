@@ -27,8 +27,15 @@ PathFinding::~PathFinding()
  * This function is very slow and computes the navigation mesh for the current level
  * This will need to be pre-computed for every level to reduce runtime computation
  */
+<<<<<<< HEAD
 grid2D_t PathFinding::createNavMesh(int _resolution)
 {	 
+=======
+std::vector<std::vector<char>> PathFinding::createNavMesh(int resolution)
+{
+
+	
+>>>>>>> d94245c4856709fa4ae294789975292bfe5d9d24
 	// Currently only generate a screen sized nav mesh
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	SDL_Point point;
@@ -45,10 +52,15 @@ grid2D_t PathFinding::createNavMesh(int _resolution)
 		y.resize(height / _resolution);
 	}
 
+<<<<<<< HEAD
 	std::shared_ptr<Entity> entity;
 	// Incrementers for the array indices
 	int x, x_i, y, y_i;
 	for (x = 0, x_i = 0; x < width; x += _resolution)
+=======
+	//std::shared_ptr<Entity> entity;
+	for (int x = 0; x < width; x++)
+>>>>>>> d94245c4856709fa4ae294789975292bfe5d9d24
 	{
 		for (y = 0, y_i = 0; y < height; y += _resolution)
 		{
@@ -64,8 +76,21 @@ grid2D_t PathFinding::createNavMesh(int _resolution)
 
 			// Of these entities at point x,y get the one on the highest layer
 			// Need to do this because obstacles are on a layer above the background
+<<<<<<< HEAD
 			entity = World::getHighestLayerEntity(entitiesAtPoint, layers::FOREGROUND);
 
+=======
+			// entity = world->getHighestLayerEntity(entitiesAtPoint, layers::FOREGROUND);
+			std::shared_ptr<Entity> entity =  std::make_unique<Entity>(
+			    &(* // Dereference the iterator
+			      	std::max_element(entitiesAtPoint.begin(), entitiesAtPoint.end(),
+			    	[]( const entitiesAtPoint &a, const entitiesAtPoint &b )
+			    	{
+					return a->getComponent<Sprite>()->getLayer() < b->getComponent<Sprite>()->getLayer();
+			    	})
+			     )
+			); 
+>>>>>>> d94245c4856709fa4ae294789975292bfe5d9d24
 			// If the top layer entity has a rigid body component, then it is unwalkable
 			if (entity->hasComponent(RigidBody::name))
 			{
