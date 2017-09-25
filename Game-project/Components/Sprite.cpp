@@ -1,9 +1,12 @@
 #include "Sprite.h"
 #include "../WindowManager.h"
+#include "../Utility/FileHelper.h"
 
 #include <string>
 
 namespace game { namespace components {
+
+using namespace utilities;
 
 const std::string Sprite::name = "Sprite";
 
@@ -71,7 +74,10 @@ void Sprite::setup()
 
 			if (textures[j] == NULL)
 			{
-				//image = SDL_LoadBMP("question_mark.bmp");
+				// Load empty image
+				SDL_Surface* imageSurface = loadImage(FileHelper::resourceFolder + "empty.bmp");
+				textures[j] = SDL_CreateTextureFromSurface(WindowManager::renderer, imageSurface);
+
 				printf("Unable to load image %s! SDL Error: %s\n", imagePaths[i][j].c_str(), SDL_GetError());
 			}
 		}

@@ -250,7 +250,7 @@ std::vector<std::shared_ptr<Node>> AStar::constructPath(std::shared_ptr<Node> &_
 #endif
 
 	// Flip the vector so its start->end rather than end->start
-	std::reverse(path.begin(), path.end());
+	// std::reverse(path.begin(), path.end());
 	return path;
 }
 

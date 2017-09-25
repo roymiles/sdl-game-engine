@@ -6,6 +6,8 @@
 #include "../Maths/Vec2.h"
 #include "AStar.h"
 
+#define DEBUG_PATHFINDING 1
+
 namespace game { namespace algorithms {
 
 // Initialise navMesh and resolution
@@ -103,44 +105,66 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 	AStar *aStar = new AStar(PathFinding::navMesh, PathFinding::resolution);
 
 	std::vector<std::shared_ptr<Node>> path;
-	aStar->calculate(startX, startY, endX, endY, path);
+	//aStar->calculate(startX, startY, endX, endY, path);
+	aStar->calculate(endX, endY, startX, startY, path);
 
 	std::vector<moves> moveList;
 	moveList.resize(path.size());
 	std::shared_ptr<Node> prevState;
+
+#ifdef DEBUG_PATHFINDING
+	SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+#endif
+
 	for(int i = 0; i < path.size(); i++)
 	{
 		if (i == 0) {
 			prevState = path[i];
 		}
 		else {
+#ifdef DEBUG_PATHFINDING
+			std::cout << "(" << prevState->x << ", " << prevState->y << ") -> (" << path[i]->x << ", " << path[i]->y << ") = ";
+			SDL_RenderDrawLine(WindowManager::renderer, prevState->x, prevState->y, path[i]->x, path[i]->y);
+#endif
 			if (path[i]->x == prevState->x + PathFinding::resolution)
 			{
 				// Moved right
+				std::cout << "RIGHT";
 				moveList[i] = moves::RIGHT;
 			}
 			else if (path[i]->x == prevState->x - PathFinding::resolution)
 			{
 				// Moved left
+				std::cout << "LEFT";
 				moveList[i] = moves::LEFT;
 			}
 			// Increasing y-axis is downward, this is because (0,0) is the top left of the screen
 			else if (path[i]->y == prevState->y + PathFinding::resolution)
 			{
 				// Moved down
+				std::cout << "DOWN";
 				moveList[i] = moves::DOWN;
 			}
 			else if (path[i]->y == prevState->y - PathFinding::resolution)
 			{
 				// Moved up
+				std::cout << "UP";
 				moveList[i] = moves::UP;
 			} 
 			else
 			{
-				std::cout << "Unknown link between nodes in path" << std::endl;
+				std::cout << "X";
+				//std::cout << "Unknown link between nodes in path" << std::endl;
 			}
+
+			prevState = path[i];
+			std::cout << std::endl;
 		}
 	}
+
+#ifdef DEBUG_PATHFINDING
+	SDL_RenderPresent(WindowManager::renderer);
+#endif
 	return moveList;
 }
 

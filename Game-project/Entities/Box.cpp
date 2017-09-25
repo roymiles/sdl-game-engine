@@ -2,7 +2,6 @@
 
 #include "Box.h"
 #include "SDL.h"
-#include "../Utility/FileHelper.h"
 #include "../EventManager.h"
 
 namespace game { namespace entities {
@@ -16,6 +15,10 @@ Box::Box()
 {
 }
 
+Box::Box(std::vector<std::string> _idleImagePaths)
+{
+	idleImagePaths = _idleImagePaths;
+}
 
 Box::~Box()
 {
@@ -25,7 +28,7 @@ void Box::setup()
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
-	spriteComponent->setImagePaths(state::IDLE, { FileHelper::resourceFolder + "empty.bmp" });
+	spriteComponent->setImagePaths(state::IDLE, idleImagePaths);
     spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());

@@ -4,15 +4,18 @@
 #include "../Components/Sprite.h"
 #include "../Components/Transform.h"
 #include "../Components/RigidBody.h"
+#include "../Utility/FileHelper.h"
 
 namespace game { namespace entities {
 
 using namespace components;
+using namespace utilities;
 
 class Box : public Entity
 {
 public:
 	Box();
+	Box(std::vector<std::string> _idleImagePaths);
 	~Box();
 
 	void setup() override;
@@ -20,10 +23,14 @@ public:
 	const std::string getName() const override;
 	int getCurrentState() const override;
 
+	const enum state : int { IDLE, SIZE = 1 };
+
 private:
 	static const std::string name;
 
-	const enum state : int { IDLE, SIZE=1 };
+	// Default sprite images are empty
+	std::vector<std::string> idleImagePaths = { FileHelper::resourceFolder + "empty.bmp" };
+
 	state currentState;
 };
 

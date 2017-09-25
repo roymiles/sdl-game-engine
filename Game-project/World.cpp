@@ -113,11 +113,23 @@ void World::setup()
 	std::shared_ptr<Camera> camera(new Camera(character));
 	createEntity(camera);
 
-	std::shared_ptr<Box> box(new Box());
+	std::shared_ptr<Box> box(new Box({ FileHelper::resourceFolder + "crate.bmp" }));
 	createEntity(box);
         
+	// UI elements
 	std::shared_ptr<Button> button(new Button());
 	createEntity(button);
+
+	for (int x = 0; x < WindowManager::WIDTH; x += 10)
+	{
+		std::shared_ptr<Block> block(new Block(x, WindowManager::HEIGHT));
+
+		// Use x key as opposed to a random string
+		std::stringstream ss;
+		ss << x;
+
+		createEntity(block, ss.str());
+	}
 
 	for (int x = 0; x < WindowManager::WIDTH; x += 100)
 	{
@@ -141,6 +153,9 @@ void World::setup()
 		// setup on each of their components
 		entity.second->setup();
 	}
+
+	// Override default parameters
+	// box->getComponent<Sprite>()->setImagePaths(box->IDLE, { FileHelper::resourceFolder + "box.bmp" });
 }
 
 void World::update()
