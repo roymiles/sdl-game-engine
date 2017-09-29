@@ -46,7 +46,7 @@ public:
 			return nullptr;
 		}
 		else {
-			return std::dynamic_pointer_cast<T>(components[T::name]);
+			return std::static_pointer_cast<T>(components[T::name]);
 		}
 	}
 

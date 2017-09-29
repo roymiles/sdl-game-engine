@@ -60,7 +60,8 @@ SDL_Surface* Sprite::loadImage(std::string filename) {
 void Sprite::setup(int entityId)
 {
 	// Add this entity to the list of drawable entities
-	World::drawableEntityIDs[layer].push_back(entityId);
+	World::renderUpdateEntities[layer].push_back(entityId);//temp
+	World::spriteEntities[layer].push_back(entityId);
 
 	std::vector<SDL_Texture*> textures;
 	// Loop through all the states

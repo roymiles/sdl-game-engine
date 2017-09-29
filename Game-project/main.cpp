@@ -166,6 +166,13 @@ int main(int argc, char * argv[]) {
 		std::cout << "Rendering Engine Update: "
 			<< std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count()
 			<< " milliseconds" << std::endl;
+
+		std::cout << "Total frame time: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t1).count()
+			<< " milliseconds" << std::endl;
+			//<< 1 / std::chrono::duration_cast<std::chrono::seconds>(t6 - t1).count()
+			//<< " FPS";
+
 #endif;
 
 		// Rendering

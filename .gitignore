@@ -27,3 +27,4 @@ Makefile
 nbproject/
 Game-project/Dependancies/nanogui/
 Game-project/Dependancies/imgui/
+x64/Release/

@@ -47,8 +47,7 @@ private:
 	Vec2i position;
 	//Vec2d orientation; // not currently used
 
-	int height;
-	int width;
+	int height, width;
 
 	display displayType = _ABSOLUTE;
 };

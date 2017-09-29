@@ -40,14 +40,10 @@ void RenderingEngine::update()
 	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
 	{
 		// Draw all the sprites to the screen
-		for (int i = 0; i < World::drawableEntityIDs[currentLayer].size(); i++)
+		for (int i = 0; i < World::renderUpdateEntities[currentLayer].size(); i++)
 		{
 			// Use the ID as input for the entity container
-			entity = World::entityContainer[World::drawableEntityIDs[currentLayer][i]];
-			// If this entity is for a different layer skip it
-			//if (entity->getComponent(Sprite::name)->getLayer() != currentLayer)
-			if(entity->getComponent<Sprite>()->getLayer() != currentLayer)
-				continue;
+			entity = World::entityContainer[World::renderUpdateEntities[currentLayer][i]];
 
 			// Every entity is drawn inside a box (rectangle)
 			//std::shared_ptr<Component> transform = entity->getComponent(Transform::name);
@@ -81,7 +77,8 @@ void RenderingEngine::update()
 				// copy the texture to the rendering context
 				SDL_RenderCopy(WindowManager::renderer, sprite->getTexture(entity->getCurrentState()), NULL, &box); // The current texture depends on the entities state
 			}
-		}	}
+		}	
+	}
 
 	SDL_RenderPresent(WindowManager::renderer);
 

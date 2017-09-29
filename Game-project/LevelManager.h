@@ -2,6 +2,8 @@
 
 #include "Dependancies/SDL/Windows/include/SDL.h"
 
+namespace game {
+
 class LevelManager
 {
 public:
@@ -11,4 +13,6 @@ public:
 	// The maximum height and widths of the current level
 	static const SDL_Rect DIMENSIONS;
 };
+
+}
 

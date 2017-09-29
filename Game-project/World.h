@@ -39,7 +39,12 @@ public:
 
 	// All the ids of the drawable entities are stored in a compact form
 	// The first index is the layer. This improves performance
-	static std::vector<std::vector<int>> drawableEntityIDs;
+	static std::vector<std::vector<int>> renderUpdateEntities; // All entities that need to be drawn on current update
+	static std::vector<std::vector<int>> spriteEntities; // All entities with sprite component
+
+	// List of all physics entities that need to be updated
+	static std::vector<int> physicsUpdateEntities; // All entities that have had a physics event this frame
+	static std::vector<int> rigidBodyEntities; // All entities with rigidBody component
 
 	// Serialise entity container and write to a file
 	void serializeEntityContainer(const std::string& fileName);

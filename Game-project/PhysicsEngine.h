@@ -15,6 +15,8 @@ namespace game {
  */
 using namespace components;
 
+typedef std::pair<entityPointer, entityPointer> collisionPair;
+
 class PhysicsEngine
 {
 public:
@@ -36,13 +38,13 @@ private:
 	 * Restrict entities to inside the level
 	 * Any temporary entities that exit the level, will need to be removed
 	 */
-	void boundToMap(std::vector<entityPointer>& rigidBodies);
+	void boundToMap(entityPointer& A);
 
 	/*
 	 * Every object that goes outside of the screen will wrap round to the other side
 	 * This will need to be called inside the update() method
 	 */
-	void boundToWindow(std::vector<entityPointer>& rigidBodies);
+	void boundToWindow(entityPointer& A);
 
 	/*
 	 * Apply friction to the object, which slows it down
@@ -52,16 +54,15 @@ private:
 	/*
 	 * Loop through all the entities and return a list of pairs of objects colliding
 	 */
-	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(std::vector<entityPointer>& colliders);
+	std::vector<collisionPair> collisionPairs;
+	std::list<std::pair<entityPointer, entityPointer>> checkCollisions(entityPointer& A);
 
 	/*
 	 * From a pair of colliding meshes, add an impulse to each rigidbody
 	 */
 #pragma message("Not a fan of this function name, ideas?")
-	void respondToCollisions(std::list<std::pair<entityPointer, entityPointer>>& collidingPairs);
+	void respondToCollisions();
 };
-
-typedef std::pair<entityPointer, entityPointer> collisionPair;
 
 }
 

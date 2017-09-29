@@ -18,6 +18,8 @@ public:
 	RigidBody();
 	~RigidBody();
 
+	void setup(int entityId) override;
+
 	const std::string getName() const override;
 
 	// Apply an impulse force in a given direction

@@ -23,8 +23,9 @@ Character::~Character()
 {
 }
 
-void Character::setup(int entityId)
+void Character::setup(int _entityId)
 {
+	entityId = _entityId;
 	//isFollowingPath = false;
 	// Register any events
 
@@ -69,7 +70,7 @@ void Character::setup(int entityId)
 	// Call the setup function for all the components
 	for(auto const &component : components)
 	{
-		component.second->setup(entityId);
+		component.second->setup(_entityId);
 	}
 }
 
@@ -92,15 +93,19 @@ void Character::update()
 		switch (curMove) {
 			case UP:
 				transformComponent->setDimensions(position.x, position.y - PathFinding::resolution, height, width);
+				World::physicsUpdateEntities.push_back(entityId);
 				break;
 			case RIGHT:
 				transformComponent->setDimensions(position.x + PathFinding::resolution, position.y, height, width);
+				World::physicsUpdateEntities.push_back(entityId);
 				break;
 			case DOWN:
 				transformComponent->setDimensions(position.x, position.y + PathFinding::resolution, height, width);
+				World::physicsUpdateEntities.push_back(entityId);
 				break;
 			case LEFT:
 				transformComponent->setDimensions(position.x - PathFinding::resolution, position.y, height, width);
+				World::physicsUpdateEntities.push_back(entityId);
 				break;
 		}
 
@@ -125,18 +130,22 @@ void Character::onEvent(std::shared_ptr<Event> event_ptr)
 	if (UpKey::name == key) {
 		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x, position.y - movementSpeed, height, width);
+		World::physicsUpdateEntities.push_back(entityId);
 	}
 	else if (RightKey::name == key) {
 		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x + movementSpeed, position.y, height, width);
+		World::physicsUpdateEntities.push_back(entityId);
 	}
 	else if (LeftKey::name == key) {
 		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x - movementSpeed, position.y, height, width);
+		World::physicsUpdateEntities.push_back(entityId);
 	}
 	else if (DownKey::name == key) {
 		currentState = state::MOVING;
 		transformComponent->setDimensions(position.x, position.y + movementSpeed, height, width);
+		World::physicsUpdateEntities.push_back(entityId);
 	}
 	else if (KeyUp::name == key) {
 		currentState = state::IDLE;

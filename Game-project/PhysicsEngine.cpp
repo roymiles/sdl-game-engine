@@ -21,15 +21,22 @@ void PhysicsEngine::update()
 	// Get all entities with RigidBody components
 	std::vector<entityPointer> rigidBodies = world->getEntitiesWithComponent<RigidBody>();
 
-	boundToMap(rigidBodies);
+	collisionPairs.clear(); // Clear all previous frame collisions
+	// Loop through all entities that have triggered a physics event (e.g. moved)
+	for(int entityId = 0; entityId < World::physicsUpdateEntities.size(); ++entityId)
+	{
+		entityPointer A = World::entityContainer[World::physicsUpdateEntities[entityId]];
+		
+		boundToMap(A);
+		checkCollisions(A);
+	}
+
+	if (!collisionPairs.empty()) 
+		respondToCollisions();
+
 	//updatePositions(rigidBodies);
 	//boundToWindow(rigidBodies);
 	//applyFriction(rigidBodies);
-
-	std::list<collisionPair> collisionPairs = checkCollisions(rigidBodies);
-	if (!collisionPairs.empty()) {
-		respondToCollisions(collisionPairs);
-	}
 }
 
 //void PhysicsEngine::updatePositions(std::map<std::string, entityPointer>& rigidBodies)
@@ -51,72 +58,66 @@ void PhysicsEngine::update()
 //}
 //
 
-void PhysicsEngine::boundToMap(std::vector<entityPointer>& rigidBodies)
+inline void PhysicsEngine::boundToMap(entityPointer& A)
 {
-	for (auto &A : rigidBodies)
+	std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
+	Vec2i position = transformComponent->getPosition();
+	// x-axis
+	if (position.x + transformComponent->getWidth() > LevelManager::DIMENSIONS.w)
 	{
-		std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
-		Vec2i position = transformComponent->getPosition();
-		// x-axis
-		if (position.x + transformComponent->getWidth() > LevelManager::DIMENSIONS.w)
-		{
-			// Right hand side of the map
-			position.x = LevelManager::DIMENSIONS.w - transformComponent->getWidth();
-		}
-		else if (position.x < 0)
-		{
-			// Left hand side of the map
-			position.x = 0;
-		}
-
-		// y-axis
-		if (position.y + transformComponent->getHeight() > LevelManager::DIMENSIONS.h)
-		{
-			// Bottom of screen
-			position.y = LevelManager::DIMENSIONS.h - transformComponent->getHeight();
-		}
-		else if (position.y < 0)
-		{
-			// Top of screen
-			position.y = 0;
-		}
-
-		transformComponent->setPosition(position.x, position.y);
+		// Right hand side of the map
+		position.x = LevelManager::DIMENSIONS.w - transformComponent->getWidth();
 	}
+	else if (position.x < 0)
+	{
+		// Left hand side of the map
+		position.x = 0;
+	}
+
+	// y-axis
+	if (position.y + transformComponent->getHeight() > LevelManager::DIMENSIONS.h)
+	{
+		// Bottom of screen
+		position.y = LevelManager::DIMENSIONS.h - transformComponent->getHeight();
+	}
+	else if (position.y < 0)
+	{
+		// Top of screen
+		position.y = 0;
+	}
+
+	transformComponent->setPosition(position.x, position.y);
 }
 
-void PhysicsEngine::boundToWindow(std::vector<entityPointer>& rigidBodies)
+inline void PhysicsEngine::boundToWindow(entityPointer& A)
 {
-	for (auto &A : rigidBodies)
+	std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
+	Vec2i position = transformComponent->getPosition();
+	// x-axis
+	if (position.x > WindowManager::WIDTH)
 	{
-		std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
-		Vec2i position = transformComponent->getPosition();
-		// x-axis
-		if (position.x > WindowManager::WIDTH)
-		{
-			// Right hand side of the screen
-			position.x = 0;
-		}
-		else if (position.x + transformComponent->getWidth() < 0)
-		{
-			// Left hand side of the screen
-			position.x = WindowManager::WIDTH;
-		}
-
-		// y-axis
-		if (position.y > WindowManager::HEIGHT)
-		{
-			// Bottom of screen
-			position.y = 0;
-		}
-		else if (position.y + transformComponent->getHeight() < 0)
-		{
-			// Top of screen
-			position.y = WindowManager::HEIGHT;
-		}
-
-		transformComponent->setPosition(position.x, position.y);
+		// Right hand side of the screen
+		position.x = 0;
 	}
+	else if (position.x + transformComponent->getWidth() < 0)
+	{
+		// Left hand side of the screen
+		position.x = WindowManager::WIDTH;
+	}
+
+	// y-axis
+	if (position.y > WindowManager::HEIGHT)
+	{
+		// Bottom of screen
+		position.y = 0;
+	}
+	else if (position.y + transformComponent->getHeight() < 0)
+	{
+		// Top of screen
+		position.y = WindowManager::HEIGHT;
+	}
+
+	transformComponent->setPosition(position.x, position.y);
 }
 
 //
@@ -137,7 +138,7 @@ void PhysicsEngine::boundToWindow(std::vector<entityPointer>& rigidBodies)
 //	}
 //}
 
-std::list<collisionPair> PhysicsEngine::checkCollisions(std::vector<entityPointer>& colliders)
+inline std::list<collisionPair> PhysicsEngine::checkCollisions(entityPointer& A)
 {
 	// The collision meshes
 	SDL_Rect meshA;
@@ -159,42 +160,45 @@ std::list<collisionPair> PhysicsEngine::checkCollisions(std::vector<entityPointe
 
 	// Loop through all colliders and check there isnt a collision with any other
 	int n = 0;
-	for (auto &A : colliders)
+
+	meshA = A->getComponent<Transform>()->getRect();
+	/*
+	 * Loop through all the other entities that can collide with A
+	 * Though start from the nth element to avoid checking a different permutation of the same pair
+	 * Note: Iterator values are accessed with *it
+	 */
+
+	// Check if the entity has collided with any other rigid body
+	for(int entityId = 0; entityId < World::rigidBodyEntities.size(); ++entityId)
+	//for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B)
 	{
-		meshA = A->getComponent<Transform>()->getRect();
-		/*
-		 * Loop through all the other entities that can collide with A
-		 * Though start from the nth element to avoid checking a different permutation of the same pair
-		 * Note: Iterator values are accessed with *it
-		 */
-		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B)
+		entityPointer B = World::entityContainer[World::rigidBodyEntities[entityId]];
+		meshB = B->getComponent<Transform>()->getRect();
+
+		// Object can't collide with itself
+		if (A != B)
 		{
-			meshB = (*B)->getComponent<Transform>()->getRect();
-
-			// Object can't collide with itself
-			if (A != (*B))
+			// If any of the sides from A are outside of B
+			if (SDL_HasIntersection(&meshA, &meshB))
 			{
-				// If any of the sides from A are outside of B
-				if (SDL_HasIntersection(&meshA, &meshB))
-				{
-					// The two objects are intersecting, collision.
-					std::cout << A->getName() << " is colliding with " << (*B)->getName() << std::endl;
-					collisionPairs.push_back(std::make_pair(A, (*B)));
-				}
-				
+				// The two objects are intersecting, collision.
+				// std::cout << A->getName() << " is colliding with " << (*B)->getName() << std::endl;
+				collisionPairs.push_back(std::make_pair(A, B));
 			}
+				
 		}
-
-		n++;
 	}
 
+	n++;
+
+	World::physicsUpdateEntities.clear();
 	return collisionPairs;
 }
 
 
-void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs)
+inline void PhysicsEngine::respondToCollisions()
 {
-	for (auto &entities : collidingPairs)
+	for (auto &entities : collisionPairs)
 	{
 		std::shared_ptr<Transform> transformComponentA = entities.first->getComponent<Transform>();
 		std::shared_ptr<Transform> transformComponentB = entities.second->getComponent<Transform>();

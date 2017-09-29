@@ -31,6 +31,8 @@ public:
 private:
 	static const std::string name;
 
+	int entityId; // Id of entity within entityContainer
+
 	const int width, height;
 
 	int pathIndex;

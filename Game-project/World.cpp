@@ -15,8 +15,13 @@ using namespace utilities;
 // One meter corresponds to 20 pixels on the screen
 const int World::METER = 20;
 
-std::vector<entityPointer> World::entityContainer	   = {};
-std::vector<std::vector<int>> World::drawableEntityIDs(layers::SIZE);
+std::vector<entityPointer> World::entityContainer = {};
+
+std::vector<std::vector<int>> World::spriteEntities(layers::SIZE);
+std::vector<std::vector<int>> World::renderUpdateEntities(layers::SIZE);
+
+std::vector<int> World::rigidBodyEntities     = {};
+std::vector<int> World::physicsUpdateEntities = {};
 
 void World::serializeEntityContainer(const std::string& fileName)
 {
