@@ -1,9 +1,7 @@
 #include "LevelManager.h"
 
-// The maximum height and widths of the current level
-const int LevelManager::WIDTH	= 1000;
-const int LevelManager::HEIGHT	= 1000;
-
+// The dimensions of the current level
+const SDL_Rect LevelManager::DIMENSIONS = SDL_Rect(-1000, -1000, 5000, 5000);
 
 LevelManager::LevelManager()
 {

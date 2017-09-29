@@ -51,17 +51,6 @@ std::string Entity::setComponent(std::shared_ptr<Component> c)
 	return key;
 }
 
-bool Entity::hasComponent(std::string key) {
-	if (components.find(key) == components.end()) {
-		// not found
-		return false;
-	}
-	else {
-		// found
-		return true;
-	}
-}
-
 bool Entity::operator==(const Entity &other) const
 {
 	if (getName() == other.getName()) {

@@ -4,15 +4,20 @@
 #include "../WindowManager.h"
 #include "../LevelManager.h"
 #include "../Maths/Vec2.h"
+#include "../Entities/Path.h" // Draw paths to screen
+#include "../World.h" // createEntity
 #include "AStar.h"
 
-#define DEBUG_PATHFINDING 1
+// bitset
+#include <bitset>
+
+//#define DEBUG_PATHFINDING 0
 
 namespace game { namespace algorithms {
 
 // Initialise navMesh and resolution
 grid2D_t PathFinding::navMesh = {};
-int PathFinding::resolution   = 1;
+int PathFinding::resolution   = Character::movementSpeed;
 
 PathFinding::PathFinding()
 {
@@ -29,30 +34,30 @@ PathFinding::~PathFinding()
  * This function is very slow and computes the navigation mesh for the current level
  * This will need to be pre-computed for every level to reduce runtime computation
  */
-grid2D_t PathFinding::createNavMesh(int _resolution)
+grid2D_t PathFinding::createNavMesh()
 {	 
 	// Currently only generate a screen sized nav mesh
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	SDL_Point point;
 
-	int width  = LevelManager::WIDTH;
-	int height = LevelManager::HEIGHT;
+	int width  = LevelManager::DIMENSIONS.w;
+	int height = LevelManager::DIMENSIONS.h;
 
 	// Resize the matrix to the width and height of the map
 	// It is good practice to resize a vector before rather than using push_back
-	grid2D_t navMesh;
-	navMesh.resize(width / _resolution);
+	grid2D_t navMesh(width / resolution);
+	//navMesh.resize(width / resolution);
 	for (auto &y : navMesh)
 	{
-		y.resize(height / _resolution);
+		y.resize(height / resolution);
 	}
 
 	std::shared_ptr<Entity> entity;
 	// Incrementers for the array indices
 	int x, x_i, y, y_i;
-	for (x = 0, x_i = 0; x < width; x += _resolution)
+	for (x = 0, x_i = 0; x < width; x += resolution)
 	{
-		for (y = 0, y_i = 0; y < height; y += _resolution)
+		for (y = 0, y_i = 0; y < height; y += resolution)
 		{
 			point.x = x;
 			point.y = y;
@@ -68,7 +73,7 @@ grid2D_t PathFinding::createNavMesh(int _resolution)
 			// Need to do this because obstacles are on a layer above the background
 			entity = World::getHighestLayerEntity(entitiesAtPoint, layers::FOREGROUND);
 			// If the top layer entity has a rigid body component, then it is unwalkable
-			if (entity->hasComponent(RigidBody::name))
+			if (entity->hasComponent<RigidBody>())
 			{
 				navMesh[x_i][y_i] = 'X';
 			}
@@ -81,7 +86,6 @@ grid2D_t PathFinding::createNavMesh(int _resolution)
 
 		x_i++;
 	}
-
 
 	return navMesh;
 }
@@ -116,8 +120,13 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 	SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 #endif
 
+	std::shared_ptr<Path> pathEntity(new Path());
+	pathEntity->points.resize(path.size());
+
 	for(int i = 0; i < path.size(); i++)
 	{
+		pathEntity->points[i] = maths::Vec2i(path[i]->x, path[i]->y);
+
 		if (i == 0) {
 			prevState = path[i];
 		}
@@ -126,41 +135,69 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 			std::cout << "(" << prevState->x << ", " << prevState->y << ") -> (" << path[i]->x << ", " << path[i]->y << ") = ";
 			SDL_RenderDrawLine(WindowManager::renderer, prevState->x, prevState->y, path[i]->x, path[i]->y);
 #endif
-			if (path[i]->x == prevState->x + PathFinding::resolution)
+			// 4 possible conditions for up, left, down and right
+			std::bitset<4> conditions;
+
+			conditions[0] = (path[i]->x == prevState->x + PathFinding::resolution); // right
+			conditions[1] = (path[i]->x == prevState->x - PathFinding::resolution); // left
+
+			// Increasing y-axis is downward, this is because (0,0) is the top left of the screen
+			conditions[2] = (path[i]->y == prevState->y + PathFinding::resolution); // down
+			conditions[3] = (path[i]->y == prevState->y - PathFinding::resolution); // up
+
+			int comparitor = (int)(conditions.to_ulong()); // cast to int so a switch statement can be used
+			switch (comparitor)
 			{
-				// Moved right
+			case 8:
+				// Right
 				std::cout << "RIGHT";
 				moveList[i] = moves::RIGHT;
-			}
-			else if (path[i]->x == prevState->x - PathFinding::resolution)
-			{
-				// Moved left
+				break;
+			case 4:
+				// Left
 				std::cout << "LEFT";
 				moveList[i] = moves::LEFT;
-			}
-			// Increasing y-axis is downward, this is because (0,0) is the top left of the screen
-			else if (path[i]->y == prevState->y + PathFinding::resolution)
-			{
-				// Moved down
+				break;
+			case 2:
+				// Down
 				std::cout << "DOWN";
 				moveList[i] = moves::DOWN;
-			}
-			else if (path[i]->y == prevState->y - PathFinding::resolution)
-			{
-				// Moved up
+				break;
+			case 1:
+				// Up
 				std::cout << "UP";
 				moveList[i] = moves::UP;
-			} 
-			else
-			{
-				std::cout << "X";
-				//std::cout << "Unknown link between nodes in path" << std::endl;
+				break;
+
+				// Diagonal movements are a combination of the above
+			case 9:
+				// Right + Up
+				std::cout << "Up Right";
+				moveList[i] = moves::UP_RIGHT;
+				break;
+			case 5:
+				// Left + Up
+				std::cout << "Up Left";
+				moveList[i] = moves::UP_LEFT;
+				break;
+			case 10:
+				// Right + Down
+				std::cout << "Down Right";
+				moveList[i] = moves::DOWN_RIGHT;
+				break;
+			case 6:
+				// Right + Down
+				std::cout << "Down Left";
+				moveList[i] = moves::DOWN_LEFT;
+				break;
 			}
 
 			prevState = path[i];
 			std::cout << std::endl;
 		}
 	}
+
+	World::createEntity(pathEntity);
 
 #ifdef DEBUG_PATHFINDING
 	SDL_RenderPresent(WindowManager::renderer);

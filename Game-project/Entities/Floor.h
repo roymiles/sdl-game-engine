@@ -4,15 +4,14 @@
 #include "../Components/Sprite.h"
 #include "../Components/Transform.h"
 
-namespace game {
-namespace entities {
+namespace game { namespace entities {
 
 using namespace components;
 
 class Floor : public Entity
 {
 public:
-	Floor(int _x, int _y);
+	Floor(int _x, int _y, int _w, int _h);
 	~Floor();
 
 	void setup() override;
@@ -26,9 +25,8 @@ private:
 	const enum state : int { IDLE, SIZE=1 };
 	state currentState;
 
-	int x;
-	int y;
+	const int x, y;
+	const int w, h;
 };
 
-}
-}
+} }

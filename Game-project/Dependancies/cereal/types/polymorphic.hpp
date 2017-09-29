@@ -30,13 +30,13 @@
 #ifndef CEREAL_TYPES_POLYMORPHIC_HPP_
 #define CEREAL_TYPES_POLYMORPHIC_HPP_
 
-#include "cereal.hpp"
-#include "types/memory.hpp"
+#include "../cereal.hpp"
+#include "memory.hpp"
 
-#include "details/util.hpp"
-#include "details/helpers.hpp"
-#include "details/traits.hpp"
-#include "details/polymorphic_impl.hpp"
+#include "../details/util.hpp"
+#include "../details/helpers.hpp"
+#include "../details/traits.hpp"
+#include "../details/polymorphic_impl.hpp"
 
 #ifdef _MSC_VER
 #define CEREAL_STATIC_CONSTEXPR static

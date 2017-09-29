@@ -6,6 +6,11 @@
 #include <map>
 #include <list>
 
+#pragma message("Should be ported over to a time class")
+#include <chrono>
+typedef std::chrono::high_resolution_clock Clock;
+#define DEBUG_TIME 1
+
 #include "Entity.h"
 #include "Entities/Camera.h"
 #include "Entities/Character.h" 
@@ -32,15 +37,21 @@ public:
 	// Each entity is  identified by a unique string
 	static std::map<std::string, entityPointer> entityContainer;
 
+	// Serialise entity container and write to a file
+	void serializeEntityContainer(const std::string& fileName);
+
 	// Current game state
 	gameState currentGameState;
+
+	// One meter corresponds to 20 pixels on the screen
+	static const int METER;
 	
 	// For a given identifier, return the entity within the container
 	entityPointer getEntity(std::string id);
 
 	// Return the first occurance of an entity type
 	template<typename T>
-	std::shared_ptr<T> getEntity()
+	static std::shared_ptr<T> getEntity()
 	{
 		for (auto const &entity : entityContainer)
 		{
@@ -63,7 +74,7 @@ public:
 	static std::shared_ptr<Entity> getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer);
 
 	// Add an entity to the container and return the identifier
-	std::string createEntity(entityPointer entity);
+	static std::string createEntity(entityPointer entity);
 	void createEntity(entityPointer entity, std::string key);
 
 	void removeEntity(std::string key);
@@ -72,7 +83,25 @@ public:
 	void update();
 
 	// Return a list of all entities with a given component
-	std::map<std::string, entityPointer> getEntitiesWithComponent(std::string key);
+	template<typename T>
+	std::vector<entityPointer> getEntitiesWithComponent()
+	{
+		std::vector<entityPointer> entitiesWithComponent;
+		entitiesWithComponent.reserve(entityContainer.size());
+		for (auto const &entity : entityContainer)
+		{
+			if (entity.second->hasComponent<T>())
+			{
+				// Add a random key at the end to avoid entities of the same type overwriting
+				entitiesWithComponent.push_back(entity.second);
+			}
+		}
+
+		return entitiesWithComponent;
+	}
+
+	// Convert screen x,y coordinates to world x,y coordinates
+	static maths::Vec2i screenToWorldCoordinates(maths::Vec2i screenCoordinates);
 };
 
 }

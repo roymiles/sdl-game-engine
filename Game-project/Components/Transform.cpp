@@ -20,24 +20,24 @@ const std::string Transform::getName() const
 	return name;
 }
 
-void Transform::setPosition(double _x, double _y)
+void Transform::setPosition(int _x, int _y)
 {
-	position = Vec2d(_x, _y);
+	position = Vec2i(_x, _y);
 }
 
-void Transform::setPosition(Vec2d _position)
+void Transform::setPosition(Vec2i _position)
 {
 	position = _position;
 }
 
-Vec2d Transform::getPosition()
+Vec2i Transform::getPosition()
 {
 	return position;
 }
 
-void Transform::setDimensions(double _x, double _y, int _height, int _width)
+void Transform::setDimensions(int _x, int _y, int _height, int _width)
 {
-	position = Vec2d(_x, _y);
+	position = Vec2i(_x, _y);
 	height = _height;
 	width = _width;
 }

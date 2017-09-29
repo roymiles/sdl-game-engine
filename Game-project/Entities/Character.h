@@ -15,8 +15,10 @@ using namespace components;
 class Character : public Entity
 {
 public:
-	Character();
+	Character(int x, int y);
 	~Character();
+
+	static int movementSpeed;
 
 	void setup() override;
 	void update() override;
@@ -24,10 +26,12 @@ public:
 	const std::string getName() const override;
 	int getCurrentState() const override;
 
-	void onCollision(maths::Vec2d &collisionVector) override;
+	void onCollision(maths::Vec2i &collisionVector) override;
 
 private:
 	static const std::string name;
+
+	const int width, height;
 
 	int pathIndex;
 	std::vector<moves> path;

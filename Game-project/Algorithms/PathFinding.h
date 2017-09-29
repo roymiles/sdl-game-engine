@@ -9,7 +9,12 @@ enum moves : int {
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+
+	UP_LEFT,
+	UP_RIGHT,
+	DOWN_LEFT,
+	DOWN_RIGHT
 };
 
 typedef std::vector<std::vector<char>> grid2D_t;
@@ -23,7 +28,7 @@ public:
 	/* 
 	 * Create navigation mesh for the entire level
 	 */
-	grid2D_t createNavMesh(int _resolution = 5);
+	grid2D_t createNavMesh();
 
 	static void setCurrentNavMesh(grid2D_t _navMesh);
 	static void setResolution(int _resolution);

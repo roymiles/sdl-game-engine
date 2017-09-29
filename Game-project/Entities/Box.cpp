@@ -11,11 +11,8 @@ using namespace utilities;
 
 const std::string Box::name = "Box";
 
-Box::Box()
-{
-}
-
-Box::Box(std::vector<std::string> _idleImagePaths)
+Box::Box(int _width, int _height, std::vector<std::string> _idleImagePaths)
+		 : width(_width), height(_height)
 {
 	idleImagePaths = _idleImagePaths;
 }

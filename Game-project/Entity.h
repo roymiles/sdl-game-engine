@@ -9,13 +9,22 @@
 #include "Utility/Random.h"
 #include "Maths/Vec2.h"
 
+#include "Dependancies/cereal/archives/json.hpp"
+
 namespace game {
 
 class Entity
 {
 public:
 	Entity();
-	virtual ~Entity() = 0;
+	//virtual ~Entity() = 0;
+	~Entity();
+
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive("hello");
+	}
 
 	virtual void setup() {}
 	virtual void update() {}
@@ -25,18 +34,35 @@ public:
 
 	template<typename T>
 	std::shared_ptr<T> getComponent() {
-		for (auto &component : components)
-		{
-			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(component.second))
-			{
-				return ptr;
-			}
+		if (components.find(T::name) == components.end()) {
+			return nullptr;
 		}
-
-		return nullptr;
+		else {
+			return std::dynamic_pointer_cast<T>(components[T::name]);
+		}
 	}
+
+	// This is for if you don't want to downcast (which incurs a performance hit)
+	std::shared_ptr<Component> getComponent(std::string name) {
+		if (components.find(name) == components.end()) {
+			return nullptr;
+		}
+		else {
+			return components[name];
+		}
+	}
+
 	std::string setComponent(std::shared_ptr<Component> c);
-	bool hasComponent(std::string key);
+
+	template<typename T>
+	bool hasComponent() {
+		if (components.find(T::name) == components.end()) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 
 	std::string registerEvent(std::shared_ptr<Event> e);
 	void deregisterEvent(std::string key);
@@ -46,7 +72,11 @@ public:
 	bool operator==(const Entity &other) const;
 	bool operator!=(const Entity &other) const;
 
-	virtual void onCollision(maths::Vec2d &collisionVector) {}
+	virtual void onCollision(maths::Vec2i &collisionVector) {}
+
+	// Can be overriden and allows custom draw commands to be called through
+	// the rendering engine on every update
+	virtual void draw(int cameraX, int cameraY, int cameraWidth, int cameraHeight) {};
 
 protected:
 	std::map<std::string, std::shared_ptr<Event>> registeredEvents;

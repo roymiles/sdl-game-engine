@@ -14,8 +14,7 @@ using namespace utilities;
 class Box : public Entity
 {
 public:
-	Box();
-	Box(std::vector<std::string> _idleImagePaths);
+	Box(int _width, int _height, std::vector<std::string> _idleImagePaths);
 	~Box();
 
 	void setup() override;
@@ -27,6 +26,8 @@ public:
 
 private:
 	static const std::string name;
+
+	const int width, height;
 
 	// Default sprite images are empty
 	std::vector<std::string> idleImagePaths = { FileHelper::resourceFolder + "empty.bmp" };

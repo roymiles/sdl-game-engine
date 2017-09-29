@@ -46,7 +46,7 @@ public:
 
 	const std::string getName() const override;
         
-	int getLayer() const;
+	int getLayer() const override;
 	void setLayer(int _layer);
 
 	SDL_Surface* loadImage(std::string filename);

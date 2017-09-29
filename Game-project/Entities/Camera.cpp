@@ -36,7 +36,7 @@ void Camera::update()
 {
 	// Set the camera position to the characters position
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-	Vec2d targetPosition = target->getComponent<Transform>()->getPosition();
+	Vec2i targetPosition = target->getComponent<Transform>()->getPosition();
 
 	transformComponent->setPosition(targetPosition);
 }

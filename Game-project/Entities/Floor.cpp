@@ -12,10 +12,8 @@ using namespace utilities;
 
 const std::string Floor::name = "Floor";
 
-Floor::Floor(int _x, int _y)
+Floor::Floor(int _x, int _y, int _w, int _h) : x(_x), y(_y), w(_w), h(_h)
 {
-	x = _x;
-	y = _y;
 }
 
 
@@ -31,7 +29,8 @@ void Floor::setup()
     spriteComponent->setLayer(BACKGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(x, y, 100, 100);
+
+	transformComponent->setDimensions(x, y, h, w);
 
 	// Add components to the container
 	setComponent(spriteComponent);

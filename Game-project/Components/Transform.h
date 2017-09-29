@@ -8,11 +8,6 @@ namespace game { namespace components {
 
 using namespace maths;
 
-// static   = stays on screen with relative x, y coordinates
-// absolute = position is relative to level
-// for example, gui elements will be static as they will stay relative to the screen
-enum display { _ABSOLUTE, _STATIC };
-
 /*
  * Most entities will have this component. It defines the entities
  * current position in the world and orientation.
@@ -25,11 +20,11 @@ public:
 
 	const std::string getName() const override;
 
-	void setPosition(double _x, double _y);
-	void setPosition(Vec2d _position);
-	Vec2d getPosition();
+	void setPosition(int _x, int _y);
+	void setPosition(Vec2i _position);
+	Vec2i getPosition();
 
-	void setDimensions(double _x, double _y, int _height, int _width);
+	void setDimensions(int _x, int _y, int _height, int _width);
 
 	int getHeight() const;
 	int getWidth() const;
@@ -39,18 +34,18 @@ public:
 	int getX() const;
 	int getY() const;
 
-	SDL_Rect getRect();
+	SDL_Rect getRect() override;
 
 	// The unique name of the component
 	static const std::string name;
 
-	display getDisplayType() const;
+	display getDisplayType() const override;
 	void setDisplayType(const display _displayType);
 
 private:
 
-	Vec2d position;
-	Vec2d orientation;
+	Vec2i position;
+	//Vec2d orientation; // not currently used
 
 	int height;
 	int width;

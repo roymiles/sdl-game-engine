@@ -17,15 +17,32 @@ RenderingEngine::~RenderingEngine()
 
 void RenderingEngine::update()
 {
-	std::map<std::string, entityPointer> drawableEntities;
-	drawableEntities = world->getEntitiesWithComponent(Sprite::name);
-	//sort(drawableEntities);
+
+#ifdef DEBUG_TIME
+	auto t1 = Clock::now();
+#endif
+
+	std::vector<entityPointer> drawableEntities = world->getEntitiesWithComponent<Sprite>();
+
+#ifdef DEBUG_TIME
+	auto t2 = Clock::now();
+	std::cout << "RenderingEngine:		getEntitiesWithComponent<Sprite>: "
+		<< std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+		<< " milliseconds" << std::endl;
+#endif;
 
 	// Clear the screen
 	SDL_RenderClear(WindowManager::renderer);
 
 	std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
 	std::shared_ptr<Transform> cameraTarget    = camera->getTarget()->getComponent<Transform>();
+
+	// Get these values outside the loop
+	Vec2i cameraPos  = cameraTransform->getPosition();
+	int cameraX      = cameraPos.x;
+	int cameraY      = cameraPos.y;
+	int cameraWidth  = cameraTarget->getWidth();
+	int cameraHeight = cameraTarget->getHeight();
 
 	// Draw all entities for each layer in order
 	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
@@ -34,11 +51,11 @@ void RenderingEngine::update()
 		for (auto &entity : drawableEntities)
 		{
 			// If this entity is for a different layer skip it
-			if (entity.second->getComponent<Sprite>()->getLayer() != currentLayer)
+			if (entity->getComponent(Sprite::name)->getLayer() != currentLayer)
 				continue;
 
 			// Every entity is drawn inside a box (rectangle)
-			std::shared_ptr<Transform> transform = entity.second->getComponent<Transform>();
+			std::shared_ptr<Component> transform = entity->getComponent(Transform::name);
 			SDL_Rect box = transform->getRect();
 
 			// The sprites are offset by half the screen width and height, so that the character
@@ -48,27 +65,41 @@ void RenderingEngine::update()
 			{
 				// ---- DRAW RELATIVE TO CAMERA ----
 				// All screen position are relative to the camera
-				box.x -= cameraTransform->getPosition().x;
-				box.y -= cameraTransform->getPosition().y;
+				box.x -= cameraX;
+				box.y -= cameraY;
 				// Make the target of the camera at the centre of the screen
 				box.x += WindowManager::WIDTH / 2;
 				box.y += WindowManager::HEIGHT / 2;
 				// Offset the camera by the width and height of the target
 				// This is because rectangle coordinates are specified by the top left corner rather than the centre
-				box.x -= cameraTarget->getWidth() / 2;
-				box.y -= cameraTarget->getHeight() / 2;
+				box.x -= cameraWidth / 2;
+				box.y -= cameraHeight / 2;
 			}
-			//else {
-				// ---- DRAW RELATIVE TO SCREEN ----
-				// Just keep x, y position of entity
-				// ... 
-			//}
 
-			std::shared_ptr<Sprite> sprite = entity.second->getComponent<Sprite>();
+			// Check if the entity is off the screen. If it is, don't render it
+			if (box.x + box.w > 0 && box.x < WindowManager::WIDTH && box.y + box.h > 0 && box.y < WindowManager::HEIGHT)
+			{
+				// The entity is on the screen
+				std::shared_ptr<Sprite> sprite = entity->getComponent<Sprite>();
 
-			// copy the texture to the rendering context
-			SDL_RenderCopy(WindowManager::renderer, sprite->getTexture(entity.second->getCurrentState()), NULL, &box); // The current texture depends on the entities state
+				// copy the texture to the rendering context
+				SDL_RenderCopy(WindowManager::renderer, sprite->getTexture(entity->getCurrentState()), NULL, &box); // The current texture depends on the entities state
+			}
 		}
+	}
+
+#ifdef DEBUG_TIME
+	auto t3 = Clock::now();
+	std::cout << "RenderingEngine:		loop: "
+		<< std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count()
+		<< " milliseconds" << std::endl;
+#endif;
+
+	// Call the draw function for every entity
+	// *this function may or may not be overriden from Entity.h*
+	for (auto const &e : world->entityContainer)
+	{
+		e.second->draw(cameraX, cameraY, cameraWidth, cameraHeight);
 	}
 
 	// Flip the backbuffer

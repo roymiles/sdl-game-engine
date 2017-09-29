@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Dependancies/SDL/Windows/include/SDL.h"
+
 class LevelManager
 {
 public:
@@ -6,7 +9,6 @@ public:
 	~LevelManager();
 
 	// The maximum height and widths of the current level
-	static const int WIDTH;
-	static const int HEIGHT;
+	static const SDL_Rect DIMENSIONS;
 };
 

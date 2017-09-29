@@ -10,10 +10,8 @@ using namespace utilities;
 
 const std::string Block::name = "Block";
 
-Block::Block(int _x, int _y)
+Block::Block(int _x, int _y, int _w, int _h) : x(_x), y(_y), w(_w), h(_h)
 {
-	x = _x;
-	y = _y;
 }
 
 
@@ -29,7 +27,7 @@ void Block::setup()
 	spriteComponent->setLayer(GUI);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(x, y, 10, 40);
+	transformComponent->setDimensions(x, y, w, h);
 	transformComponent->setDisplayType(_STATIC);
 
 	// ... and then add these components to the container

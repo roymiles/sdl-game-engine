@@ -3,6 +3,8 @@
 // To generate the unique entity keys
 #include "Utility/Random.h"
 
+#include "LevelManager.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -10,7 +12,19 @@ namespace game {
 
 using namespace utilities;
 
+// One meter corresponds to 20 pixels on the screen
+const int World::METER = 20;
+
 std::map<std::string, entityPointer> World::entityContainer = {};
+
+void World::serializeEntityContainer(const std::string& fileName)
+{
+	std::ofstream outFile;
+	outFile.open(fileName);
+
+	cereal::JSONOutputArchive oarchive(outFile); // Create an output archive
+	oarchive("hi"); // Write the data to the archive
+}
 
 World::World()
 {
@@ -32,10 +46,10 @@ std::vector<std::shared_ptr<Entity>> World::getEntitiesAtPoint(SDL_Point &point)
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	for (auto &entity : entityContainer)
 	{
-		if (entity.second->hasComponent(Transform::name))
-		{
-			transformComponent = entity.second->getComponent<Transform>();
+		transformComponent = entity.second->getComponent<Transform>();
 
+		if (transformComponent != nullptr)
+		{
 			// Check if the entity covers the point
 			if (SDL_PointInRect(&point, &transformComponent->getRect()))
 			{
@@ -53,14 +67,19 @@ std::shared_ptr<Entity> World::getHighestLayerEntity(std::vector<std::shared_ptr
 	// Anything higher than FOREGROUND is on a menu, affect etc and so they don't affect
 	// the navigation mesh
 	bool tmp = false;
+	std::shared_ptr<Sprite> spriteComponent;
 	for (int currentLayer = layers::FOREGROUND; currentLayer >= layers::BACKGROUND; currentLayer--)
 	{
 		// Check if there is an entity at this point and on this layer
 		for (auto const &entity : entities)
 		{
-			if (entity->getComponent<Sprite>()->getLayer() == currentLayer)
+			spriteComponent = entity->getComponent<Sprite>();
+			if (spriteComponent != nullptr)
 			{
-				return entity;
+				if (entity->getComponent<Sprite>()->getLayer() == currentLayer)
+				{
+					return entity;
+				}
 			}
 		}
 	}
@@ -107,22 +126,24 @@ void World::setup()
 	currentGameState = gameState::Level1;
 	// importEntities(state);
 
-	std::shared_ptr<Character> character(new Character());
+	std::shared_ptr<Character> character(new Character(0.25*METER, 1.5*METER));
 	createEntity(character);
 
 	std::shared_ptr<Camera> camera(new Camera(character));
 	createEntity(camera);
 
-	std::shared_ptr<Box> box(new Box({ FileHelper::resourceFolder + "crate.bmp" }));
+	std::shared_ptr<Box> box(new Box(1*METER, 1*METER, { FileHelper::resourceFolder + "crate.bmp" }));
 	createEntity(box);
         
-	// UI elements
+	// UI elements. These are _ABSOLUTE entities
 	std::shared_ptr<Button> button(new Button());
 	createEntity(button);
 
-	for (int x = 0; x < WindowManager::WIDTH; x += 10)
+	int blockWidth = 10;
+	int blockHeight = 40;
+	for (int x = 0; x < WindowManager::WIDTH; x += blockWidth)
 	{
-		std::shared_ptr<Block> block(new Block(x, WindowManager::HEIGHT));
+		std::shared_ptr<Block> block(new Block(x, WindowManager::HEIGHT - blockHeight, blockWidth, blockHeight));
 
 		// Use x key as opposed to a random string
 		std::stringstream ss;
@@ -131,11 +152,13 @@ void World::setup()
 		createEntity(block, ss.str());
 	}
 
-	for (int x = 0; x < WindowManager::WIDTH; x += 100)
+	int floorWidth  = 5*METER;
+	int floorHeight = 5*METER;
+	for (int x = LevelManager::DIMENSIONS.x; x < LevelManager::DIMENSIONS.w; x += floorWidth)
 	{
-		for (int y = 0; y < WindowManager::HEIGHT; y += 100)
+		for (int y = LevelManager::DIMENSIONS.y; y < LevelManager::DIMENSIONS.h; y += floorHeight)
 		{
-			std::shared_ptr<Floor> floor(new Floor(x, y));
+			std::shared_ptr<Floor> floor(new Floor(x, y, floorWidth, floorHeight));
 
 			// Use x_y key as opposed to a random string
 			std::stringstream ss;
@@ -154,6 +177,12 @@ void World::setup()
 		entity.second->setup();
 	}
 
+	//std::ofstream os("out.cereal", std::ios::binary);
+	//cereal::JSONOutputArchive archive(os);
+	//archive(entityContainer);
+	//serializeEntityContainer("world.txt");
+	//FileHelper::abc(entityContainer, "world.txt");
+
 	// Override default parameters
 	// box->getComponent<Sprite>()->setImagePaths(box->IDLE, { FileHelper::resourceFolder + "box.bmp" });
 }
@@ -167,19 +196,17 @@ void World::update()
 	}
 }
 
-std::map<std::string, entityPointer> World::getEntitiesWithComponent(std::string key)
+maths::Vec2i World::screenToWorldCoordinates(maths::Vec2i screenCoordinates)
 {
-	std::map<std::string, entityPointer> entitiesWithComponent;
-	for (auto &entity : entityContainer)
-	{
-		if (entity.second->hasComponent(key))
-		{
-			// Add a random key at the end to avoid entities of the same type overwriting
-			entitiesWithComponent[entity.second->getName() + "_" + randomString(7)] = entity.second;
-		}
-	}
+	// Convert the x, y cooordinates of the mouse click to the world coordinates
+	// The center of the screen (window::width / 2 , window::height / 2) corresponds to (camera.x, camera.y) in world space
+	// e.g. subtract the center screen x, y and then add the camera x, y
+	int x, y;
+	std::shared_ptr<Transform> cameraTransform = getEntity<Camera>()->getComponent<Transform>();
+	x = screenCoordinates.x - (WindowManager::WIDTH / 2) + cameraTransform->getX();
+	y = screenCoordinates.y - (WindowManager::HEIGHT / 2) + cameraTransform->getY();
 
-	return entitiesWithComponent;
+	return Vec2i(x, y);
 }
 
 }

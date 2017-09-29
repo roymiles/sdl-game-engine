@@ -10,9 +10,11 @@ using namespace events;
 using namespace utilities;
 using namespace algorithms;
 
-const std::string Character::name = "Character"; 
+const std::string Character::name = "Character";
+int Character::movementSpeed = 1 * World::METER; // 1 meter per frame
 
-Character::Character()
+Character::Character(int _width, int _height)
+	: width(_width), height(_height)
 {
 	currentState = state::IDLE;
 }
@@ -82,7 +84,7 @@ void Character::update()
 		}
 
 		std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-		Vec2d position = transformComponent->getPosition();
+		Vec2i position = transformComponent->getPosition();
 		int width = transformComponent->getWidth();
 		int height = transformComponent->getHeight();
 
@@ -111,7 +113,7 @@ void Character::onEvent(std::shared_ptr<Event> event_ptr)
 	//std::cout << event_ptr->getName() << " event triggered for " << getName() << std::endl;
 
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-	Vec2d position = transformComponent->getPosition();
+	Vec2i position = transformComponent->getPosition();
     int width = transformComponent->getWidth();
     int height = transformComponent->getHeight();
 
@@ -122,26 +124,30 @@ void Character::onEvent(std::shared_ptr<Event> event_ptr)
 	// y axis will be downwards, not upwards
 	if (UpKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x, position.y-5, height, width);
+		transformComponent->setDimensions(position.x, position.y - movementSpeed, height, width);
 	}
 	else if (RightKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x+5, position.y, height, width);
+		transformComponent->setDimensions(position.x + movementSpeed, position.y, height, width);
 	}
 	else if (LeftKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x-5, position.y, height, width);
+		transformComponent->setDimensions(position.x - movementSpeed, position.y, height, width);
 	}
 	else if (DownKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x, position.y+5, height, width);
+		transformComponent->setDimensions(position.x, position.y + movementSpeed, height, width);
 	}
 	else if (KeyUp::name == key) {
 		currentState = state::IDLE;
 	}
 	else if (MouseButtonUp::name == key) {
 		std::shared_ptr<MouseButtonUp> mouseButtonUp = std::static_pointer_cast<MouseButtonUp>(event_ptr);
-		std::cout << "Released mouse at " << mouseButtonUp->getX() << ", " << mouseButtonUp->getY() << std::endl;
+
+		Vec2i worldCoordinates = World::screenToWorldCoordinates( Vec2i(mouseButtonUp->getX(), mouseButtonUp->getY()) );
+
+		//std::cout << "Released mouse at " << mouseButtonUp->getX() << ", " << mouseButtonUp->getY() << std::endl;
+		std::cout << "Released mouse at " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
 		std::cout << "Currently at " << transformComponent->getX() << ", " << transformComponent->getY() << std::endl;
 		std::vector<moves> moveList = PathFinding::astar(transformComponent->getX(), transformComponent->getY(), mouseButtonUp->getX(), mouseButtonUp->getY());
 
@@ -162,10 +168,10 @@ int Character::getCurrentState() const
 }
 
 
-void Character::onCollision(maths::Vec2d &collisionVector)
+void Character::onCollision(maths::Vec2i &collisionVector)
 {
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-	Vec2d position = transformComponent->getPosition();
+	Vec2i position = transformComponent->getPosition();
 	transformComponent->setPosition(position.x - collisionVector.x, position.y - collisionVector.y);
 }
 

@@ -64,24 +64,23 @@ int main(int argc, char * argv[]) {
 	if (FileHelper::fileExists("navMesh.txt")) {
 		// Use the previously made nav mesh
 		std::vector<std::vector<char>> navMesh;
-		FileHelper::readMatrixFromFile<char>(navMesh, "navMesh.txt");
+		FileHelper::readDataFromFile(navMesh, "navMesh.txt");
 
 		pathFinding->setCurrentNavMesh(navMesh);
 
 		// Calculate the resolution by comparing the level dimensions with the matrix
 		// Mat.size = Level::width / resolution.x -> resolution.x = Level::width / Mat.size 
-		int resolution = LevelManager::WIDTH / (int)navMesh.size();
+		int resolution = LevelManager::DIMENSIONS.w / (int)navMesh.size();
 		pathFinding->setResolution(resolution);
 	}
 	else {
 		// Create the nav mesh
-		int resolution = 10;
-		std::vector<std::vector<char>> navMesh = pathFinding->createNavMesh(resolution);
+		pathFinding->setResolution(Character::movementSpeed);
+		std::vector<std::vector<char>> navMesh = pathFinding->createNavMesh();
 		pathFinding->setCurrentNavMesh(navMesh);
-		pathFinding->setResolution(resolution);
 
 		// Save nav mesh to file
-		FileHelper::writeMatrixToFile<char>(navMesh, "navMesh.txt");
+		FileHelper::writeDataToFile(navMesh, "navMesh.txt");
 	}
 
 	// Handles any event that occurs in app
@@ -106,6 +105,9 @@ int main(int argc, char * argv[]) {
 #pragma message("Maybe pass in some delta time into these update functions? like how unity does it")
 #pragma message("Double check update() order")
 		// Handle inputs
+#ifdef DEBUG_TIME
+		auto t1 = Clock::now();
+#endif
 		eventManager->update(&window_event);
 
 		//ImGui_ImplSdlGL2_NewFrame(windowManager->window);
@@ -121,6 +123,12 @@ int main(int argc, char * argv[]) {
 		//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		//}
 
+#ifdef DEBUG_TIME
+		auto t2 = Clock::now();
+		std::cout << "Event Manager Update: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+			<< " milliseconds" << std::endl;
+#endif;
 		// 2. Show another simple window, this time using an explicit Begin/End pair
 		if (show_another_window)
 		{
@@ -129,14 +137,36 @@ int main(int argc, char * argv[]) {
 			ImGui::End();
 		}
 
+#ifdef DEBUG_TIME
+		auto t3 = Clock::now();
+#endif;
 		// Physics Engine
 		physicsEngine->update();
 
+#ifdef DEBUG_TIME
+		auto t4 = Clock::now();
+		std::cout << "Physics Engine Update: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count()
+			<< " milliseconds" << std::endl;
+#endif;
 		// Logic
 		world->update();
 
+#ifdef DEBUG_TIME
+		auto t5 = Clock::now();
+		std::cout << "World Update: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t5 - t4).count()
+			<< " milliseconds" << std::endl;
+#endif;
 		// Render
 		renderingEngine->update();
+
+#ifdef DEBUG_TIME
+		auto t6 = Clock::now();
+		std::cout << "Rendering Engine Update: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count()
+			<< " milliseconds" << std::endl;
+#endif;
 
 		// Rendering
 		//glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
