@@ -14,7 +14,7 @@ public:
 	Button();
 	~Button();
 
-	void setup() override;
+	void setup(int entityId) override;
 	void update() override;
 	const std::string getName() const override;
 	int getCurrentState() const override;

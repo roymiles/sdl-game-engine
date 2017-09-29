@@ -21,7 +21,7 @@ Floor::~Floor()
 {
 }
 
-void Floor::setup()
+void Floor::setup(int entityId)
 {
 	// Create instances of all components for entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
@@ -39,7 +39,7 @@ void Floor::setup()
 	// Call the setup function for all the components
 	for (auto &component : components)
 	{
-		component.second->setup();
+		component.second->setup(entityId);
 	}
 }
 

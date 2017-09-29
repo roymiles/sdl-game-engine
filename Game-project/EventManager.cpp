@@ -90,8 +90,8 @@ void EventManager::triggerEvent(std::shared_ptr<Event> event_ptr)
 	for (auto &entity : world->entityContainer)
 	{
 		// Check if this entity has registered for this event
-		if (entity.second->hasRegisteredEvent(event_ptr->getName())) {
-			entity.second->onEvent(event_ptr);
+		if (entity->hasRegisteredEvent(event_ptr->getName())) {
+			entity->onEvent(event_ptr);
 		}
 	}
 }

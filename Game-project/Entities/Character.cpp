@@ -23,7 +23,7 @@ Character::~Character()
 {
 }
 
-void Character::setup()
+void Character::setup(int entityId)
 {
 	//isFollowingPath = false;
 	// Register any events
@@ -67,9 +67,9 @@ void Character::setup()
 	registerEvent(mouseButtonUpEvent);
 
 	// Call the setup function for all the components
-	for (auto &component : components)
+	for(auto const &component : components)
 	{
-		component.second->setup();
+		component.second->setup(entityId);
 	}
 }
 

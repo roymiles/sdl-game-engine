@@ -19,23 +19,15 @@ void RenderingEngine::update()
 {
 
 #ifdef DEBUG_TIME
-	auto t1 = Clock::now();
-#endif
-
-	std::vector<entityPointer> drawableEntities = world->getEntitiesWithComponent<Sprite>();
-
-#ifdef DEBUG_TIME
 	auto t2 = Clock::now();
-	std::cout << "RenderingEngine:		getEntitiesWithComponent<Sprite>: "
-		<< std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-		<< " milliseconds" << std::endl;
-#endif;
+#endif
 
 	// Clear the screen
 	SDL_RenderClear(WindowManager::renderer);
 
 	std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
 	std::shared_ptr<Transform> cameraTarget    = camera->getTarget()->getComponent<Transform>();
+	std::shared_ptr<Entity> entity;
 
 	// Get these values outside the loop
 	Vec2i cameraPos  = cameraTransform->getPosition();
@@ -48,14 +40,18 @@ void RenderingEngine::update()
 	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
 	{
 		// Draw all the sprites to the screen
-		for (auto &entity : drawableEntities)
+		for (int i = 0; i < World::drawableEntityIDs[currentLayer].size(); i++)
 		{
+			// Use the ID as input for the entity container
+			entity = World::entityContainer[World::drawableEntityIDs[currentLayer][i]];
 			// If this entity is for a different layer skip it
-			if (entity->getComponent(Sprite::name)->getLayer() != currentLayer)
+			//if (entity->getComponent(Sprite::name)->getLayer() != currentLayer)
+			if(entity->getComponent<Sprite>()->getLayer() != currentLayer)
 				continue;
 
 			// Every entity is drawn inside a box (rectangle)
-			std::shared_ptr<Component> transform = entity->getComponent(Transform::name);
+			//std::shared_ptr<Component> transform = entity->getComponent(Transform::name);
+			std::shared_ptr<Transform> transform = entity->getComponent<Transform>();
 			SDL_Rect box = transform->getRect();
 
 			// The sprites are offset by half the screen width and height, so that the character
@@ -85,8 +81,9 @@ void RenderingEngine::update()
 				// copy the texture to the rendering context
 				SDL_RenderCopy(WindowManager::renderer, sprite->getTexture(entity->getCurrentState()), NULL, &box); // The current texture depends on the entities state
 			}
-		}
-	}
+		}	}
+
+	SDL_RenderPresent(WindowManager::renderer);
 
 #ifdef DEBUG_TIME
 	auto t3 = Clock::now();
@@ -99,7 +96,7 @@ void RenderingEngine::update()
 	// *this function may or may not be overriden from Entity.h*
 	for (auto const &e : world->entityContainer)
 	{
-		e.second->draw(cameraX, cameraY, cameraWidth, cameraHeight);
+		e->draw(cameraX, cameraY, cameraWidth, cameraHeight);
 	}
 
 	// Flip the backbuffer

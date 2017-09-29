@@ -35,7 +35,11 @@ public:
 	~World();
 
 	// Each entity is  identified by a unique string
-	static std::map<std::string, entityPointer> entityContainer;
+	static std::vector<entityPointer> entityContainer;
+
+	// All the ids of the drawable entities are stored in a compact form
+	// The first index is the layer. This improves performance
+	static std::vector<std::vector<int>> drawableEntityIDs;
 
 	// Serialise entity container and write to a file
 	void serializeEntityContainer(const std::string& fileName);
@@ -55,7 +59,7 @@ public:
 	{
 		for (auto const &entity : entityContainer)
 		{
-			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(entity.second))
+			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(entity))
 			{
 				return ptr;
 			}
@@ -75,7 +79,7 @@ public:
 
 	// Add an entity to the container and return the identifier
 	static std::string createEntity(entityPointer entity);
-	void createEntity(entityPointer entity, std::string key);
+	static void createEntity(entityPointer entity, std::string key);
 
 	void removeEntity(std::string key);
 
@@ -90,10 +94,10 @@ public:
 		entitiesWithComponent.reserve(entityContainer.size());
 		for (auto const &entity : entityContainer)
 		{
-			if (entity.second->hasComponent<T>())
+			if (entity->hasComponent<T>())
 			{
 				// Add a random key at the end to avoid entities of the same type overwriting
-				entitiesWithComponent.push_back(entity.second);
+				entitiesWithComponent.push_back(entity);
 			}
 		}
 

@@ -14,7 +14,7 @@ public:
 	Floor(int _x, int _y, int _w, int _h);
 	~Floor();
 
-	void setup() override;
+	void setup(int entityId) override;
 	void update() override;
 	const std::string getName() const override;
 	int getCurrentState() const override;

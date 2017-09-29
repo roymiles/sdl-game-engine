@@ -1,6 +1,7 @@
 #include "Sprite.h"
 #include "../WindowManager.h"
 #include "../Utility/FileHelper.h"
+#include "../World.h"
 
 #include <string>
 
@@ -56,8 +57,11 @@ SDL_Surface* Sprite::loadImage(std::string filename) {
 	return tmp;
 }
 
-void Sprite::setup()
+void Sprite::setup(int entityId)
 {
+	// Add this entity to the list of drawable entities
+	World::drawableEntityIDs[layer].push_back(entityId);
+
 	std::vector<SDL_Texture*> textures;
 	// Loop through all the states
 	for (int i = 0; i < imagePaths.size(); i++)

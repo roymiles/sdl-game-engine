@@ -15,7 +15,8 @@ using namespace utilities;
 // One meter corresponds to 20 pixels on the screen
 const int World::METER = 20;
 
-std::map<std::string, entityPointer> World::entityContainer = {};
+std::vector<entityPointer> World::entityContainer	   = {};
+std::vector<std::vector<int>> World::drawableEntityIDs(layers::SIZE);
 
 void World::serializeEntityContainer(const std::string& fileName)
 {
@@ -37,7 +38,8 @@ World::~World()
 
 entityPointer World::getEntity(std::string key)
 {
-	return entityContainer[key];
+	return nullptr;
+	//return entityContainer[key];
 }
 
 std::vector<std::shared_ptr<Entity>> World::getEntitiesAtPoint(SDL_Point &point)
@@ -46,14 +48,14 @@ std::vector<std::shared_ptr<Entity>> World::getEntitiesAtPoint(SDL_Point &point)
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	for (auto &entity : entityContainer)
 	{
-		transformComponent = entity.second->getComponent<Transform>();
+		transformComponent = entity->getComponent<Transform>();
 
 		if (transformComponent != nullptr)
 		{
 			// Check if the entity covers the point
 			if (SDL_PointInRect(&point, &transformComponent->getRect()))
 			{
-				entitiesAtPoint.push_back(entity.second);
+				entitiesAtPoint.push_back(entity);
 			}
 		}
 	}
@@ -96,7 +98,7 @@ std::string World::createEntity(entityPointer entity)
 	// May need to check this key does not already exist first!
 	std::string randomKey = randomString(7);
 
-	entityContainer[entity->getName() + "_" + randomKey] = entity;
+	createEntity(entity, randomKey);
 
 	return randomKey;
 }
@@ -104,12 +106,14 @@ std::string World::createEntity(entityPointer entity)
 void World::createEntity(entityPointer entity, std::string key)
 {
 	// Add to container and then return entity
-	entityContainer[entity->getName() + "_" + key] = entity;
+	entity->setKey(entity->getName() + "_" + key);
+	entityContainer.push_back(entity);
 }
 
 void World::removeEntity(std::string key)
 {
-	entityContainer.erase(key);
+#pragma message("Implement delete function")
+	//entityContainer.erase(key);
 }
 
 void World::setup()
@@ -170,11 +174,11 @@ void World::setup()
 	// ----------------------------------------
 
 	// Loop through all the created entities and call setup
-	for (auto &entity : entityContainer)
+	for(int id = 0; id < entityContainer.size(); id++)
 	{
 		// Calling setup on each entity will also internally call
 		// setup on each of their components
-		entity.second->setup();
+		entityContainer[id]->setup(id);
 	}
 
 	//std::ofstream os("out.cereal", std::ios::binary);
@@ -192,7 +196,7 @@ void World::update()
 	// Loop through all entities and call update
 	for (auto &entity : entityContainer)
 	{
-		entity.second->update();
+		entity->update();
 	}
 }
 

@@ -26,11 +26,19 @@ public:
 		archive("hello");
 	}
 
-	virtual void setup() {}
+	virtual void setup(int id) {}
 	virtual void update() {}
 	virtual void onEvent(std::shared_ptr<Event> event_ptr) {}
 	virtual const std::string getName() const = 0;
 	virtual int getCurrentState() const { return -1; };
+
+	// Instead of having entity container as a map, it is stored as a vector
+	// and the key is a member variable
+	std::string key;
+	void setKey(std::string _key)
+	{
+		key = _key;
+	}
 
 	template<typename T>
 	std::shared_ptr<T> getComponent() {

@@ -23,7 +23,7 @@ const std::string Path::getName() const
 	return name;
 }
 
-void Path::setup()
+void Path::setup(int entityId)
 {
 }
 

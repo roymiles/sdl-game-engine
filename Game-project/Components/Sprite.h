@@ -46,12 +46,12 @@ public:
 
 	const std::string getName() const override;
         
-	int getLayer() const override;
+	int getLayer() const;
 	void setLayer(int _layer);
 
 	SDL_Surface* loadImage(std::string filename);
 	
-	void setup() override;
+	void setup(int entityId) override;
 
 	void setImagePaths(int state_id, std::vector<std::string> _imagePaths);
 	SDL_Texture* getTexture(int state_id);

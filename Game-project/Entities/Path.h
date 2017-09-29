@@ -20,7 +20,7 @@ public:
 	static const std::string name;
 	const std::string getName() const override;
 
-	void setup() override;
+	void setup(int entityId) override;
 	void draw(int cameraX, int cameraY, int cameraWidth, int cameraHeight) override;
 
 #pragma message("make getters and setters for this")

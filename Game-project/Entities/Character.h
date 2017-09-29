@@ -20,7 +20,7 @@ public:
 
 	static int movementSpeed;
 
-	void setup() override;
+	void setup(int entityId) override;
 	void update() override;
 	void onEvent(std::shared_ptr<Event> event_ptr) override;
 	const std::string getName() const override;

@@ -16,7 +16,7 @@ public:
 	Camera(std::shared_ptr<Entity> _target);
 	~Camera();
 
-	void setup() override;
+	void setup(int entityId) override;
 	void update() override;
 	const std::string getName() const override;
 	std::shared_ptr<Entity> getTarget();

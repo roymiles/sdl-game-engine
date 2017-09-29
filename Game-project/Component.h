@@ -21,19 +21,20 @@ public:
 
 	virtual const std::string getName() const = 0;
 
-	virtual void setup() {}
+	virtual void setup(int entityId) {}
 	virtual void update() {}
 
+	// **NOTE** THESE MAY BE WORSE THAN DOWNCASTING
 	// Virtual functions overriden by Transform component
 	// Having these functions as virtual removes the need to downcast the component
-	// inside the rendering engine loop. This drastically improves performance
+	// inside the rendering engine loop.
 
-	// Transform
-	virtual SDL_Rect getRect() { return SDL_Rect(); }
-	virtual display getDisplayType() const { return _ABSOLUTE; }
+	//// Transform
+	//virtual SDL_Rect getRect() { return SDL_Rect(); }
+	//virtual display getDisplayType() const { return _ABSOLUTE; }
 
-	// Sprite
-	virtual int getLayer() const { return -1; }
+	//// Sprite
+	//virtual int getLayer() const { return -1; }
 
 	//bool Component::operator==(const Component &other) const {};
 	//bool Component::operator!=(const Component &other) const {};

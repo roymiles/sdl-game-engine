@@ -20,7 +20,7 @@ Camera::~Camera()
 {
 }
 
-void Camera::setup()
+void Camera::setup(int entityId)
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Transform> transformComponent(new Transform());

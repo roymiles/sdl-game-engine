@@ -17,7 +17,7 @@ public:
 	Box(int _width, int _height, std::vector<std::string> _idleImagePaths);
 	~Box();
 
-	void setup() override;
+	void setup(int entityId) override;
 	void update() override;
 	const std::string getName() const override;
 	int getCurrentState() const override;

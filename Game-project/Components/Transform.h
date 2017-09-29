@@ -34,12 +34,12 @@ public:
 	int getX() const;
 	int getY() const;
 
-	SDL_Rect getRect() override;
+	SDL_Rect getRect();
 
 	// The unique name of the component
 	static const std::string name;
 
-	display getDisplayType() const override;
+	display getDisplayType() const;
 	void setDisplayType(const display _displayType);
 
 private:

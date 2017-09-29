@@ -19,7 +19,7 @@ Button::~Button()
 {
 }
 
-void Button::setup()
+void Button::setup(int entityId)
 {
 	// Create instances of all the components for this entity
 	std::shared_ptr<Sprite> spriteComponent(new Sprite(state::SIZE));
@@ -37,7 +37,7 @@ void Button::setup()
 	// Call the setup function for all the components
 	for (auto &component : components)
 	{
-		component.second->setup();
+		component.second->setup(entityId);
 	}
 }
 
