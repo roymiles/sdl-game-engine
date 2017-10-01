@@ -13,7 +13,7 @@ using namespace components;
 class Camera : public Entity
 {
 public:
-	Camera(std::shared_ptr<Entity> _target);
+	Camera(int _targetId);
 	~Camera();
 
 	void setup(int entityId) override;
@@ -24,8 +24,9 @@ public:
 private:
 	static const std::string name;
 
-	std::shared_ptr<Entity> target; // The entity the camera will follow
+	int targetIndex;
+#pragma message("Why does storing the pointer not work?")
+	//std::shared_ptr<Entity> target; // The entity the camera will follow
 };
 
-}
-}
+} }

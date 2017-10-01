@@ -4,6 +4,8 @@
 #include "Utility/Random.h"
 
 #include "LevelManager.h"
+#include "WindowManager.h"
+#include "Globals.h"
 
 #include <iostream>
 #include <sstream>
@@ -11,9 +13,6 @@
 namespace game {
 
 using namespace utilities;
-
-// One meter corresponds to 20 pixels on the screen
-const int World::METER = 20;
 
 std::vector<entityPointer> World::entityContainer = {};
 
@@ -95,7 +94,8 @@ std::shared_ptr<Entity> World::getHighestLayerEntity(std::vector<std::shared_ptr
 	return nullptr;
 }
 
-std::string World::createEntity(entityPointer entity)
+// Returns index in container
+int World::createEntity(entityPointer entity)
 {
 	// Add to container and then return entity
 
@@ -103,16 +103,19 @@ std::string World::createEntity(entityPointer entity)
 	// May need to check this key does not already exist first!
 	std::string randomKey = randomString(7);
 
-	createEntity(entity, randomKey);
+	int index = createEntity(entity, randomKey);
 
-	return randomKey;
+	return index;
 }
 
-void World::createEntity(entityPointer entity, std::string key)
+int World::createEntity(entityPointer entity, std::string key)
 {
 	// Add to container and then return entity
 	entity->setKey(entity->getName() + "_" + key);
+	int index = entityContainer.size(); // Before push_back because index starts at 0
 	entityContainer.push_back(entity);
+
+	return index;
 }
 
 void World::removeEntity(std::string key)
@@ -135,10 +138,10 @@ void World::setup()
 	currentGameState = gameState::Level1;
 	// importEntities(state);
 
-	std::shared_ptr<Character> character(new Character(0.25*METER, 1.5*METER));
-	createEntity(character);
+	std::shared_ptr<Character> character(new Character(2*METER, 2*METER));
+	int characterIndex = createEntity(character);
 
-	std::shared_ptr<Camera> camera(new Camera(character));
+	std::shared_ptr<Camera> camera(new Camera(characterIndex));
 	createEntity(camera);
 
 	std::shared_ptr<Box> box(new Box(1*METER, 1*METER, { FileHelper::resourceFolder + "crate.bmp" }));
@@ -150,9 +153,9 @@ void World::setup()
 
 	int blockWidth = 10;
 	int blockHeight = 40;
-	for (int x = 0; x < WindowManager::WIDTH; x += blockWidth)
+	for (int x = 0; x < SCREEN_WIDTH; x += blockWidth)
 	{
-		std::shared_ptr<Block> block(new Block(x, WindowManager::HEIGHT - blockHeight, blockWidth, blockHeight));
+		std::shared_ptr<Block> block(new Block(x, SCREEN_HEIGHT - blockHeight, blockWidth, blockHeight));
 
 		// Use x key as opposed to a random string
 		std::stringstream ss;
@@ -161,8 +164,8 @@ void World::setup()
 		createEntity(block, ss.str());
 	}
 
-	int floorWidth  = 5*METER;
-	int floorHeight = 5*METER;
+	int floorWidth  = 5*METER * 1000;
+	int floorHeight = 5*METER * 1000;
 	for (int x = LevelManager::DIMENSIONS.x; x < LevelManager::DIMENSIONS.w; x += floorWidth)
 	{
 		for (int y = LevelManager::DIMENSIONS.y; y < LevelManager::DIMENSIONS.h; y += floorHeight)
@@ -212,8 +215,8 @@ maths::Vec2i World::screenToWorldCoordinates(maths::Vec2i screenCoordinates)
 	// e.g. subtract the center screen x, y and then add the camera x, y
 	int x, y;
 	std::shared_ptr<Transform> cameraTransform = getEntity<Camera>()->getComponent<Transform>();
-	x = screenCoordinates.x - (WindowManager::WIDTH / 2) + cameraTransform->getX();
-	y = screenCoordinates.y - (WindowManager::HEIGHT / 2) + cameraTransform->getY();
+	x = screenCoordinates.x - (SCREEN_WIDTH / 2) + cameraTransform->getX();
+	y = screenCoordinates.y - (SCREEN_HEIGHT / 2) + cameraTransform->getY();
 
 	return Vec2i(x, y);
 }

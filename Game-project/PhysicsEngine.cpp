@@ -3,6 +3,7 @@
 #include "PhysicsEngine.h"
 #include "EventManager.h" // For triggerEvent
 #include "LevelManager.h" // boundToMap
+#include "Globals.h"
 
 namespace game {
 
@@ -94,7 +95,7 @@ inline void PhysicsEngine::boundToWindow(entityPointer& A)
 	std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
 	Vec2i position = transformComponent->getPosition();
 	// x-axis
-	if (position.x > WindowManager::WIDTH)
+	if (position.x > SCREEN_WIDTH)
 	{
 		// Right hand side of the screen
 		position.x = 0;
@@ -102,11 +103,11 @@ inline void PhysicsEngine::boundToWindow(entityPointer& A)
 	else if (position.x + transformComponent->getWidth() < 0)
 	{
 		// Left hand side of the screen
-		position.x = WindowManager::WIDTH;
+		position.x = SCREEN_WIDTH;
 	}
 
 	// y-axis
-	if (position.y > WindowManager::HEIGHT)
+	if (position.y > SCREEN_HEIGHT)
 	{
 		// Bottom of screen
 		position.y = 0;
@@ -114,7 +115,7 @@ inline void PhysicsEngine::boundToWindow(entityPointer& A)
 	else if (position.y + transformComponent->getHeight() < 0)
 	{
 		// Top of screen
-		position.y = WindowManager::HEIGHT;
+		position.y = SCREEN_HEIGHT;
 	}
 
 	transformComponent->setPosition(position.x, position.y);

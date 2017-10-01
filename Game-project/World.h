@@ -9,7 +9,7 @@
 #pragma message("Should be ported over to a time class")
 #include <chrono>
 typedef std::chrono::high_resolution_clock Clock;
-#define DEBUG_TIME 1
+//#define DEBUG_TIME 1
 
 #include "Entity.h"
 #include "Entities/Camera.h"
@@ -51,9 +51,6 @@ public:
 
 	// Current game state
 	gameState currentGameState;
-
-	// One meter corresponds to 20 pixels on the screen
-	static const int METER;
 	
 	// For a given identifier, return the entity within the container
 	entityPointer getEntity(std::string id);
@@ -64,7 +61,7 @@ public:
 	{
 		for (auto const &entity : entityContainer)
 		{
-			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(entity))
+			if (std::shared_ptr<T> ptr = std::static_pointer_cast<T>(entity))
 			{
 				return ptr;
 			}
@@ -83,8 +80,8 @@ public:
 	static std::shared_ptr<Entity> getHighestLayerEntity(std::vector<std::shared_ptr<Entity>> entities, layers maxLayer);
 
 	// Add an entity to the container and return the identifier
-	static std::string createEntity(entityPointer entity);
-	static void createEntity(entityPointer entity, std::string key);
+	static int createEntity(entityPointer entity);
+	static int createEntity(entityPointer entity, std::string key);
 
 	void removeEntity(std::string key);
 

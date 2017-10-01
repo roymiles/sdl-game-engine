@@ -29,7 +29,7 @@ void Box::setup(int entityId)
     spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(50, 50, 200, 200);
+	transformComponent->setDimensions(80, 80, width, height);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
 

@@ -1,18 +1,19 @@
 #include "Camera.h"
 #include "SDL.h"
+#include "../World.h"
 
 namespace game { namespace entities {
 
 const std::string Camera::name = "Camera";
 
-Camera::Camera(std::shared_ptr<Entity> _target)
+Camera::Camera(int _targetIndex)
 {
-	target = _target;
+	targetIndex = _targetIndex;
 }
 
 std::shared_ptr<Entity> Camera::getTarget()
 {
-	return target;
+	return World::entityContainer[targetIndex];
 }
 
 
@@ -20,8 +21,9 @@ Camera::~Camera()
 {
 }
 
-void Camera::setup(int entityId)
+void Camera::setup(int _entityId)
 {
+	entityId = _entityId;
 	// Create instances of all the components for this entity
 	std::shared_ptr<Transform> transformComponent(new Transform());
 	//Vec2d characterPosition = character->getComponent<Transform>()->getPosition();
@@ -36,7 +38,7 @@ void Camera::update()
 {
 	// Set the camera position to the characters position
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-	Vec2i targetPosition = target->getComponent<Transform>()->getPosition();
+	Vec2i targetPosition = getTarget()->getComponent<Transform>()->getPosition();
 
 	transformComponent->setPosition(targetPosition);
 }

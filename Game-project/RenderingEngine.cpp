@@ -1,7 +1,10 @@
 #include "RenderingEngine.h"
 #include "WindowManager.h"
+#include "Globals.h"
 
 namespace game {
+
+std::vector<std::vector<int>> RenderingEngine::screenGrid(GRID_COLS, std::vector<int>(GRID_ROWS, 0));
 
 RenderingEngine::RenderingEngine(std::shared_ptr<World> _world)
 {
@@ -60,8 +63,8 @@ void RenderingEngine::update()
 				box.x -= cameraX;
 				box.y -= cameraY;
 				// Make the target of the camera at the centre of the screen
-				box.x += WindowManager::WIDTH / 2;
-				box.y += WindowManager::HEIGHT / 2;
+				box.x += SCREEN_WIDTH / 2;
+				box.y += SCREEN_HEIGHT / 2;
 				// Offset the camera by the width and height of the target
 				// This is because rectangle coordinates are specified by the top left corner rather than the centre
 				box.x -= cameraWidth / 2;
@@ -69,7 +72,7 @@ void RenderingEngine::update()
 			}
 
 			// Check if the entity is off the screen. If it is, don't render it
-			if (box.x + box.w > 0 && box.x < WindowManager::WIDTH && box.y + box.h > 0 && box.y < WindowManager::HEIGHT)
+			if (box.x + box.w > 0 && box.x < SCREEN_WIDTH && box.y + box.h > 0 && box.y < SCREEN_HEIGHT)
 			{
 				// The entity is on the screen
 				std::shared_ptr<Sprite> sprite = entity->getComponent<Sprite>();
@@ -79,6 +82,42 @@ void RenderingEngine::update()
 			}
 		}	
 	}
+
+	// Draw unit square around the character and across the whole screen (fence post problem
+	SDL_Rect r;
+	r.w = METER;
+	r.h = METER;
+	for (int i = 0; i < GRID_COLS; ++i)
+	{
+		for (int j = 0; j < GRID_ROWS; ++j)
+		{
+			r.x = i * METER;
+			r.y = j * METER;
+
+			if (RenderingEngine::screenGrid[i][j] == 1)
+			{
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+				SDL_RenderFillRect(WindowManager::renderer, &r);
+			}
+			else if (RenderingEngine::screenGrid[i][j] == 2) {
+				SDL_SetRenderDrawColor(WindowManager::renderer, 0, 255, 255, SDL_ALPHA_OPAQUE);
+				SDL_RenderFillRect(WindowManager::renderer, &r);
+			}
+			else if (RenderingEngine::screenGrid[i][j] == 3) {
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 0, 255, SDL_ALPHA_OPAQUE);
+				SDL_RenderFillRect(WindowManager::renderer, &r);
+			}
+			else if (RenderingEngine::screenGrid[i][j] == 4) {
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);
+				SDL_RenderFillRect(WindowManager::renderer, &r);
+			}
+			else {
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+				SDL_RenderDrawRect(WindowManager::renderer, &r);
+			}
+		}
+	}
+
 
 	SDL_RenderPresent(WindowManager::renderer);
 
@@ -131,6 +170,14 @@ void RenderingEngine::sort(std::map<std::string, entityPointer>& drawableEntitie
         }
     }
 
+}
+
+Vec2i RenderingEngine::roundScreenCoordinates(int _x, int _y)
+{
+	int x = ((_x + METER / 2) / METER);
+	int y = ((_y + METER / 2) / METER);
+
+	return Vec2i(x, y);
 }
 
 }

@@ -32,7 +32,7 @@ struct Node
 class AStar
 {
 public:
-	AStar(std::vector<std::vector<char>> _grid, int _resolution = 10);
+	AStar(std::vector<std::vector<char>> _grid);
 	~AStar();
 
 	bool calculate(int startX, int startY, int endX, int endY, std::vector<std::shared_ptr<Node>> &path);

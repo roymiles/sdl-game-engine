@@ -1,10 +1,7 @@
 #include "WindowManager.h"
+#include "Globals.h"
 
 #include <iostream>
-
-// Screen Dimensions constants
-const int WindowManager::WIDTH  = 1280;
-const int WindowManager::HEIGHT = 720;
 
 SDL_Window* WindowManager::window	   = NULL;
 SDL_Renderer* WindowManager::renderer  = NULL;
@@ -27,7 +24,7 @@ bool WindowManager::init()
 	}
 	else {
 		// The window to be rendered into
-		window = SDL_CreateWindow("Game Title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowManager::WIDTH, WindowManager::HEIGHT, SDL_WINDOW_OPENGL);
+		window = SDL_CreateWindow("Game Title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 		if (window == NULL) {
 			std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 			success = false;

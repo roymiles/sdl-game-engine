@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "../Utility/FileHelper.h"
 #include "../EventManager.h"
+#include "../RenderingEngine.h"
+#include "../Globals.h"
 
 namespace game { namespace entities {
 
@@ -11,7 +13,7 @@ using namespace utilities;
 using namespace algorithms;
 
 const std::string Character::name = "Character";
-int Character::movementSpeed = 1 * World::METER; // 1 meter per frame
+int Character::movementSpeed = 1/40 * METER; // 1 meter per frame
 
 Character::Character(int _width, int _height)
 	: width(_width), height(_height)
@@ -41,7 +43,7 @@ void Character::setup(int _entityId)
 	// Drawn in the centre of the screen
 	// The rectangles are drawn on screen from the top left of the image
 	// To ensure the character is exactly in the middle, the character needs to be offset by its height and width
-	transformComponent->setDimensions(WindowManager::WIDTH/2, WindowManager::HEIGHT/2, 100, 100);
+	transformComponent->setDimensions(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, width, height);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
 	rigidBodyComponent->mass = 0;
@@ -158,11 +160,14 @@ void Character::onEvent(std::shared_ptr<Event> event_ptr)
 		//std::cout << "Released mouse at " << mouseButtonUp->getX() << ", " << mouseButtonUp->getY() << std::endl;
 		std::cout << "Released mouse at " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
 		std::cout << "Currently at " << transformComponent->getX() << ", " << transformComponent->getY() << std::endl;
-		std::vector<moves> moveList = PathFinding::astar(transformComponent->getX(), transformComponent->getY(), mouseButtonUp->getX(), mouseButtonUp->getY());
 
-		isFollowingPath = true;
-		pathIndex		= 0;
-		path			= moveList;
+		Vec2i startGridXY = RenderingEngine::roundScreenCoordinates(transformComponent->getX(), transformComponent->getY());
+		Vec2i endGridXY   = RenderingEngine::roundScreenCoordinates(mouseButtonUp->getX(), mouseButtonUp->getY());
+		RenderingEngine::screenGrid[endGridXY.x][endGridXY.y] = 1; // Mark end coordinate
+		std::vector<moves> moveList = PathFinding::astar(startGridXY.x, startGridXY.y, endGridXY.x, endGridXY.y);
+		//isFollowingPath = true;
+		//pathIndex		= 0;
+		//path			= moveList;
 	}
 }
 

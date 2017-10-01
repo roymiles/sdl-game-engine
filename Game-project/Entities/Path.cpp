@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../WindowManager.h"
+#include "../Globals.h"
 
 namespace game { namespace entities {
 
@@ -37,8 +38,8 @@ void Path::draw(int cameraX, int cameraY, int cameraWidth, int cameraHeight)
 		points[i].x -= cameraX;
 		points[i].y -= cameraY;
 		// Make the target of the camera at the centre of the screen
-		points[i].x += WindowManager::WIDTH / 2;
-		points[i].y += WindowManager::HEIGHT / 2;
+		points[i].x += SCREEN_WIDTH / 2;
+		points[i].y += SCREEN_HEIGHT / 2;
 		// Offset the camera by the width and height of the target
 		// This is because rectangle coordinates are specified by the top left corner rather than the centre
 		points[i].x -= cameraWidth / 2;

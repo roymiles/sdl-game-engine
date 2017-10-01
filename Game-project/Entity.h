@@ -8,10 +8,13 @@
 #include "Event.h"
 #include "Utility/Random.h"
 #include "Maths/Vec2.h"
+#include "Components/Transform.h"
 
 #include "Dependancies/cereal/archives/json.hpp"
 
 namespace game {
+
+using namespace components;
 
 class Entity
 {
@@ -26,6 +29,7 @@ public:
 		archive("hello");
 	}
 
+	int entityId; // Id of entity in entityContainer
 	virtual void setup(int id) {}
 	virtual void update() {}
 	virtual void onEvent(std::shared_ptr<Event> event_ptr) {}
@@ -50,7 +54,12 @@ public:
 		}
 	}
 
-	// This is for if you don't want to downcast (which incurs a performance hit)
+	template<>
+	std::shared_ptr<Transform> getComponent<Transform>() {
+		return transform;
+	}
+
+	// This is for if you don't want to downcast (which incurs a performance hit? or not?)
 	std::shared_ptr<Component> getComponent(std::string name) {
 		if (components.find(name) == components.end()) {
 			return nullptr;
@@ -60,11 +69,23 @@ public:
 		}
 	}
 
+	void setComponent(std::shared_ptr<Transform> t);
 	std::string setComponent(std::shared_ptr<Component> c);
 
 	template<typename T>
 	bool hasComponent() {
 		if (components.find(T::name) == components.end()) {
+			return false;
+		}
+		else {
+			return true;
+		} 
+	}
+
+	template<>
+	bool hasComponent<Transform>() {
+		if (transform == nullptr)
+		{
 			return false;
 		}
 		else {
@@ -87,6 +108,7 @@ public:
 	virtual void draw(int cameraX, int cameraY, int cameraWidth, int cameraHeight) {};
 
 protected:
+	std::shared_ptr<Transform> transform; // Every entity has it, so might as well keep seperate to avoid downcasting performance hit
 	std::map<std::string, std::shared_ptr<Event>> registeredEvents;
 	std::map<std::string, std::shared_ptr<Component>> components;
 };

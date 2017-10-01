@@ -140,21 +140,23 @@ int main(int argc, char * argv[]) {
 #ifdef DEBUG_TIME
 		auto t3 = Clock::now();
 #endif;
-		// Physics Engine
-		physicsEngine->update();
 
-#ifdef DEBUG_TIME
-		auto t4 = Clock::now();
-		std::cout << "Physics Engine Update: "
-			<< std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count()
-			<< " milliseconds" << std::endl;
-#endif;
 		// Logic
 		world->update();
 
 #ifdef DEBUG_TIME
-		auto t5 = Clock::now();
+		auto t4 = Clock::now();
 		std::cout << "World Update: "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count()
+			<< " milliseconds" << std::endl;
+#endif;
+
+		// Physics Engine
+		physicsEngine->update();
+
+#ifdef DEBUG_TIME
+		auto t5 = Clock::now();
+		std::cout << "Physics Engine Update: "
 			<< std::chrono::duration_cast<std::chrono::milliseconds>(t5 - t4).count()
 			<< " milliseconds" << std::endl;
 #endif;

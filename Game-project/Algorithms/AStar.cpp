@@ -11,13 +11,12 @@ using namespace utilities;
 
 //#define DEBUG_ASTAR
 
-AStar::AStar(std::vector<std::vector<char>> _grid, int _resolution)
+AStar::AStar(std::vector<std::vector<char>> _grid)
 {
 	grid		= _grid;
-	resolution	= _resolution;
 
-	MAX_X = _grid.size() * _resolution;
-	MAX_Y = _grid[0].size() * _resolution;
+	MAX_X = _grid.size();
+	MAX_Y = _grid[0].size();
 
 	closedSet.reserve(_grid.size() * _grid[0].size());
 	openSet.reserve(_grid.size() * _grid[0].size());
@@ -30,10 +29,10 @@ AStar::~AStar()
 bool AStar::calculate(int startX, int startY, int endX, int endY, std::vector<std::shared_ptr<Node>> &path)
 {
 	// Perhaps these should round down?
-	startX = roundUp(startX, resolution);
-	startY = roundUp(startY, resolution);
-	endX   = roundUp(endX, resolution);
-	endY   = roundUp(endY, resolution);
+	//startX = roundUp(startX, resolution);
+	//startY = roundUp(startY, resolution);
+	//endX   = roundUp(endX, resolution);
+	//endY   = roundUp(endY, resolution);
 
 	// Check if start and end coordinates are inside the grid
 	// Double check conditions
@@ -140,32 +139,27 @@ std::vector<std::shared_ptr<Node>> AStar::getNeighbours(std::shared_ptr<Node> &_
 	x = _node->x;
 	y = _node->y;
 
-	// indices are the x, y coordinates divided by the resolution
-	int x_i, y_i;
-	x_i = x / resolution;
-	y_i = y / resolution;
-
 	if (x < MAX_X) {
-		if (grid[x_i + 1][y_i] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x + resolution, y)));
+		if (grid[x + 1][y] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x + 1, y)));
 		}
 	}
 
 	if (x > 0) {
-		if (grid[x_i - 1][y_i] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x - resolution, y)));
+		if (grid[x - 1][y] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x - 1, y)));
 		}
 	}
 
 	if (y < MAX_Y) {
-		if (grid[x_i][y_i + 1] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x, y + resolution)));
+		if (grid[x][y + 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x, y + 1)));
 		}
 	}
 
 	if (y > 0) {
-		if (grid[x_i][y_i - 1] = '0') {
-			neighbours.push_back(std::make_shared<Node>(Node(x, y - resolution)));
+		if (grid[x][y - 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x, y - 1)));
 		}
 	}
 

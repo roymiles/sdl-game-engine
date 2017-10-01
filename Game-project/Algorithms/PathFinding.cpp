@@ -1,11 +1,12 @@
 #include "PathFinding.h"
-#include "../World.h"
 #include "../Entity.h"
 #include "../WindowManager.h"
 #include "../LevelManager.h"
 #include "../Maths/Vec2.h"
 #include "../Entities/Path.h" // Draw paths to screen
 #include "../World.h" // createEntity
+#include "../Globals.h"
+#include "../RenderingEngine.h"
 #include "AStar.h"
 
 // bitset
@@ -40,32 +41,27 @@ grid2D_t PathFinding::createNavMesh()
 	std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 	SDL_Point point;
 
-	int width  = LevelManager::DIMENSIONS.w;
-	int height = LevelManager::DIMENSIONS.h;
-
 	// Resize the matrix to the width and height of the map
 	// It is good practice to resize a vector before rather than using push_back
-	grid2D_t navMesh(width / resolution);
-	//navMesh.resize(width / resolution);
+	grid2D_t navMesh(GRID_COLS);
 	for (auto &y : navMesh)
 	{
-		y.resize(height / resolution);
+		y.resize(GRID_ROWS);
 	}
 
 	std::shared_ptr<Entity> entity;
 	// Incrementers for the array indices
-	int x, x_i, y, y_i;
-	for (x = 0, x_i = 0; x < width; x += resolution)
+	for (int i = 0; i < GRID_COLS; ++i)
 	{
-		for (y = 0, y_i = 0; y < height; y += resolution)
+		for (int j = 0; j < GRID_ROWS; ++j)
 		{
-			point.x = x;
-			point.y = y;
+			point.x = i * METER;
+			point.y = j * METER;
 			entitiesAtPoint = World::getEntitiesAtPoint(point);
 
 			// If there is no entity at this point, then assume its walkable
 			if (entitiesAtPoint.empty()) {
-				navMesh[x_i][y_i] = '0';
+				navMesh[i][j] = '0';
 				continue; // Move onto next x, y coordinate
 			}
 
@@ -75,16 +71,14 @@ grid2D_t PathFinding::createNavMesh()
 			// If the top layer entity has a rigid body component, then it is unwalkable
 			if (entity->hasComponent<RigidBody>())
 			{
-				navMesh[x_i][y_i] = 'X';
+				//RenderingEngine::screenGrid[i][j] = 2;
+				navMesh[i][j] = 'X';
 			}
 			else {
-				navMesh[x_i][y_i] = '0';
+				//RenderingEngine::screenGrid[i][j] = 3;
+				navMesh[i][j] = '0';
 			}
-
-			y_i++;
 		}
-
-		x_i++;
 	}
 
 	return navMesh;
@@ -106,7 +100,13 @@ void PathFinding::setResolution(int _resolution)
 std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY)
 {
 	// A*
-	AStar *aStar = new AStar(PathFinding::navMesh, PathFinding::resolution);
+
+	// Clear previously drawn path
+	for (auto &i : RenderingEngine::screenGrid)
+		std::fill(i.begin(), i.end(), 0);
+
+	setCurrentNavMesh(PathFinding::createNavMesh());
+	AStar *aStar = new AStar(PathFinding::navMesh);
 
 	std::vector<std::shared_ptr<Node>> path;
 	//aStar->calculate(startX, startY, endX, endY, path);
@@ -127,6 +127,9 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 	{
 		pathEntity->points[i] = maths::Vec2i(path[i]->x, path[i]->y);
 
+		// Draw path
+		RenderingEngine::screenGrid[path[i]->x][path[i]->y] = 2;
+
 		if (i == 0) {
 			prevState = path[i];
 		}
@@ -138,12 +141,12 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 			// 4 possible conditions for up, left, down and right
 			std::bitset<4> conditions;
 
-			conditions[0] = (path[i]->x == prevState->x + PathFinding::resolution); // right
-			conditions[1] = (path[i]->x == prevState->x - PathFinding::resolution); // left
+			conditions[0] = (path[i]->x == prevState->x + 1); // right
+			conditions[1] = (path[i]->x == prevState->x - 1); // left
 
 			// Increasing y-axis is downward, this is because (0,0) is the top left of the screen
-			conditions[2] = (path[i]->y == prevState->y + PathFinding::resolution); // down
-			conditions[3] = (path[i]->y == prevState->y - PathFinding::resolution); // up
+			conditions[2] = (path[i]->y == prevState->y + 1); // down
+			conditions[3] = (path[i]->y == prevState->y - 1); // up
 
 			int comparitor = (int)(conditions.to_ulong()); // cast to int so a switch statement can be used
 			switch (comparitor)
@@ -197,7 +200,7 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 		}
 	}
 
-	World::createEntity(pathEntity);
+	//World::createEntity(pathEntity);
 
 #ifdef DEBUG_PATHFINDING
 	SDL_RenderPresent(WindowManager::renderer);

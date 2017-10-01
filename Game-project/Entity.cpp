@@ -42,6 +42,11 @@ bool Entity::hasRegisteredEvent(std::string key)
 	}
 }
 
+void Entity::setComponent(std::shared_ptr<components::Transform> t)
+{
+	transform = t;
+}
+
 std::string Entity::setComponent(std::shared_ptr<Component> c)
 {
 	// Add to container and then return the key

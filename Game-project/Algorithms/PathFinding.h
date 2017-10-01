@@ -28,7 +28,7 @@ public:
 	/* 
 	 * Create navigation mesh for the entire level
 	 */
-	grid2D_t createNavMesh();
+	static grid2D_t createNavMesh();
 
 	static void setCurrentNavMesh(grid2D_t _navMesh);
 	static void setResolution(int _resolution);

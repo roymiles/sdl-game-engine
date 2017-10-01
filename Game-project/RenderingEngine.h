@@ -20,6 +20,14 @@ public:
 	RenderingEngine(std::shared_ptr<World> _world);
 	~RenderingEngine();
 
+	/*
+	 * Grid squares on  the screen
+	 */
+	static std::vector<std::vector<int>> screenGrid;
+
+	// Round x,y screen coordinates to a screen grid index
+	static Vec2i roundScreenCoordinates(int x, int y);
+
 	/* 
 	 * Called on every frame and draws every entity with a sprite component
 	 */
