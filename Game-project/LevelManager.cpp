@@ -5,7 +5,7 @@
 namespace game {
 
 // The dimensions of the current level
-const SDL_Rect LevelManager::DIMENSIONS = SDL_Rect(-1000, -1000, 200 * METER, 200 * METER);
+const SDL_Rect LevelManager::DIMENSIONS = SDL_Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 LevelManager::LevelManager()
 {

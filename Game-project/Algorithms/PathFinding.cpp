@@ -7,7 +7,6 @@
 #include "../World.h" // createEntity
 #include "../Globals.h"
 #include "../RenderingEngine.h"
-#include "AStar.h"
 
 // bitset
 #include <bitset>
@@ -19,6 +18,7 @@ namespace game { namespace algorithms {
 // Initialise navMesh and resolution
 grid2D_t PathFinding::navMesh = {};
 int PathFinding::resolution   = Character::movementSpeed;
+std::vector<std::shared_ptr<Node>> PathFinding::path = {};
 
 PathFinding::PathFinding()
 {
@@ -71,11 +71,11 @@ grid2D_t PathFinding::createNavMesh()
 			// If the top layer entity has a rigid body component, then it is unwalkable
 			if (entity->hasComponent<RigidBody>())
 			{
-				//RenderingEngine::screenGrid[i][j] = 2;
+				RenderingEngine::screenGrid[i][j] = 2;
 				navMesh[i][j] = 'X';
 			}
 			else {
-				//RenderingEngine::screenGrid[i][j] = 3;
+				RenderingEngine::screenGrid[i][j] = 3;
 				navMesh[i][j] = '0';
 			}
 		}
@@ -105,12 +105,10 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 	for (auto &i : RenderingEngine::screenGrid)
 		std::fill(i.begin(), i.end(), 0);
 
-	setCurrentNavMesh(PathFinding::createNavMesh());
 	AStar *aStar = new AStar(PathFinding::navMesh);
 
-	std::vector<std::shared_ptr<Node>> path;
-	//aStar->calculate(startX, startY, endX, endY, path);
-	aStar->calculate(endX, endY, startX, startY, path);
+	//std::vector<std::shared_ptr<Node>> path;
+	aStar->calculate(startX, startY, endX, endY, path);
 
 	std::vector<moves> moveList;
 	moveList.resize(path.size());
@@ -151,56 +149,57 @@ std::vector<moves> PathFinding::astar(int startX, int startY, int endX, int endY
 			int comparitor = (int)(conditions.to_ulong()); // cast to int so a switch statement can be used
 			switch (comparitor)
 			{
-			case 8:
+			case 1:
 				// Right
-				std::cout << "RIGHT";
+				//std::cout << "RIGHT";
 				moveList[i] = moves::RIGHT;
 				break;
-			case 4:
+			case 2:
 				// Left
-				std::cout << "LEFT";
+				//std::cout << "LEFT";
 				moveList[i] = moves::LEFT;
 				break;
-			case 2:
+			case 4:
 				// Down
-				std::cout << "DOWN";
+				//std::cout << "DOWN";
 				moveList[i] = moves::DOWN;
 				break;
-			case 1:
+			case 8:
 				// Up
-				std::cout << "UP";
+				//std::cout << "UP";
 				moveList[i] = moves::UP;
 				break;
 
 				// Diagonal movements are a combination of the above
 			case 9:
 				// Right + Up
-				std::cout << "Up Right";
+				//std::cout << "Up Right";
 				moveList[i] = moves::UP_RIGHT;
 				break;
-			case 5:
+			case 10:
 				// Left + Up
-				std::cout << "Up Left";
+				//std::cout << "Up Left";
 				moveList[i] = moves::UP_LEFT;
 				break;
-			case 10:
+			case 5:
 				// Right + Down
-				std::cout << "Down Right";
+				//std::cout << "Down Right";
 				moveList[i] = moves::DOWN_RIGHT;
 				break;
 			case 6:
-				// Right + Down
-				std::cout << "Down Left";
+				// Left + Down
+				//std::cout << "Down Left";
 				moveList[i] = moves::DOWN_LEFT;
 				break;
 			}
 
 			prevState = path[i];
-			std::cout << std::endl;
+			//std::cout << std::endl;
 		}
 	}
 
-	//World::createEntity(pathEntity);
+	// For some reason the first movement is always up, so remove it
+	moveList[0] = moves::IDLE;
 
 #ifdef DEBUG_PATHFINDING
 	SDL_RenderPresent(WindowManager::renderer);

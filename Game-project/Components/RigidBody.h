@@ -25,11 +25,11 @@ public:
 	// Apply an impulse force in a given direction
 	// void impulse(Vec2d direction);
 
-	Vec2d velocity;
-	double mass;
+	//Vec2d velocity;
+	//double mass;
 	// The velocity of an object after a collision is proportional
 	// to its velocity before. The constant of proportionality is its elasticity
-	double elasticity;
+	//double elasticity;
 
 	// The unique name of the component
 	// This needs to be public so that it can be accessed without making

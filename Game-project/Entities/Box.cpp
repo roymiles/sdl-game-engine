@@ -11,8 +11,8 @@ using namespace utilities;
 
 const std::string Box::name = "Box";
 
-Box::Box(int _width, int _height, std::vector<std::string> _idleImagePaths)
-		 : width(_width), height(_height)
+Box::Box(int _x, int _y, int _width, int _height, std::vector<std::string> _idleImagePaths)
+		 : x(_x), y(_y), width(_width), height(_height)
 {
 	idleImagePaths = _idleImagePaths;
 }
@@ -29,7 +29,7 @@ void Box::setup(int entityId)
     spriteComponent->setLayer(FOREGROUND);
 
 	std::shared_ptr<Transform> transformComponent(new Transform());
-	transformComponent->setDimensions(80, 80, width, height);
+	transformComponent->setDimensions(x, y, width, height);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
 

@@ -3,9 +3,13 @@
 #include <vector>
 #include <memory>
 
+#include "AStar.h"
+
 namespace game { namespace algorithms {
 
 enum moves : int {
+	IDLE, 
+
 	UP,
 	DOWN,
 	LEFT,
@@ -35,6 +39,8 @@ public:
 
 	static int resolution;
 	static grid2D_t navMesh;
+
+	static std::vector<std::shared_ptr<Node>> path; // List of all nodes in the path
 
 	// Uses current navMesh
 	static std::vector<moves> astar(int startX, int startY, int endX, int endY);

@@ -9,8 +9,8 @@ const std::string RigidBody::name = "RigidBody";
 
 RigidBody::RigidBody()
 {
-	mass	   = 1;
-	elasticity = 1;
+	//mass	   = 1;
+	//elasticity = 1;
 }
 
 

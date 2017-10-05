@@ -35,8 +35,12 @@ private:
 
 	const int width, height;
 
+	int gridMovement; // How much the character has moved for the current movement
 	int pathIndex;
-	std::vector<moves> path;
+
+	std::vector<moves> moveList; // List of all movement operations
+	std::vector<std::shared_ptr<Node>> nodeList; // List of all nodes on the path
+
 	bool isFollowingPath;
 
 	enum state : int { IDLE, MOVING, SIZE=2 };

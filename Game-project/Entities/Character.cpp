@@ -1,4 +1,5 @@
 #include <iostream> // temp debugging
+#include <math.h>   // ceil 
 
 #include "Character.h"
 #include "../Utility/FileHelper.h"
@@ -13,7 +14,7 @@ using namespace utilities;
 using namespace algorithms;
 
 const std::string Character::name = "Character";
-int Character::movementSpeed = 1/40 * METER; // 1 meter per frame
+int Character::movementSpeed = std::ceil(10*METER / (double)FPS_TARGET); // 1 meter per frame
 
 Character::Character(int _width, int _height)
 	: width(_width), height(_height)
@@ -46,7 +47,7 @@ void Character::setup(int _entityId)
 	transformComponent->setDimensions(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, width, height);
 
 	std::shared_ptr<RigidBody> rigidBodyComponent(new RigidBody());
-	rigidBodyComponent->mass = 0;
+	//rigidBodyComponent->mass = 0;
 
 	// ... and then add these components to the container
 	setComponent(spriteComponent);
@@ -80,8 +81,9 @@ void Character::update()
 {
 	if (isFollowingPath)
 	{
-		if (pathIndex == path.size())
+		if (pathIndex == moveList.size())
 		{
+			// Finished movement
 			isFollowingPath = false;
 			return;
 		}
@@ -91,27 +93,74 @@ void Character::update()
 		int width = transformComponent->getWidth();
 		int height = transformComponent->getHeight();
 
-		int curMove = path[pathIndex];
+		int diagMovementSpeed = floor(movementSpeed * 0.707);
+		int curMove = moveList[pathIndex];
+		int newX = position.x;
+		int newY = position.y;
+		bool validMove = true;
+		bool diag = false;
 		switch (curMove) {
 			case UP:
-				transformComponent->setDimensions(position.x, position.y - PathFinding::resolution, height, width);
-				World::physicsUpdateEntities.push_back(entityId);
+				newY -= movementSpeed;
+				gridMovement += movementSpeed;
 				break;
 			case RIGHT:
-				transformComponent->setDimensions(position.x + PathFinding::resolution, position.y, height, width);
-				World::physicsUpdateEntities.push_back(entityId);
+				newX += movementSpeed;
 				break;
 			case DOWN:
-				transformComponent->setDimensions(position.x, position.y + PathFinding::resolution, height, width);
-				World::physicsUpdateEntities.push_back(entityId);
+				newY += movementSpeed; // y coordinates start at top of screen
 				break;
 			case LEFT:
-				transformComponent->setDimensions(position.x - PathFinding::resolution, position.y, height, width);
-				World::physicsUpdateEntities.push_back(entityId);
+				newX -= movementSpeed;
+				break;
+			case UP_LEFT:
+				// Have to move slower along diagonal to ensure equal movement speed in all directions
+				newX -= diagMovementSpeed;
+				newY -= diagMovementSpeed;
+				diag = true;
+				break;
+			case UP_RIGHT:
+				newX += diagMovementSpeed;
+				newY -= diagMovementSpeed;
+				diag = true;
+				break;
+			case DOWN_LEFT:
+				newX -= diagMovementSpeed;
+				newY += diagMovementSpeed;
+				diag = true;
+				break;
+			case DOWN_RIGHT:
+				newX += diagMovementSpeed;
+				newY += diagMovementSpeed;
+				diag = true;
+				break;
+			default:
+				validMove = false;
 				break;
 		}
 
-		pathIndex++; // Move onto next movement
+		if (validMove)
+		{
+			transformComponent->setDimensions(newX, newY, height, width);
+			World::physicsUpdateEntities.push_back(entityId);
+
+			if (diag) {
+				gridMovement += diagMovementSpeed;
+			}
+			else {
+				gridMovement += movementSpeed;
+			}
+		}
+
+		// If character has finished movement, or it wasnt a valid move in the first place, move onto next
+		if ((gridMovement > METER && diag == false) || (gridMovement > METER * 0.707 && diag == true) || !validMove)
+		{
+			// Once movement is over, force character onto the correct grid square
+			transformComponent->setDimensions(nodeList[pathIndex]->x * METER, nodeList[pathIndex]->y * METER, height, width);
+
+			gridMovement = 0;
+			pathIndex++; // Move onto next movement
+		}
 	}
 }
 
@@ -129,45 +178,62 @@ void Character::onEvent(std::shared_ptr<Event> event_ptr)
 
 	// Remember the coordinate (0,0) starts at the top left. This means that the +ve
 	// y axis will be downwards, not upwards
+	int newX = position.x;
+	int newY = position.y;
+
 	if (UpKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x, position.y - movementSpeed, height, width);
-		World::physicsUpdateEntities.push_back(entityId);
+		newY -= movementSpeed;
 	}
-	else if (RightKey::name == key) {
+
+	if (RightKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x + movementSpeed, position.y, height, width);
-		World::physicsUpdateEntities.push_back(entityId);
+		newX += movementSpeed;
 	}
-	else if (LeftKey::name == key) {
+	
+	if (LeftKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x - movementSpeed, position.y, height, width);
-		World::physicsUpdateEntities.push_back(entityId);
+		newX -= movementSpeed;
 	}
-	else if (DownKey::name == key) {
+	
+	if (DownKey::name == key) {
 		currentState = state::MOVING;
-		transformComponent->setDimensions(position.x, position.y + movementSpeed, height, width);
-		World::physicsUpdateEntities.push_back(entityId);
+		newY += movementSpeed;
 	}
-	else if (KeyUp::name == key) {
+	
+	if (KeyUp::name == key) {
 		currentState = state::IDLE;
 	}
-	else if (MouseButtonUp::name == key) {
+	
+	if (MouseButtonUp::name == key) {
 		std::shared_ptr<MouseButtonUp> mouseButtonUp = std::static_pointer_cast<MouseButtonUp>(event_ptr);
 
 		Vec2i worldCoordinates = World::screenToWorldCoordinates( Vec2i(mouseButtonUp->getX(), mouseButtonUp->getY()) );
 
 		//std::cout << "Released mouse at " << mouseButtonUp->getX() << ", " << mouseButtonUp->getY() << std::endl;
-		std::cout << "Released mouse at " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
-		std::cout << "Currently at " << transformComponent->getX() << ", " << transformComponent->getY() << std::endl;
+		//std::cout << "Released mouse at " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
+		//std::cout << "Currently at " << transformComponent->getX() << ", " << transformComponent->getY() << std::endl;
 
-		Vec2i startGridXY = RenderingEngine::roundScreenCoordinates(transformComponent->getX(), transformComponent->getY());
+		// So the start position starts at the characters feet
+		int startX = transformComponent->getX() + (transformComponent->getWidth() / 2);
+		int startY = transformComponent->getY() + (transformComponent->getHeight() / 2);
+
+		Vec2i startGridXY = RenderingEngine::roundScreenCoordinates(startX, startY);
 		Vec2i endGridXY   = RenderingEngine::roundScreenCoordinates(mouseButtonUp->getX(), mouseButtonUp->getY());
 		RenderingEngine::screenGrid[endGridXY.x][endGridXY.y] = 1; // Mark end coordinate
-		std::vector<moves> moveList = PathFinding::astar(startGridXY.x, startGridXY.y, endGridXY.x, endGridXY.y);
-		//isFollowingPath = true;
-		//pathIndex		= 0;
-		//path			= moveList;
+
+		moveList = PathFinding::astar(startGridXY.x, startGridXY.y, endGridXY.x, endGridXY.y);
+		nodeList = PathFinding::path; // Make a copy of all the nodes in the path
+
+		isFollowingPath = true;
+		pathIndex		= 0;
+		gridMovement    = 0;
+	}
+
+	if (currentState == state::MOVING)
+	{
+		transformComponent->setDimensions(newX, newY, height, width);
+		World::physicsUpdateEntities.push_back(entityId);
 	}
 }
 

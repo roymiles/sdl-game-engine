@@ -14,7 +14,7 @@ using namespace utilities;
 class Box : public Entity
 {
 public:
-	Box(int _width, int _height, std::vector<std::string> _idleImagePaths);
+	Box(int _x, int _y, int _width, int _height, std::vector<std::string> _idleImagePaths);
 	~Box();
 
 	void setup(int entityId) override;
@@ -27,6 +27,7 @@ public:
 private:
 	static const std::string name;
 
+	const int x, y;
 	const int width, height;
 
 	// Default sprite images are empty

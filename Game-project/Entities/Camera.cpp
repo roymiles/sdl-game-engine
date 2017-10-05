@@ -13,7 +13,8 @@ Camera::Camera(int _targetIndex)
 
 std::shared_ptr<Entity> Camera::getTarget()
 {
-	return World::entityContainer[targetIndex];
+	//return World::entityContainer[targetIndex];
+	return nullptr;
 }
 
 
@@ -38,9 +39,14 @@ void Camera::update()
 {
 	// Set the camera position to the characters position
 	std::shared_ptr<Transform> transformComponent = getComponent<Transform>();
-	Vec2i targetPosition = getTarget()->getComponent<Transform>()->getPosition();
-
-	transformComponent->setPosition(targetPosition);
+	std::shared_ptr<Entity> target = getTarget();
+	Vec2i targetPosition;
+	if (target != nullptr) // If empty, dont move the camera
+	{
+		// Use target position
+		targetPosition = target->getComponent<Transform>()->getPosition();
+		transformComponent->setPosition(targetPosition);
+	}
 }
 
 const std::string Camera::getName() const

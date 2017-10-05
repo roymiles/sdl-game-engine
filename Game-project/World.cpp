@@ -6,6 +6,7 @@
 #include "LevelManager.h"
 #include "WindowManager.h"
 #include "Globals.h"
+#include "RenderingEngine.h"
 
 #include <iostream>
 #include <sstream>
@@ -138,34 +139,39 @@ void World::setup()
 	currentGameState = gameState::Level1;
 	// importEntities(state);
 
-	std::shared_ptr<Character> character(new Character(2*METER, 2*METER));
+	std::shared_ptr<Character> character(new Character(0.8*METER, 0.8*METER));
 	int characterIndex = createEntity(character);
 
 	std::shared_ptr<Camera> camera(new Camera(characterIndex));
 	createEntity(camera);
 
-	std::shared_ptr<Box> box(new Box(1*METER, 1*METER, { FileHelper::resourceFolder + "crate.bmp" }));
-	createEntity(box);
+	//std::shared_ptr<Box> box(new Box(METER, METER, { FileHelper::resourceFolder + "crate.bmp" }));
+	//createEntity(box);
         
 	// UI elements. These are _ABSOLUTE entities
-	std::shared_ptr<Button> button(new Button());
-	createEntity(button);
+	//std::shared_ptr<Button> button(new Button());
+	//createEntity(button);
 
-	int blockWidth = 10;
-	int blockHeight = 40;
-	for (int x = 0; x < SCREEN_WIDTH; x += blockWidth)
-	{
-		std::shared_ptr<Block> block(new Block(x, SCREEN_HEIGHT - blockHeight, blockWidth, blockHeight));
+	/* 
+	 * Draw the user interface
+	 */
+	//int blockWidth = METER;
+	//int blockHeight = 2*METER;
+	//for (int x = 0; x < SCREEN_WIDTH; x += blockWidth)
+	//{
+	//	std::shared_ptr<Block> block(new Block(x, SCREEN_HEIGHT - blockHeight, blockWidth, blockHeight));
 
-		// Use x key as opposed to a random string
-		std::stringstream ss;
-		ss << x;
+	//	// Use x key as opposed to a random string
+	//	std::stringstream ss;
+	//	ss << x;
 
-		createEntity(block, ss.str());
-	}
+	//	createEntity(block, ss.str());
+	//}
 
-	int floorWidth  = 5*METER * 1000;
-	int floorHeight = 5*METER * 1000;
+	int blockWidth = METER;
+	int blockHeight = METER;
+	int floorWidth  = METER;
+	int floorHeight = METER;
 	for (int x = LevelManager::DIMENSIONS.x; x < LevelManager::DIMENSIONS.w; x += floorWidth)
 	{
 		for (int y = LevelManager::DIMENSIONS.y; y < LevelManager::DIMENSIONS.h; y += floorHeight)
@@ -177,8 +183,17 @@ void World::setup()
 			ss << x << "_" << y;
 
 			createEntity(floor, ss.str());
+
+			// Add a block
+			if (findnoise2(x, y) <= 0) {
+				std::shared_ptr<Box> block(new Box(x, y, blockWidth, blockHeight, { FileHelper::resourceFolder + "crate.bmp" }));
+				createEntity(block, ss.str());
+			}
 		}
 	}
+
+	PathFinding::setCurrentNavMesh(PathFinding::createNavMesh());
+
 	// ----------------------------------------
 
 	// Loop through all the created entities and call setup

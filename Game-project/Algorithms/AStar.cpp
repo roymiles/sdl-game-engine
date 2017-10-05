@@ -163,6 +163,39 @@ std::vector<std::shared_ptr<Node>> AStar::getNeighbours(std::shared_ptr<Node> &_
 		}
 	}
 
+	// Diagonal neighbours
+	// Up Right
+	if (y < MAX_Y && x < MAX_X)
+	{
+		if (grid[x + 1][y + 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x + 1, y + 1)));
+		}
+	}
+
+	// Up Left
+	if (y < MAX_Y && x > 0)
+	{
+		if (grid[x - 1][y + 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x - 1, y + 1)));
+		}
+	}
+
+	// Down Right
+	if (y > 0 && x < MAX_X)
+	{
+		if (grid[x + 1][y - 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x + 1, y - 1)));
+		}
+	}
+
+	// Down Left
+	if (y > 0 && x > 0)
+	{
+		if (grid[x - 1][y - 1] = '0') {
+			neighbours.push_back(std::make_shared<Node>(Node(x - 1, y - 1)));
+		}
+	}
+
 	// Assign F, G and H
 #ifdef DEBUG_ASTAR
 	std::cout << "Neighbours of (" << x << "," << y << ") are:" << std::endl;
@@ -244,7 +277,7 @@ std::vector<std::shared_ptr<Node>> AStar::constructPath(std::shared_ptr<Node> &_
 #endif
 
 	// Flip the vector so its start->end rather than end->start
-	// std::reverse(path.begin(), path.end());
+	std::reverse(path.begin(), path.end());
 	return path;
 }
 

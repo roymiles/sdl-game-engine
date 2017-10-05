@@ -2,8 +2,6 @@
 
 #include "PhysicsEngine.h"
 #include "EventManager.h" // For triggerEvent
-#include "LevelManager.h" // boundToMap
-#include "Globals.h"
 
 namespace game {
 
@@ -20,24 +18,17 @@ PhysicsEngine::~PhysicsEngine()
 void PhysicsEngine::update()
 {
 	// Get all entities with RigidBody components
-	std::vector<entityPointer> rigidBodies = world->getEntitiesWithComponent<RigidBody>();
-
-	collisionPairs.clear(); // Clear all previous frame collisions
-	// Loop through all entities that have triggered a physics event (e.g. moved)
-	for(int entityId = 0; entityId < World::physicsUpdateEntities.size(); ++entityId)
-	{
-		entityPointer A = World::entityContainer[World::physicsUpdateEntities[entityId]];
-		
-		boundToMap(A);
-		checkCollisions(A);
-	}
-
-	if (!collisionPairs.empty()) 
-		respondToCollisions();
+	std::vector<entityPointer> rigidBodies;
+	rigidBodies = world->getEntitiesWithComponent<RigidBody>();
 
 	//updatePositions(rigidBodies);
 	//boundToWindow(rigidBodies);
 	//applyFriction(rigidBodies);
+
+	std::list<collisionPair> collisionPairs = checkCollisions(rigidBodies);
+	if (!collisionPairs.empty()) {
+		respondToCollisions(collisionPairs);
+	}
 }
 
 //void PhysicsEngine::updatePositions(std::map<std::string, entityPointer>& rigidBodies)
@@ -58,69 +49,39 @@ void PhysicsEngine::update()
 //	}
 //}
 //
-
-inline void PhysicsEngine::boundToMap(entityPointer& A)
-{
-	std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
-	Vec2i position = transformComponent->getPosition();
-	// x-axis
-	if (position.x + transformComponent->getWidth() > LevelManager::DIMENSIONS.w)
-	{
-		// Right hand side of the map
-		position.x = LevelManager::DIMENSIONS.w - transformComponent->getWidth();
-	}
-	else if (position.x < 0)
-	{
-		// Left hand side of the map
-		position.x = 0;
-	}
-
-	// y-axis
-	if (position.y + transformComponent->getHeight() > LevelManager::DIMENSIONS.h)
-	{
-		// Bottom of screen
-		position.y = LevelManager::DIMENSIONS.h - transformComponent->getHeight();
-	}
-	else if (position.y < 0)
-	{
-		// Top of screen
-		position.y = 0;
-	}
-
-	transformComponent->setPosition(position.x, position.y);
-}
-
-inline void PhysicsEngine::boundToWindow(entityPointer& A)
-{
-	std::shared_ptr<Transform> transformComponent = A->getComponent<Transform>();
-	Vec2i position = transformComponent->getPosition();
-	// x-axis
-	if (position.x > SCREEN_WIDTH)
-	{
-		// Right hand side of the screen
-		position.x = 0;
-	}
-	else if (position.x + transformComponent->getWidth() < 0)
-	{
-		// Left hand side of the screen
-		position.x = SCREEN_WIDTH;
-	}
-
-	// y-axis
-	if (position.y > SCREEN_HEIGHT)
-	{
-		// Bottom of screen
-		position.y = 0;
-	}
-	else if (position.y + transformComponent->getHeight() < 0)
-	{
-		// Top of screen
-		position.y = SCREEN_HEIGHT;
-	}
-
-	transformComponent->setPosition(position.x, position.y);
-}
-
+//void PhysicsEngine::boundToWindow(std::map<std::string, entityPointer>& rigidBodies)
+//{
+//	for (auto &A : rigidBodies)
+//	{
+//		std::shared_ptr<Transform> transformComponent = A.second->getComponent<Transform>();
+//		Vec2d position = transformComponent->getPosition();
+//		// x-axis
+//		if (position.x > Window::WIDTH)
+//		{
+//			// Right hand side of the screen
+//			position.x = 0;
+//		}
+//		else if (position.x + transformComponent->getWidth() < 0)
+//		{
+//			// Left hand side of the screen
+//			position.x = Window::WIDTH;
+//		}
+//
+//		// y-axis
+//		if (position.y > Window::HEIGHT)
+//		{
+//			// Bottom of screen
+//			position.y = 0;
+//		}
+//		else if (position.y + transformComponent->getHeight() < 0)
+//		{
+//			// Top of screen
+//			position.y = Window::HEIGHT;
+//		}
+//
+//		transformComponent->setPosition(position.x, position.y);
+//	}
+//}
 //
 //void PhysicsEngine::applyFriction(std::map<std::string, entityPointer>& rigidBodies)
 //{
@@ -139,21 +100,21 @@ inline void PhysicsEngine::boundToWindow(entityPointer& A)
 //	}
 //}
 
-inline std::list<collisionPair> PhysicsEngine::checkCollisions(entityPointer& A)
+std::list<collisionPair> PhysicsEngine::checkCollisions(std::vector<entityPointer>& colliders)
 {
 	// The collision meshes
 	SDL_Rect meshA;
 	SDL_Rect meshB;
 
 	/*
-	 *	Want to find all pair combinations of entities and don't want to check for
-	 *  a collision between A,B and then B,A. For example:
-		1.2 1.3 1.4 1.5
-		[2.1] 2.3 2.4 2.5
-		[3.1][3.2] 3.4 3.5
-		[4.1][4.2][4.3] 4.5
-		[5.1][5.2][5.3][5.4]
-		After every loop, you only need to loop n-1 elements
+	*	Want to find all pair combinations of entities and don't want to check for
+	*  a collision between A,B and then B,A. For example:
+	1.2 1.3 1.4 1.5
+	[2.1] 2.3 2.4 2.5
+	[3.1][3.2] 3.4 3.5
+	[4.1][4.2][4.3] 4.5
+	[5.1][5.2][5.3][5.4]
+	After every loop, you only need to loop n-1 elements
 	*/
 
 	// This is an enumeration of all the possible pair combinations of rigid body entities
@@ -161,52 +122,49 @@ inline std::list<collisionPair> PhysicsEngine::checkCollisions(entityPointer& A)
 
 	// Loop through all colliders and check there isnt a collision with any other
 	int n = 0;
-
-	meshA = A->getComponent<Transform>()->getRect();
-	/*
-	 * Loop through all the other entities that can collide with A
-	 * Though start from the nth element to avoid checking a different permutation of the same pair
-	 * Note: Iterator values are accessed with *it
-	 */
-
-	// Check if the entity has collided with any other rigid body
-	for(int entityId = 0; entityId < World::rigidBodyEntities.size(); ++entityId)
-	//for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B)
+	for (auto &A : colliders)
 	{
-		entityPointer B = World::entityContainer[World::rigidBodyEntities[entityId]];
-		meshB = B->getComponent<Transform>()->getRect();
-
-		// Object can't collide with itself
-		if (A != B)
+		meshA = A->getComponent<Transform>()->getRect();
+		/*
+		* Loop through all the other entities that can collide with A
+		* Though start from the nth element to avoid checking a different permutation of the same pair
+		* Note: Iterator values are accessed with *it
+		*/
+		for (auto B = std::next(colliders.begin(), n); B != colliders.end(); ++B)
 		{
-			// If any of the sides from A are outside of B
-			if (SDL_HasIntersection(&meshA, &meshB))
+			meshB = (*B)->getComponent<Transform>()->getRect();
+
+			// Object can't collide with itself
+			if (A != (*B))
 			{
-				// The two objects are intersecting, collision.
-				// std::cout << A->getName() << " is colliding with " << (*B)->getName() << std::endl;
-				collisionPairs.push_back(std::make_pair(A, B));
+				// If any of the sides from A are outside of B
+				if (SDL_HasIntersection(&meshA, &meshB))
+				{
+					// The two objects are intersecting, collision.
+					std::cout << A->getName() << " is colliding with " << (*B)->getName() << std::endl;
+					collisionPairs.push_back(std::make_pair(A, (*B)));
+				}
+
 			}
-				
 		}
+
+		n++;
 	}
 
-	n++;
-
-	World::physicsUpdateEntities.clear();
 	return collisionPairs;
 }
 
 
-inline void PhysicsEngine::respondToCollisions()
+void PhysicsEngine::respondToCollisions(std::list<collisionPair>& collidingPairs)
 {
-	for (auto &entities : collisionPairs)
+	for (auto &entities : collidingPairs)
 	{
 		std::shared_ptr<Transform> transformComponentA = entities.first->getComponent<Transform>();
 		std::shared_ptr<Transform> transformComponentB = entities.second->getComponent<Transform>();
 
-        SDL_Rect rectA = transformComponentA->getRect();
-        SDL_Rect rectB = transformComponentB->getRect();
-                
+		SDL_Rect rectA = transformComponentA->getRect();
+		SDL_Rect rectB = transformComponentB->getRect();
+
 		SDL_Rect intersectionResult; // A rect containing the amount of intersection
 		SDL_IntersectRect(&rectA, &rectB, &intersectionResult);
 
@@ -222,14 +180,14 @@ inline void PhysicsEngine::respondToCollisions()
 		Vec2i positionA = transformComponentA->getPosition();
 		Vec2i positionB = transformComponentB->getPosition();
 
-		bool left  = (intersectionResult.x == positionA.x);
+		bool left = (intersectionResult.x == positionA.x);
 		bool right = (intersectionResult.x + intersectionResult.w == positionA.x + transformComponentA->getWidth());
 		bool above = (intersectionResult.y == positionA.y);
 		bool below = (intersectionResult.y + intersectionResult.h == positionA.y + transformComponentA->getHeight());
 
 		// x-axis
 		// Note: I'm not sure why it works this way round, but it does :s
-		if ( (left && !(above || below)) || (left && (above || below) && intersectionResult.h > intersectionResult.w) )
+		if ((left && !(above || below)) || (left && (above || below) && intersectionResult.h > intersectionResult.w))
 		{
 			// A is on the left of B
 			Vec2i leftCollision(-intersectionResult.w, 0);

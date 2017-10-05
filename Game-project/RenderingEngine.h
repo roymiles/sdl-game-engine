@@ -36,8 +36,6 @@ public:
 private:
 	std::shared_ptr<World> world;
 	std::shared_ptr<Camera> camera;
-
-	void sort(std::map<std::string, entityPointer>& drawableEntities);
 };
 
 }

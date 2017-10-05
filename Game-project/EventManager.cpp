@@ -66,7 +66,7 @@ void EventManager::update(SDL_Event* window_event)
 			case SDL_MOUSEBUTTONUP:
 			{
 				//Get mouse position
-				std::cout << "mouse up" << std::endl;
+				//std::cout << "mouse up" << std::endl;
 				int x, y;
 				SDL_GetMouseState(&x, &y);
 				std::shared_ptr<MouseButtonUp> mouseButtonUp(new MouseButtonUp(x, y));

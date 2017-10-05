@@ -29,15 +29,25 @@ void RenderingEngine::update()
 	SDL_RenderClear(WindowManager::renderer);
 
 	std::shared_ptr<Transform> cameraTransform = camera->getComponent<Transform>();
-	std::shared_ptr<Transform> cameraTarget    = camera->getTarget()->getComponent<Transform>();
+	std::shared_ptr<Entity> cameraTarget = camera->getTarget();
+	std::shared_ptr<Transform> cameraTargetTransform;
+	if (cameraTarget == nullptr)
+	{
+		// No camera target
+		cameraTargetTransform = cameraTransform; // Keep it constant
+	}
+	else {
+		cameraTargetTransform = cameraTarget->getComponent<Transform>();
+	}
+
 	std::shared_ptr<Entity> entity;
 
 	// Get these values outside the loop
 	Vec2i cameraPos  = cameraTransform->getPosition();
 	int cameraX      = cameraPos.x;
 	int cameraY      = cameraPos.y;
-	int cameraWidth  = cameraTarget->getWidth();
-	int cameraHeight = cameraTarget->getHeight();
+	int cameraWidth  = cameraTargetTransform->getWidth();
+	int cameraHeight = cameraTargetTransform->getHeight();
 
 	// Draw all entities for each layer in order
 	for (int currentLayer = layers::BACKGROUND; currentLayer < layers::SIZE; currentLayer++)
@@ -56,20 +66,21 @@ void RenderingEngine::update()
 			// The sprites are offset by half the screen width and height, so that the character
 			// is in the centre of the screen
 
-			if (transform->getDisplayType() == _ABSOLUTE)
-			{
-				// ---- DRAW RELATIVE TO CAMERA ----
-				// All screen position are relative to the camera
-				box.x -= cameraX;
-				box.y -= cameraY;
-				// Make the target of the camera at the centre of the screen
-				box.x += SCREEN_WIDTH / 2;
-				box.y += SCREEN_HEIGHT / 2;
-				// Offset the camera by the width and height of the target
-				// This is because rectangle coordinates are specified by the top left corner rather than the centre
-				box.x -= cameraWidth / 2;
-				box.y -= cameraHeight / 2;
-			}
+			// EVERYTHING IS STATIC TO SCREEN NOW
+			//if (transform->getDisplayType() == _ABSOLUTE)
+			//{
+			//	// ---- DRAW RELATIVE TO CAMERA ----
+			//	// All screen position are relative to the camera
+			//	box.x -= cameraX;
+			//	box.y -= cameraY;
+			//	// Make the target of the camera at the centre of the screen
+			//	box.x += SCREEN_WIDTH / 2;
+			//	box.y += SCREEN_HEIGHT / 2;
+			//	// Offset the camera by the width and height of the target
+			//	// This is because rectangle coordinates are specified by the top left corner rather than the centre
+			//	box.x -= cameraWidth / 2;
+			//	box.y -= cameraHeight / 2;
+			//}
 
 			// Check if the entity is off the screen. If it is, don't render it
 			if (box.x + box.w > 0 && box.x < SCREEN_WIDTH && box.y + box.h > 0 && box.y < SCREEN_HEIGHT)
@@ -96,19 +107,19 @@ void RenderingEngine::update()
 
 			if (RenderingEngine::screenGrid[i][j] == 1)
 			{
-				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 255, 122);
 				SDL_RenderFillRect(WindowManager::renderer, &r);
 			}
 			else if (RenderingEngine::screenGrid[i][j] == 2) {
-				SDL_SetRenderDrawColor(WindowManager::renderer, 0, 255, 255, SDL_ALPHA_OPAQUE);
+				SDL_SetRenderDrawColor(WindowManager::renderer, 0, 255, 255, 122);
 				SDL_RenderFillRect(WindowManager::renderer, &r);
 			}
 			else if (RenderingEngine::screenGrid[i][j] == 3) {
-				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 0, 255, SDL_ALPHA_OPAQUE);
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 0, 255, 122);
 				SDL_RenderFillRect(WindowManager::renderer, &r);
 			}
 			else if (RenderingEngine::screenGrid[i][j] == 4) {
-				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);
+				SDL_SetRenderDrawColor(WindowManager::renderer, 255, 255, 0, 122);
 				SDL_RenderFillRect(WindowManager::renderer, &r);
 			}
 			else {
@@ -138,38 +149,6 @@ void RenderingEngine::update()
 	// Flip the backbuffer
 	// This means that everything that we prepared behind the screens is actually shown
 	SDL_RenderPresent(WindowManager::renderer);
-}
-
-// Sort the container of entities according to their layer in ascending order
-void RenderingEngine::sort(std::map<std::string, entityPointer>& drawableEntities)
-{
-    int i, j, n;
-    entityPointer temp;
-    n = drawableEntities.size();
-    
-    std::vector<std::string> entityKeys;
-    entityKeys.reserve(n);
-    
-    for (auto &entity : drawableEntities)
-    {
-        entityKeys.push_back(entity.first);    
-    }
-    
-    for (i=1; i<n-1; i++)
-    {
-        for (j=1; i<n-1; i++)
-        {
-            int elem1 = drawableEntities[entityKeys[i-1]]->getComponent<Sprite>()->getLayer();
-            int elem2 = drawableEntities[entityKeys[i]]->getComponent<Sprite>()->getLayer();
-       
-            if (elem1 < elem2) {
-                temp=drawableEntities[entityKeys[j]];
-                drawableEntities[entityKeys[j]]=drawableEntities[entityKeys[j+1]];
-                drawableEntities[entityKeys[j+1]]=temp;
-            }
-        }
-    }
-
 }
 
 Vec2i RenderingEngine::roundScreenCoordinates(int _x, int _y)
